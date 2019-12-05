@@ -12,6 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^24.0.23",
+    "@types/node": "^12.12.14",
     "jest": "^24.9.0",
     "ts-jest": "^24.2.0",
     "tspeg": "^1.1.6",
@@ -19,7 +20,7 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testPathIgnorePatterns" : [
+    "testPathIgnorePatterns": [
       "/node_modules/",
       "^.+\\.js$"
     ]
