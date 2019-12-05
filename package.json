@@ -5,10 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "gen": "tspeg src/grammar.gram src/parser.ts",
     "build": "tspeg src/grammar.gram src/parser.ts && tsc",
     "clean": "rm -rf node-build"
   },
   "author": "Eoin Davey",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EoinDavey/Setanta.git"
+  },
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^24.0.23",

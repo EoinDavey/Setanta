@@ -3,10 +3,17 @@ import { ASTKinds } from './parser';
 
 export type Value = number | boolean;
 
-class RuntimeError extends Error {
+export class RuntimeError extends Error {
+    msg: string;
     constructor(message : string){
-        super(`Runtime Error: ${message}`);
+        const msg = `Runtime Error: ${message}`;
+        super(msg);
+        this.msg = msg;
     }
+}
+
+function unidentifiedError(id : string) {
+    return new RuntimeError(`Undefined identifier: ${id}`);
 }
 
 export class Interpreter {
@@ -22,11 +29,19 @@ export class Interpreter {
     execStmt(st : P.Stmt) {
         if(st.kind === ASTKinds.Stmt_1){
             this.execAssgn(st.asgn);
+        }else if(st.kind === ASTKinds.Stmt_2){
+            this.execDefn(st.asgn);
         } else {
             this.evalExpr(st.expr);
         }
     }
+    execDefn(a : P.DefnStmt) {
+        const val = this.evalExpr(a.expr);
+        this.env.set(a.id, val);
+    }
     execAssgn(a : P.AssgnStmt) {
+        if(!this.env.has(a.id))
+            throw unidentifiedError(a.id);
         const val = this.evalExpr(a.expr);
         this.env.set(a.id, val);
     }
@@ -102,7 +117,7 @@ export class Interpreter {
     evalID(id : P.ID) : Value {
         const g = this.env.get(id);
         if(!g)
-            throw new RuntimeError(`${g} not found`);
+            throw new RuntimeError(`Undefined identifier: ${id}`);
         return g;
     }
     evalINT(i : P.INT) : number {

@@ -28,20 +28,20 @@ test('test assign', () => {
     interface tc { inp: string, exp: Value, env: Map<string, Value>}
     const cases : tc[] = [
         {
-            inp : `res = 12`,
+            inp : `res := 12`,
             exp : 12,
             env: new Map()
         },
         {
-            inp : `x = 6
-            y = 2*x
+            inp : `x := 6
+            y := 2*x
             y = y+1
-            res = y*y`,
+            res := y*y`,
             exp : 169,
             env: new Map()
         },
         {
-            inp : `res = x
+            inp : `res := x
             10*10-40/3
             res = res*res + res + 3`,
             exp : 113,

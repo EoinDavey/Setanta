@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as readline from 'readline';
-import { Interpreter } from './i10r';
+import { Interpreter, RuntimeError } from './i10r';
 import { Parser, ASTKinds } from './parser';
 
 const rl = readline.createInterface({
@@ -27,11 +27,18 @@ async function main() {
             continue;
         }
         const ast = p.ast!;
-        if(ast.length === 1 && ast[0].kind === ASTKinds.Stmt_2){
-            console.log(i.evalExpr(ast[0].expr));
-            continue;
+        try {
+            if(ast.length === 1 && ast[0].kind === ASTKinds.Stmt_3){
+                    console.log(i.evalExpr(ast[0].expr));
+                continue;
+            }
+            i.interpret(ast);
+        } catch(err){
+            if(err instanceof RuntimeError)
+                console.log(err.msg);
+            else
+                console.log(err);
         }
-        i.interpret(ast);
     }
 }
 

@@ -1,5 +1,8 @@
 Program   := Stmt*
-Stmt      := _ asgn=AssgnStmt _ | _ expr=Expr _
+Stmt      := _ asgn=AssgnStmt _
+           | _ asgn=DefnStmt _
+           | _ expr=Expr _
+DefnStmt  := id=ID _ ':=' _ expr=Expr
 AssgnStmt := id=ID _ '=' _ expr=Expr
 Expr      := And
 And       := head=Or tail={'\&' trm=Or}*
