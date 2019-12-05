@@ -1,0 +1,17 @@
+Program   := Stmt*
+Stmt      := _ asgn=AssgnStmt _ | _ expr=Expr _
+AssgnStmt := id=ID _ '=' _ expr=Expr
+Expr      := And
+And       := head=Or tail={'\&' trm=Or}*
+Or        := head=Eq tail={'\|' trm=Eq}*
+Eq        := head=Comp tail={op='[!=]=' trm=Comp}*
+Comp      := head=Sum tail={op=Compare trm=Sum}*
+Sum       := head=Product tail={op=PlusMinus trm=Product}*
+Product   := head=Atom tail={op=MulDiv trm=Atom}*
+Atom      := _ trm=INT _ | _ trm=ID _ | _ '\(' trm=Expr '\)' _
+PlusMinus := '\+|-'
+MulDiv    := '\*|\/|%'
+Compare   := '(<=)|(>=)|<|>'
+ID        := '[a-zA-Z_]+'
+INT       := '[0-9]+'
+_         := '\s*'
