@@ -1,17 +1,19 @@
-import { Interpreter, Value } from '../../src/i10r';
+import { Interpreter } from '../../src/i10r';
+import { Value } from '../../src/values';
 import { Parser } from '../../src/parser';
+import { Environment } from '../../src/env';
 
 test('test expressions', () => {
-    interface tc { inp: string, exp: Value, env: Map<string, Value>}
+    interface tc { inp: string, exp: Value, env: Environment}
     const cases : tc[] = [
-        {inp : '12 + 3*5', exp : 27, env: new Map()},
-        {inp : '12 + 3*5 == 27', exp : true, env: new Map()},
-        {inp : '12-12-12', exp : -12, env: new Map()},
-        {inp : '12*2/3', exp : 8, env: new Map()},
-        {inp : '1 <= 0', exp : false, env: new Map()},
-        {inp : '1 >= 0', exp : true, env: new Map()},
-        {inp : 'big > small', exp : true, env: new Map([["big", 100], ["small", 1]])},
-        {inp : 'x*x + y*y - z*z', exp : 0, env: new Map([["x", 3], ["y", 4], ["z", 5]])}
+        {inp : '12 + 3*5', exp : 27, env: new Environment()},
+        {inp : '12 + 3*5 == 27', exp : true, env: new Environment()},
+        {inp : '12-12-12', exp : -12, env: new Environment()},
+        {inp : '12*2/3', exp : 8, env: new Environment()},
+        {inp : '1 <= 0', exp : false, env: new Environment()},
+        {inp : '1 >= 0', exp : true, env: new Environment()},
+        {inp : 'big > small', exp : true, env: Environment.from([["big", 100], ["small", 1]])},
+        {inp : 'x*x + y*y - z*z', exp : 0, env: Environment.from([["x", 3], ["y", 4], ["z", 5]])}
     ];
     for(let c of cases){
         const i = new Interpreter();
@@ -25,12 +27,12 @@ test('test expressions', () => {
 });
 
 test('test assign', () => {
-    interface tc { inp: string, exp: Value, env: Map<string, Value>}
+    interface tc { inp: string, exp: Value, env: Environment};
     const cases : tc[] = [
         {
             inp : `res := 12`,
             exp : 12,
-            env: new Map()
+            env: new Environment()
         },
         {
             inp : `x := 6
@@ -38,14 +40,14 @@ test('test assign', () => {
             y = y+1
             res := y*y`,
             exp : 169,
-            env: new Map()
+            env: new Environment()
         },
         {
             inp : `res := x
             10*10-40/3
             res = res*res + res + 3`,
             exp : 113,
-            env: new Map([['x', 10]])
+            env: Environment.from([['x', 10]])
         },
     ];
     for(let c of cases){

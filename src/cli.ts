@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as readline from 'readline';
-import { Interpreter, RuntimeError } from './i10r';
+import { Interpreter } from './i10r';
+import { RuntimeError } from './error';
 import { Parser, ASTKinds } from './parser';
 
 const rl = readline.createInterface({

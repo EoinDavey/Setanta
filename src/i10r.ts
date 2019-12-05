@@ -1,35 +1,23 @@
 import * as P from './parser';
 import { ASTKinds } from './parser';
-
-export type Value = number | boolean;
-
-export class RuntimeError extends Error {
-    msg: string;
-    constructor(message : string){
-        const msg = `Runtime Error: ${message}`;
-        super(msg);
-        this.msg = msg;
-    }
-}
-
-function unidentifiedError(id : string) {
-    return new RuntimeError(`Undefined identifier: ${id}`);
-}
+import { Value } from './values';
+import { RuntimeError, undefinedError } from './error';
+import { Environment } from './env';
 
 export class Interpreter {
-    env : Map<string, Value> = new Map();
+    env : Environment = new Environment();
     interpret(p : P.Program) {
         this.execStmtBlock(p);
     }
-    execStmtBlock(blk : P.Stmt[]){
+    execStmtBlock(blk : P.Stmt[]) {
         for(let st of blk){
             this.execStmt(st);
         }
     }
     execStmt(st : P.Stmt) {
-        if(st.kind === ASTKinds.Stmt_1){
+        if(st.kind === ASTKinds.Stmt_1) {
             this.execAssgn(st.asgn);
-        }else if(st.kind === ASTKinds.Stmt_2){
+        }else if(st.kind === ASTKinds.Stmt_2) {
             this.execDefn(st.asgn);
         } else {
             this.evalExpr(st.expr);
@@ -37,13 +25,11 @@ export class Interpreter {
     }
     execDefn(a : P.DefnStmt) {
         const val = this.evalExpr(a.expr);
-        this.env.set(a.id, val);
+        this.env.define(a.id, val);
     }
     execAssgn(a : P.AssgnStmt) {
-        if(!this.env.has(a.id))
-            throw unidentifiedError(a.id);
         const val = this.evalExpr(a.expr);
-        this.env.set(a.id, val);
+        this.env.assign(a.id, val);
     }
     evalExpr(expr : P.Expr) : Value {
         return this.evalAnd(expr);
@@ -115,10 +101,7 @@ export class Interpreter {
         return this.evalExpr(at.trm);
     }
     evalID(id : P.ID) : Value {
-        const g = this.env.get(id);
-        if(!g)
-            throw new RuntimeError(`Undefined identifier: ${id}`);
-        return g;
+        return this.env.get(id);
     }
     evalINT(i : P.INT) : number {
         return parseInt(i);
