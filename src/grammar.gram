@@ -1,24 +1,25 @@
-Program   := Stmt*
-Stmt      := IfStmt
-           | BlockStmt
-           | AssgnStmt
-           | DefnStmt
-           | Expr
-IfStmt    := _ 'm[áa]' _ expr=Expr _ stmt=Stmt elsebranch={ _ 'n[oó]' _  stmt=Stmt}?
-BlockStmt := _ '{' blk=Stmt* '}'
-DefnStmt  := _ id=ID _ ':=' _ expr=Expr
-AssgnStmt := _ id=ID _ '=' _ expr=Expr
-Expr      := And
-And       := head=Or tail={'\&' trm=Or}*
-Or        := head=Eq tail={'\|' trm=Eq}*
-Eq        := head=Comp tail={op='[!=]=' trm=Comp}*
-Comp      := head=Sum tail={op=Compare trm=Sum}*
-Sum       := head=Product tail={op=PlusMinus trm=Product}*
-Product   := head=Atom tail={op=MulDiv trm=Atom}*
-Atom      := _ trm=INT _ | _ trm=ID _ | _ '\(' trm=Expr '\)' _
-PlusMinus := '\+|-'
-MulDiv    := '\*|\/|%'
-Compare   := '(<=)|(>=)|<|>'
-ID        := '[a-zA-Z_]+'
-INT       := '[0-9]+'
-_         := '\s*'
+Program     := AsgnStmt*
+AsgnStmt    := IfStmt
+             | BlockStmt
+             | AssgnStmt
+             | DefnStmt
+             | Expr
+NonAsgnStmt := IfStmt | BlockStmt | AssgnStmt | Expr
+IfStmt      := _ 'm[áa]' _ expr=Expr _ stmt=NonAsgnStmt elsebranch={ _ 'n[oó]' _  stmt=NonAsgnStmt}?
+BlockStmt   := _ '{' blk=AsgnStmt* '}'
+DefnStmt    := _ id=ID _ ':=' _ expr=Expr
+AssgnStmt   := _ id=ID _ '=' _ expr=Expr
+Expr        := And
+And         := head=Or tail={'\&' trm=Or}*
+Or          := head=Eq tail={'\|' trm=Eq}*
+Eq          := head=Comp tail={op='[!=]=' trm=Comp}*
+Comp        := head=Sum tail={op=Compare trm=Sum}*
+Sum         := head=Product tail={op=PlusMinus trm=Product}*
+Product     := head=Atom tail={op=MulDiv trm=Atom}*
+Atom        := _ trm=INT _ | _ trm=ID _ | _ '\(' trm=Expr '\)' _
+PlusMinus   := '\+|-'
+MulDiv      := '\*|\/|%'
+Compare     := '(<=)|(>=)|<|>'
+ID          := '[a-zA-Z_]+'
+INT         := '[0-9]+'
+_           := '\s*'

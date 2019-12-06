@@ -4,13 +4,15 @@ import { Value, isTrue } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 
+type Stmt = P.AsgnStmt | P.NonAsgnStmt;
+
 // TODO Division by zero
 export class Interpreter {
     env : Environment = new Environment();
     interpret(p : P.Program) {
         this.execStmts(p);
     }
-    execStmts(stmts : P.Stmt[]){
+    execStmts(stmts : Stmt[]){
         for(let st of stmts){
             this.execStmt(st);
         }
@@ -21,7 +23,7 @@ export class Interpreter {
         this.execStmts(blk.blk);
         this.env = prev;
     }
-    execStmt(st : P.Stmt) {
+    execStmt(st : P.AsgnStmt | P.NonAsgnStmt) {
         switch(st.kind) {
             case ASTKinds.IfStmt:
                 this.execIf(st);
