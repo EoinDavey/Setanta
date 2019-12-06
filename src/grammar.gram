@@ -1,7 +1,17 @@
 Program   := Stmt*
-Stmt      := _ asgn=AssgnStmt _
+Stmt      := _ ifst=IfStmt _
+           | _ asgn=AssgnStmt _
            | _ asgn=DefnStmt _
            | _ expr=Expr _
+IfStmt    :=
+    'má' expr=Expr '{'
+        seq=Stmt*
+    '}'
+    elsebranch={
+        _ 'nó' _ '{'
+            seq=Stmt*
+        '}'
+    }?
 DefnStmt  := id=ID _ ':=' _ expr=Expr
 AssgnStmt := id=ID _ '=' _ expr=Expr
 Expr      := And

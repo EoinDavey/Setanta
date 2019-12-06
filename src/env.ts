@@ -30,9 +30,9 @@ export class Environment {
             this.values.set(id, val);
             return;
         }
-
         if(this.enclosing) {
             this.enclosing.assign(id, val);
+            return;
         }
         throw undefinedError(id);
     }

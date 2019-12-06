@@ -1,27 +1,46 @@
 import * as P from './parser';
 import { ASTKinds } from './parser';
-import { Value } from './values';
+import { Value, isTrue } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 
+// TODO Division by zero
 export class Interpreter {
     env : Environment = new Environment();
     interpret(p : P.Program) {
-        this.execStmtBlock(p);
+        this.execStmts(p);
     }
-    execStmtBlock(blk : P.Stmt[]) {
-        for(let st of blk){
+    execStmts(stmts : P.Stmt[]){
+        for(let st of stmts){
             this.execStmt(st);
         }
     }
+    execStmtBlock(blk : P.Stmt[]) {
+        const prev = this.env;
+        this.env = new Environment(this.env);
+        this.execStmts(blk);
+        this.env = prev;
+    }
     execStmt(st : P.Stmt) {
         if(st.kind === ASTKinds.Stmt_1) {
-            this.execAssgn(st.asgn);
+            this.execIf(st.ifst);
         }else if(st.kind === ASTKinds.Stmt_2) {
+            this.execAssgn(st.asgn);
+        }else if(st.kind === ASTKinds.Stmt_3) {
             this.execDefn(st.asgn);
         } else {
             this.evalExpr(st.expr);
         }
+    }
+    execIf(f : P.IfStmt) {
+        const v = this.evalExpr(f.expr);
+        if(isTrue(v)){
+            this.execStmtBlock(f.seq);
+            return;
+        }
+        if(!f.elsebranch)
+            return;
+        this.execStmtBlock(f.elsebranch.seq);
     }
     execDefn(a : P.DefnStmt) {
         const val = this.evalExpr(a.expr);

@@ -60,3 +60,47 @@ test('test assign', () => {
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
+
+test('test if stmt', () => {
+    interface tc { inp: string, exp: Value, env: Environment};
+    const cases : tc[] = [
+        {
+            inp : `res := 6
+            má res > 5 {
+                res = res+2
+            }`,
+            exp : 8,
+            env: new Environment()
+        },
+        {
+            inp : `x := 6
+            res := 10
+            má x < 5 {
+                x = x + 2
+            } nó {
+                res := 100
+            }`,
+            exp : 10,
+            env: new Environment()
+        },
+        {
+            inp : `res := 6
+            má res < 5 {
+                res = res + 2
+            } nó {
+                res = 100
+            }`,
+            exp : 100,
+            env: new Environment()
+        },
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        i.env = c.env;
+        const p = new Parser(c.inp);
+        const res = p.matchProgram(0);
+        expect(res).not.toBeNull();
+        i.interpret(res!);
+        expect(i.env.get('res')).toEqual(c.exp);
+    }
+});

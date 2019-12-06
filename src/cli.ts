@@ -29,7 +29,7 @@ async function main() {
         }
         const ast = p.ast!;
         try {
-            if(ast.length === 1 && ast[0].kind === ASTKinds.Stmt_3){
+            if(ast.length === 1 && ast[0].kind === ASTKinds.Stmt_4){
                     console.log(i.evalExpr(ast[0].expr));
                 continue;
             }
