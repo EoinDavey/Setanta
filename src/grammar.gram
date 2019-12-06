@@ -1,12 +1,14 @@
 Program     := AsgnStmt*
 AsgnStmt    := IfStmt
              | BlockStmt
+             | NuairStmt
              | AssgnStmt
              | DefnStmt
              | Expr
-NonAsgnStmt := IfStmt | BlockStmt | AssgnStmt | Expr
+NonAsgnStmt := IfStmt | NuairStmt | BlockStmt | AssgnStmt | Expr
 IfStmt      := _ 'm[áa]' _ expr=Expr _ stmt=NonAsgnStmt elsebranch={ _ 'n[oó]' _  stmt=NonAsgnStmt}?
 BlockStmt   := _ '{' blk=AsgnStmt* '}'
+NuairStmt   := _ 'nuair a' expr=Expr stmt=NonAsgnStmt
 DefnStmt    := _ id=ID _ ':=' _ expr=Expr
 AssgnStmt   := _ id=ID _ '=' _ expr=Expr
 Expr        := And

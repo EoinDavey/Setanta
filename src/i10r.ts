@@ -26,7 +26,7 @@ export class Interpreter {
     execStmt(st : P.AsgnStmt | P.NonAsgnStmt) {
         switch(st.kind) {
             case ASTKinds.IfStmt:
-                this.execIf(st);
+                this.execMá(st);
                 break
             case ASTKinds.BlockStmt:
                 this.execStmtBlock(st);
@@ -37,12 +37,20 @@ export class Interpreter {
             case ASTKinds.DefnStmt:
                 this.execDefn(st);
                 break;
+            case ASTKinds.NuairStmt:
+                this.execNuair(st);
+                break;
             default:
                 this.evalExpr(st);
                 break;
         }
     }
-    execIf(f : P.IfStmt) {
+    execNuair(n : P.NuairStmt) {
+        while(isTrue(this.evalExpr(n.expr))){
+            this.execStmt(n.stmt);
+        }
+    }
+    execMá(f : P.IfStmt) {
         const v = this.evalExpr(f.expr);
         if(isTrue(v)){
             this.execStmt(f.stmt);
