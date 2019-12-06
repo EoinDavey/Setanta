@@ -1,19 +1,13 @@
 Program   := Stmt*
-Stmt      := _ ifst=IfStmt _
-           | _ asgn=AssgnStmt _
-           | _ asgn=DefnStmt _
-           | _ expr=Expr _
-IfStmt    :=
-    'má' expr=Expr '{'
-        seq=Stmt*
-    '}'
-    elsebranch={
-        _ 'nó' _ '{'
-            seq=Stmt*
-        '}'
-    }?
-DefnStmt  := id=ID _ ':=' _ expr=Expr
-AssgnStmt := id=ID _ '=' _ expr=Expr
+Stmt      := IfStmt
+           | BlockStmt
+           | AssgnStmt
+           | DefnStmt
+           | Expr
+IfStmt    := _ 'm[áa]' _ expr=Expr _ stmt=Stmt elsebranch={ _ 'n[oó]' _  stmt=Stmt}?
+BlockStmt := _ '{' blk=Stmt* '}'
+DefnStmt  := _ id=ID _ ':=' _ expr=Expr
+AssgnStmt := _ id=ID _ '=' _ expr=Expr
 Expr      := And
 And       := head=Or tail={'\&' trm=Or}*
 Or        := head=Eq tail={'\|' trm=Eq}*

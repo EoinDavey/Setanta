@@ -65,26 +65,28 @@ test('test if stmt', () => {
     interface tc { inp: string, exp: Value, env: Environment};
     const cases : tc[] = [
         {
-            inp : `res := 6
-            má res > 5 {
-                res = res+2
-            }`,
+            inp : `
+            res := 6
+            má res > 5
+                res = res+2`,
             exp : 8,
             env: new Environment()
         },
         {
-            inp : `x := 6
+            inp : `
+            x := 6
             res := 10
-            má x < 5 {
+            má x < 5
                 x = x + 2
-            } nó {
+            nó {
                 res := 100
             }`,
             exp : 10,
             env: new Environment()
         },
         {
-            inp : `res := 6
+            inp : `
+            res := 6
             má res < 5 {
                 res = res + 2
             } nó {

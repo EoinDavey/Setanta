@@ -9,6 +9,9 @@
     "build": "tspeg src/grammar.gram src/parser.ts && tsc",
     "clean": "rm -rf node-build"
   },
+  "bin": {
+    "setanta": "node_build/cli.js"
+  },
   "author": "Eoin Davey",
   "repository": {
     "type": "git",

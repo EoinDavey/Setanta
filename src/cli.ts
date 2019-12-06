@@ -29,8 +29,8 @@ async function main() {
         }
         const ast = p.ast!;
         try {
-            if(ast.length === 1 && ast[0].kind === ASTKinds.Stmt_4){
-                    console.log(i.evalExpr(ast[0].expr));
+            if(ast.length === 1 && ast[0].kind === ASTKinds.And){
+                    console.log(i.evalExpr(ast[0]));
                 continue;
             }
             i.interpret(ast);

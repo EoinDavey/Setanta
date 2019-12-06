@@ -15,32 +15,40 @@ export class Interpreter {
             this.execStmt(st);
         }
     }
-    execStmtBlock(blk : P.Stmt[]) {
+    execStmtBlock(blk : P.BlockStmt) {
         const prev = this.env;
         this.env = new Environment(this.env);
-        this.execStmts(blk);
+        this.execStmts(blk.blk);
         this.env = prev;
     }
     execStmt(st : P.Stmt) {
-        if(st.kind === ASTKinds.Stmt_1) {
-            this.execIf(st.ifst);
-        }else if(st.kind === ASTKinds.Stmt_2) {
-            this.execAssgn(st.asgn);
-        }else if(st.kind === ASTKinds.Stmt_3) {
-            this.execDefn(st.asgn);
-        } else {
-            this.evalExpr(st.expr);
+        switch(st.kind) {
+            case ASTKinds.IfStmt:
+                this.execIf(st);
+                break
+            case ASTKinds.BlockStmt:
+                this.execStmtBlock(st);
+                break;
+            case ASTKinds.AssgnStmt:
+                this.execAssgn(st);
+                break;
+            case ASTKinds.DefnStmt:
+                this.execDefn(st);
+                break;
+            default:
+                this.evalExpr(st);
+                break;
         }
     }
     execIf(f : P.IfStmt) {
         const v = this.evalExpr(f.expr);
         if(isTrue(v)){
-            this.execStmtBlock(f.seq);
+            this.execStmt(f.stmt);
             return;
         }
         if(!f.elsebranch)
             return;
-        this.execStmtBlock(f.elsebranch.seq);
+        this.execStmt(f.elsebranch.stmt);
     }
     execDefn(a : P.DefnStmt) {
         const val = this.evalExpr(a.expr);
