@@ -6,7 +6,12 @@ import { Environment } from './env';
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
-// TODO Division by zero
+function assertNumber(x : Value, op : string) : number {
+    if(typeof x === "number")
+        return x;
+    throw new RuntimeError(`Operands to ${op} must be numbers`);
+}
+
 export class Interpreter {
     env : Environment = new Environment();
     interpret(p : P.Program) {
@@ -110,9 +115,8 @@ export class Interpreter {
     }
     evalSum(p : P.Sum) : Value {
         return p.tail.reduce((x, y) => {
-            const at = this.evalProduct(y.trm);
-            if(!(typeof at === "number" && typeof x === "number"))
-                throw new RuntimeError("Operands must be numbers");
+            const at = assertNumber(this.evalProduct(y.trm), y.op);
+            x = assertNumber(x, y.op);
             if(y.op === '+')
                 return x+at;
             return x-at;
@@ -120,13 +124,15 @@ export class Interpreter {
     }
     evalProduct(p : P.Product) : Value {
         return p.tail.reduce((x, y) => {
-            const at = this.evalAtom(y.trm);
-            if(!(typeof at === "number" && typeof x === "number"))
-                throw new RuntimeError("Operands must be numbers");
+            const at = assertNumber(this.evalAtom(y.trm), y.op);
+            x = assertNumber(x, y.op);
             if(y.op === '*')
                 return x*at;
-            if(y.op === '/')
+            if(y.op === '/') {
+                if(at === 0)
+                    throw new RuntimeError("Division by zero");
                 return x/at;
+            }
             return x%at;
         }, this.evalAtom(p.head));
     }
