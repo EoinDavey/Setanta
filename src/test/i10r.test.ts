@@ -106,3 +106,41 @@ test('test if stmt', () => {
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
+
+test('test nuair a loops', () => {
+    interface tc { inp: string, exp: Value, env?: Environment};
+    const cases : tc[] = [
+        {
+            inp : `
+            res := 0
+            nuair a res < 10 
+                res = res + 1`,
+            exp : 10,
+        },
+        {
+            inp : `
+            cnt := 0
+            i := 0
+            nuair a i < 10 {
+                j := 0
+                nuair a j < 10 {
+                    j = j + 1
+                    cnt = cnt + 1
+                }
+                i = i + 1
+            }
+            res := cnt`,
+            exp : 100,
+        },
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        if(c.env)
+            i.env = c.env;
+        const p = new Parser(c.inp);
+        const res = p.matchProgram(0);
+        expect(res).not.toBeNull();
+        i.interpret(res!);
+        expect(i.env.get('res')).toEqual(c.exp);
+    }
+});
