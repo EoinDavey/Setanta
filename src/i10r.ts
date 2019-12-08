@@ -15,7 +15,7 @@ function assertNumber(x : Value, op : string) : number {
 export class Interpreter {
     env : Environment = new Environment();
     interpret(p : P.Program) {
-        this.execStmts(p);
+        this.execStmts(p.stmts);
     }
     execStmts(stmts : Stmt[]){
         for(let st of stmts){

@@ -46,6 +46,13 @@ test('test assign', () => {
             exp : 169,
         },
         {
+            inp : `máx := 6
+            fíory := 2*máx
+            fíory = fíory+1
+            res := fíory*fíory`,
+            exp : 169,
+        },
+        {
             inp : `res := x
             10*10-40/3
             res = res*res + res + 3`,
@@ -71,6 +78,13 @@ test('test if stmt', () => {
     const cases : tc[] = [
         {
             inp : `
+            res := 6
+            má res > 5
+                res = res+2`,
+            exp : 8,
+        },
+        {
+            inp : `má 5 == 5 { 5 }
             res := 6
             má res > 5
                 res = res+2`,
@@ -104,6 +118,8 @@ test('test if stmt', () => {
             i.env = c.env;
         const p = new Parser(c.inp);
         const res = p.parse();
+        if(res.err)
+            console.log(c);
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         i.interpret(res.ast!);
@@ -165,7 +181,7 @@ test('test le idir loops', () => {
             res := 0
             le i idir (0,10)
                 le i idir ( 0 , 10 )
-                    res = res + i`,
+                    res = res + i `,
             exp : 450,
         },
     ];
@@ -181,3 +197,4 @@ test('test le idir loops', () => {
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
+

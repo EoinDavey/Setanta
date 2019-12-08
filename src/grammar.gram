@@ -1,4 +1,4 @@
-Program     := AsgnStmt*
+Program     := stmts=AsgnStmt* _
 AsgnStmt    := IfStmt
              | BlockStmt
              | NuairStmt
@@ -7,28 +7,29 @@ AsgnStmt    := IfStmt
              | DefnStmt
              | Expr
 NonAsgnStmt := IfStmt | NuairStmt | LeStmt | BlockStmt | AssgnStmt | Expr
-IfStmt      := _ 'm[áa]' _ expr=Expr _ stmt=NonAsgnStmt elsebranch={'n[oó]' _  stmt=NonAsgnStmt}? _
-BlockStmt   := _ '{' blk=AsgnStmt* '}' _
-NuairStmt   := _ 'nuair a' expr=Expr stmt=NonAsgnStmt _
-LeStmt      := _ 'le' _ id=ID _ 'idir' _ '\('strt=Expr ',' end=Expr'\)' stmt=NonAsgnStmt
-DefnStmt    := _ id=ID _ ':=' _ expr=Expr _
-AssgnStmt   := _ id=ID _ '=' _ expr=Expr _
+IfStmt      := _ 'm[áa]' &gap expr=Expr &gap stmt=NonAsgnStmt elsebranch={_ 'n[oó]' &gap stmt=NonAsgnStmt}?
+BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
+NuairStmt   := _ 'nuair' gap 'a' expr=Expr &gap stmt=NonAsgnStmt
+LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr _ '\)' stmt=NonAsgnStmt
+DefnStmt    := _ id=ID _ ':=' _ expr=Expr
+AssgnStmt   := _ id=ID _ '=' _ expr=Expr
 Expr        := And
-And         := head=Or tail={'\&' trm=Or}*
-Or          := head=Eq tail={'\|' trm=Eq}*
-Eq          := head=Comp tail={op='[!=]=' trm=Comp}*
-Comp        := head=Sum tail={op=Compare trm=Sum}*
-Sum         := head=Product tail={op=PlusMinus trm=Product}*
-Product     := head=Atom tail={op=MulDiv trm=Atom}*
+And         := head=Or tail={_ '\&' trm=Or}*
+Or          := head=Eq tail={_ '\|' trm=Eq}*
+Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
+Comp        := head=Sum tail={_ op=Compare trm=Sum}*
+Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
+Product     := head=Atom tail={_ op=MulDiv trm=Atom}*
 Atom        := Int
-             | Bool
              | ID
-             | _ '\(' trm=Expr '\)' _
+             | Bool
+             | _ '\(' trm=Expr '\)'
 PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '(<=)|(>=)|<|>'
-Keyword     := 'm[áa]' | 'n[oó]' | 'nuair a' | 'f[ií]or|breag'
-ID          := _ !Keyword id='[a-zA-Z_áéíóúÁÉÍÓÚ]+' _
-Bool        := _ bool='f[ií]or|breag' _
-Int         := _ int='[0-9]+' _
+Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
+ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
+Bool        := _ bool='f[ií]or|breag'
+Int         := _ int='[0-9]+'
 _           := '\s*'
+gap         := '(^|\s|$)+'
