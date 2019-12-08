@@ -1,6 +1,6 @@
 import * as P from './parser';
 import { ASTKinds } from './parser';
-import { Value, isTrue } from './values';
+import { Value, isTrue, isCallable, isNumber, isBool, Callable } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 
@@ -10,6 +10,18 @@ function assertNumber(x : Value, op : string) : number {
     if(typeof x === "number")
         return x;
     throw new RuntimeError(`Operands to ${op} must be numbers`);
+}
+
+function assertCallable(x : Value) : Callable {
+    if(isCallable(x))
+        return x;
+    throw new RuntimeError(`${x} is not callable`);
+}
+
+function assertComparable(a : Value, b : Value) : [number | boolean, number | boolean] {
+    if(isNumber(a) && isNumber(b) || (isBool(a) && isBool(b)))
+        return [a,b];
+    throw new RuntimeError(`${a} is not comparable to ${b}`);
 }
 
 export class Interpreter {
@@ -121,13 +133,15 @@ export class Interpreter {
     }
     evalComp(p : P.Comp) : Value {
         return p.tail.reduce((x, y) => {
+            let yv = this.evalSum(y.trm);
+            [x, yv] = assertComparable(x, yv);
             if(y.op === '>=')
-                return x >= this.evalSum(y.trm);
+                return x >= yv;
             if(y.op === '<=')
-                return x <= this.evalSum(y.trm);
+                return x <= yv;
             if(y.op === '<')
-                return x < this.evalSum(y.trm);
-            return x > this.evalSum(y.trm);
+                return x < yv;
+            return x > yv;
         }, this.evalSum(p.head));
     }
     evalSum(p : P.Sum) : Value {
@@ -141,7 +155,7 @@ export class Interpreter {
     }
     evalProduct(p : P.Product) : Value {
         return p.tail.reduce((x, y) => {
-            const at = assertNumber(this.evalAtom(y.trm), y.op);
+            const at = assertNumber(this.evalPostOp(y.trm), y.op);
             x = assertNumber(x, y.op);
             if(y.op === '*')
                 return x*at;
@@ -151,7 +165,17 @@ export class Interpreter {
                 return x/at;
             }
             return x%at;
-        }, this.evalAtom(p.head));
+        }, this.evalPostOp(p.head));
+    }
+    evalPostOp(p : P.PostOp) : Value { // Call function
+        return p.ops.reduce((x : Value, y) => {
+            x = assertCallable(x);
+            const args : Value[] = y.args ? this.evalCSArgs(y.args) : [];
+            const ar = x.arity();
+            if(args.length !== ar)
+                throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);
+            return x.call(args);
+        }, this.evalAtom(p.at));
     }
     evalAtom(at : P.Atom) : Value {
         switch(at.kind){
@@ -164,6 +188,9 @@ export class Interpreter {
         }
         return this.evalExpr(at.trm);
     }
+    evalCSArgs(args : P.CSArgs) : Value[] {
+        return [this.evalExpr(args.head)].concat(args.tail.map(x => this.evalExpr(x.exp)));
+    }
     evalID(id : P.ID) : Value {
         return this.env.get(id.id);
     }
@@ -173,15 +200,4 @@ export class Interpreter {
     evalInt(i : P.Int) : number {
         return parseInt(i.int);
     }
-}
-
-export function evTest(s : string) {
-    const p = new P.Parser(s);
-    const result = p.parse();
-    if(result.err != null){
-        console.log('' + result.err);
-        return;
-    }
-    const i10r = new Interpreter();
-    console.log(i10r.interpret(result.ast!));
 }

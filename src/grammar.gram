@@ -19,11 +19,13 @@ Or          := head=Eq tail={_ '\|' trm=Eq}*
 Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
 Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
-Product     := head=Atom tail={_ op=MulDiv trm=Atom}*
+Product     := head=PostOp tail={_ op=MulDiv trm=PostOp}*
+PostOp      := at=Atom ops={'\(' args=CSArgs? _ '\)'}*
 Atom        := Int
              | ID
              | Bool
              | _ '\(' trm=Expr '\)'
+CSArgs      := head=Expr tail={_ ',' exp=Expr}*
 PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '(<=)|(>=)|<|>'

@@ -198,3 +198,50 @@ test('test le idir loops', () => {
     }
 });
 
+test('test function calls', () => {
+    interface tc { inp: string, exp: Value, env?: Environment};
+    const cases : tc[] = [
+        {
+            inp : `res := sum(12*3, 4+2)`,
+            exp : 42,
+            env : Environment.from([
+                ['sum', {
+                    arity: () => 2,
+                    call: (args) => {
+                        return (args[0] as number)+(args[1] as number);
+                    }
+                }],
+            ])
+        },
+        {
+            inp : `res := sum(square(3), square(4)) - square(5)`,
+            exp : 0,
+            env : Environment.from([
+                ['sum', {
+                    arity: () => 2,
+                    call: (args) => {
+                        return (args[0] as number)+(args[1] as number);
+                    }
+                }],
+                ['square', {
+                    arity: () => 1,
+                    call: (args) => {
+                        return (args[0] as number)*(args[0] as number);
+                    }
+                }],
+            ])
+        },
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        if(c.env)
+            i.env = c.env;
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        i.interpret(res.ast!);
+        expect(i.env.get('res')).toEqual(c.exp);
+    }
+});
+
