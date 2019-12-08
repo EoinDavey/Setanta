@@ -67,11 +67,11 @@ export class Interpreter {
     }
     execDefn(a : P.DefnStmt) {
         const val = this.evalExpr(a.expr);
-        this.env.define(a.id, val);
+        this.env.define(a.id.id, val);
     }
     execAssgn(a : P.AssgnStmt) {
         const val = this.evalExpr(a.expr);
-        this.env.assign(a.id, val);
+        this.env.assign(a.id.id, val);
     }
     evalExpr(expr : P.Expr) : Value {
         return this.evalAnd(expr);
@@ -144,7 +144,7 @@ export class Interpreter {
         return this.evalExpr(at.trm);
     }
     evalID(id : P.ID) : Value {
-        return this.env.get(id);
+        return this.env.get(id.id);
     }
     evalINT(i : P.INT) : number {
         return parseInt(i);

@@ -24,7 +24,8 @@
 * PlusMinus   := '\+|-'
 * MulDiv      := '\*|\/|%'
 * Compare     := '(<=)|(>=)|<|>'
-* ID          := '[a-zA-Z_áéíóúÁÉÍÓÚ]+'
+* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair a'
+* ID          := !Keyword id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 * INT         := '[0-9]+'
 * _           := '\s*'
 */
@@ -74,6 +75,9 @@ export enum ASTKinds {
     PlusMinus,
     MulDiv,
     Compare,
+    Keyword_1,
+    Keyword_2,
+    Keyword_3,
     ID,
     INT,
     _,
@@ -196,7 +200,14 @@ export interface Atom_3 {
 export type PlusMinus = string;
 export type MulDiv = string;
 export type Compare = string;
-export type ID = string;
+export type Keyword = Keyword_1 | Keyword_2 | Keyword_3;
+export type Keyword_1 = string;
+export type Keyword_2 = string;
+export type Keyword_3 = string;
+export interface ID {
+    kind : ASTKinds.ID;
+    id : string;
+}
 export type INT = string;
 export type _ = string;
 export class Parser {
@@ -725,8 +736,36 @@ export class Parser {
     matchCompare($$dpth : number, cr? : ContextRecorder) : Nullable<Compare> {
         return this.regexAccept(String.raw`(<=)|(>=)|<|>`, $$dpth+1, cr);
     }
+    matchKeyword($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword> {
+        return this.choice<Keyword>([
+            () => { return this.matchKeyword_1($$dpth + 1, cr) },
+            () => { return this.matchKeyword_2($$dpth + 1, cr) },
+            () => { return this.matchKeyword_3($$dpth + 1, cr) },
+        ]);
+    }
+    matchKeyword_1($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_1> {
+        return this.regexAccept(String.raw`m[áa]`, $$dpth+1, cr);
+    }
+    matchKeyword_2($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_2> {
+        return this.regexAccept(String.raw`n[oó]`, $$dpth+1, cr);
+    }
+    matchKeyword_3($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_3> {
+        return this.regexAccept(String.raw`nuair a`, $$dpth+1, cr);
+    }
     matchID($$dpth : number, cr? : ContextRecorder) : Nullable<ID> {
-        return this.regexAccept(String.raw`[a-zA-Z_áéíóúÁÉÍÓÚ]+`, $$dpth+1, cr);
+        return this.runner<ID>($$dpth,
+            (log) => {
+                if(log)
+                    log('ID');
+                let id : Nullable<string>;
+                let res : Nullable<ID> = null;
+                if(true
+                    && this.negate(() => this.matchKeyword($$dpth + 1, cr)) != null
+                    && (id = this.regexAccept(String.raw`[a-zA-Z_áéíóúÁÉÍÓÚ]+`, $$dpth+1, cr)) != null
+                )
+                    res = {kind: ASTKinds.ID, id : id};
+                return res;
+            }, cr)();
     }
     matchINT($$dpth : number, cr? : ContextRecorder) : Nullable<INT> {
         return this.regexAccept(String.raw`[0-9]+`, $$dpth+1, cr);
