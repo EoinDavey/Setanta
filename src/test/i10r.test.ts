@@ -149,3 +149,35 @@ test('test nuair a loops', () => {
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
+
+test('test le idir loops', () => {
+    interface tc { inp: string, exp: Value, env?: Environment};
+    const cases : tc[] = [
+        {
+            inp : `
+            res := 0
+            le i idir (0, 10)
+                res = res + 1`,
+            exp : 10,
+        },
+        {
+            inp : `
+            res := 0
+            le i idir (0,10)
+                le i idir ( 0 , 10 )
+                    res = res + i`,
+            exp : 450,
+        },
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        if(c.env)
+            i.env = c.env;
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        i.interpret(res.ast!);
+        expect(i.env.get('res')).toEqual(c.exp);
+    }
+});

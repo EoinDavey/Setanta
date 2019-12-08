@@ -2,15 +2,17 @@ Program     := AsgnStmt*
 AsgnStmt    := IfStmt
              | BlockStmt
              | NuairStmt
+             | LeStmt
              | AssgnStmt
              | DefnStmt
              | Expr
-NonAsgnStmt := IfStmt | NuairStmt | BlockStmt | AssgnStmt | Expr
-IfStmt      := _ 'm[áa]' _ expr=Expr _ stmt=NonAsgnStmt elsebranch={ _ 'n[oó]' _  stmt=NonAsgnStmt}?
-BlockStmt   := _ '{' blk=AsgnStmt* '}'
-NuairStmt   := _ 'nuair a' expr=Expr stmt=NonAsgnStmt
-DefnStmt    := _ id=ID _ ':=' _ expr=Expr
-AssgnStmt   := _ id=ID _ '=' _ expr=Expr
+NonAsgnStmt := IfStmt | NuairStmt | LeStmt | BlockStmt | AssgnStmt | Expr
+IfStmt      := _ 'm[áa]' _ expr=Expr _ stmt=NonAsgnStmt elsebranch={'n[oó]' _  stmt=NonAsgnStmt}? _
+BlockStmt   := _ '{' blk=AsgnStmt* '}' _
+NuairStmt   := _ 'nuair a' expr=Expr stmt=NonAsgnStmt _
+LeStmt      := _ 'le' _ id=ID _ 'idir' _ '\('strt=Expr ',' end=Expr'\)' stmt=NonAsgnStmt
+DefnStmt    := _ id=ID _ ':=' _ expr=Expr _
+AssgnStmt   := _ id=ID _ '=' _ expr=Expr _
 Expr        := And
 And         := head=Or tail={'\&' trm=Or}*
 Or          := head=Eq tail={'\|' trm=Eq}*

@@ -4,15 +4,17 @@
 * AsgnStmt    := IfStmt
 *              | BlockStmt
 *              | NuairStmt
+*              | LeStmt
 *              | AssgnStmt
 *              | DefnStmt
 *              | Expr
-* NonAsgnStmt := IfStmt | NuairStmt | BlockStmt | AssgnStmt | Expr
-* IfStmt      := _ 'm[áa]' _ expr=Expr _ stmt=NonAsgnStmt elsebranch={ _ 'n[oó]' _  stmt=NonAsgnStmt}?
-* BlockStmt   := _ '{' blk=AsgnStmt* '}'
-* NuairStmt   := _ 'nuair a' expr=Expr stmt=NonAsgnStmt
-* DefnStmt    := _ id=ID _ ':=' _ expr=Expr
-* AssgnStmt   := _ id=ID _ '=' _ expr=Expr
+* NonAsgnStmt := IfStmt | NuairStmt | LeStmt | BlockStmt | AssgnStmt | Expr
+* IfStmt      := _ 'm[áa]' _ expr=Expr _ stmt=NonAsgnStmt elsebranch={'n[oó]' _  stmt=NonAsgnStmt}? _
+* BlockStmt   := _ '{' blk=AsgnStmt* '}' _
+* NuairStmt   := _ 'nuair a' expr=Expr stmt=NonAsgnStmt _
+* LeStmt      := _ 'le' _ id=ID _ 'idir' _ '\('strt=Expr ',' end=Expr'\)' stmt=NonAsgnStmt
+* DefnStmt    := _ id=ID _ ':=' _ expr=Expr _
+* AssgnStmt   := _ id=ID _ '=' _ expr=Expr _
 * Expr        := And
 * And         := head=Or tail={'\&' trm=Or}*
 * Or          := head=Eq tail={'\|' trm=Eq}*
@@ -49,15 +51,18 @@ export enum ASTKinds {
     AsgnStmt_4,
     AsgnStmt_5,
     AsgnStmt_6,
+    AsgnStmt_7,
     NonAsgnStmt_1,
     NonAsgnStmt_2,
     NonAsgnStmt_3,
     NonAsgnStmt_4,
     NonAsgnStmt_5,
+    NonAsgnStmt_6,
     IfStmt,
     IfStmt_$0,
     BlockStmt,
     NuairStmt,
+    LeStmt,
     DefnStmt,
     AssgnStmt,
     Expr,
@@ -90,19 +95,21 @@ export enum ASTKinds {
     _,
 }
 export type Program = AsgnStmt[];
-export type AsgnStmt = AsgnStmt_1 | AsgnStmt_2 | AsgnStmt_3 | AsgnStmt_4 | AsgnStmt_5 | AsgnStmt_6;
+export type AsgnStmt = AsgnStmt_1 | AsgnStmt_2 | AsgnStmt_3 | AsgnStmt_4 | AsgnStmt_5 | AsgnStmt_6 | AsgnStmt_7;
 export type AsgnStmt_1 = IfStmt;
 export type AsgnStmt_2 = BlockStmt;
 export type AsgnStmt_3 = NuairStmt;
-export type AsgnStmt_4 = AssgnStmt;
-export type AsgnStmt_5 = DefnStmt;
-export type AsgnStmt_6 = Expr;
-export type NonAsgnStmt = NonAsgnStmt_1 | NonAsgnStmt_2 | NonAsgnStmt_3 | NonAsgnStmt_4 | NonAsgnStmt_5;
+export type AsgnStmt_4 = LeStmt;
+export type AsgnStmt_5 = AssgnStmt;
+export type AsgnStmt_6 = DefnStmt;
+export type AsgnStmt_7 = Expr;
+export type NonAsgnStmt = NonAsgnStmt_1 | NonAsgnStmt_2 | NonAsgnStmt_3 | NonAsgnStmt_4 | NonAsgnStmt_5 | NonAsgnStmt_6;
 export type NonAsgnStmt_1 = IfStmt;
 export type NonAsgnStmt_2 = NuairStmt;
-export type NonAsgnStmt_3 = BlockStmt;
-export type NonAsgnStmt_4 = AssgnStmt;
-export type NonAsgnStmt_5 = Expr;
+export type NonAsgnStmt_3 = LeStmt;
+export type NonAsgnStmt_4 = BlockStmt;
+export type NonAsgnStmt_5 = AssgnStmt;
+export type NonAsgnStmt_6 = Expr;
 export interface IfStmt {
     kind : ASTKinds.IfStmt;
     expr : Expr;
@@ -120,6 +127,13 @@ export interface BlockStmt {
 export interface NuairStmt {
     kind : ASTKinds.NuairStmt;
     expr : Expr;
+    stmt : NonAsgnStmt;
+}
+export interface LeStmt {
+    kind : ASTKinds.LeStmt;
+    id : ID;
+    strt : Expr;
+    end : Expr;
     stmt : NonAsgnStmt;
 }
 export interface DefnStmt {
@@ -329,6 +343,7 @@ export class Parser {
             () => { return this.matchAsgnStmt_4($$dpth + 1, cr) },
             () => { return this.matchAsgnStmt_5($$dpth + 1, cr) },
             () => { return this.matchAsgnStmt_6($$dpth + 1, cr) },
+            () => { return this.matchAsgnStmt_7($$dpth + 1, cr) },
         ]);
     }
     matchAsgnStmt_1($$dpth : number, cr? : ContextRecorder) : Nullable<AsgnStmt_1> {
@@ -341,12 +356,15 @@ export class Parser {
         return this.matchNuairStmt($$dpth + 1, cr);
     }
     matchAsgnStmt_4($$dpth : number, cr? : ContextRecorder) : Nullable<AsgnStmt_4> {
-        return this.matchAssgnStmt($$dpth + 1, cr);
+        return this.matchLeStmt($$dpth + 1, cr);
     }
     matchAsgnStmt_5($$dpth : number, cr? : ContextRecorder) : Nullable<AsgnStmt_5> {
-        return this.matchDefnStmt($$dpth + 1, cr);
+        return this.matchAssgnStmt($$dpth + 1, cr);
     }
     matchAsgnStmt_6($$dpth : number, cr? : ContextRecorder) : Nullable<AsgnStmt_6> {
+        return this.matchDefnStmt($$dpth + 1, cr);
+    }
+    matchAsgnStmt_7($$dpth : number, cr? : ContextRecorder) : Nullable<AsgnStmt_7> {
         return this.matchExpr($$dpth + 1, cr);
     }
     matchNonAsgnStmt($$dpth : number, cr? : ContextRecorder) : Nullable<NonAsgnStmt> {
@@ -356,6 +374,7 @@ export class Parser {
             () => { return this.matchNonAsgnStmt_3($$dpth + 1, cr) },
             () => { return this.matchNonAsgnStmt_4($$dpth + 1, cr) },
             () => { return this.matchNonAsgnStmt_5($$dpth + 1, cr) },
+            () => { return this.matchNonAsgnStmt_6($$dpth + 1, cr) },
         ]);
     }
     matchNonAsgnStmt_1($$dpth : number, cr? : ContextRecorder) : Nullable<NonAsgnStmt_1> {
@@ -365,12 +384,15 @@ export class Parser {
         return this.matchNuairStmt($$dpth + 1, cr);
     }
     matchNonAsgnStmt_3($$dpth : number, cr? : ContextRecorder) : Nullable<NonAsgnStmt_3> {
-        return this.matchBlockStmt($$dpth + 1, cr);
+        return this.matchLeStmt($$dpth + 1, cr);
     }
     matchNonAsgnStmt_4($$dpth : number, cr? : ContextRecorder) : Nullable<NonAsgnStmt_4> {
-        return this.matchAssgnStmt($$dpth + 1, cr);
+        return this.matchBlockStmt($$dpth + 1, cr);
     }
     matchNonAsgnStmt_5($$dpth : number, cr? : ContextRecorder) : Nullable<NonAsgnStmt_5> {
+        return this.matchAssgnStmt($$dpth + 1, cr);
+    }
+    matchNonAsgnStmt_6($$dpth : number, cr? : ContextRecorder) : Nullable<NonAsgnStmt_6> {
         return this.matchExpr($$dpth + 1, cr);
     }
     matchIfStmt($$dpth : number, cr? : ContextRecorder) : Nullable<IfStmt> {
@@ -390,6 +412,7 @@ export class Parser {
                     && this.match_($$dpth + 1, cr) != null
                     && (stmt = this.matchNonAsgnStmt($$dpth + 1, cr)) != null
                     && ((elsebranch = this.matchIfStmt_$0($$dpth + 1, cr)) || true)
+                    && this.match_($$dpth + 1, cr) != null
                 )
                     res = {kind: ASTKinds.IfStmt, expr : expr, stmt : stmt, elsebranch : elsebranch};
                 return res;
@@ -403,7 +426,6 @@ export class Parser {
                 let stmt : Nullable<NonAsgnStmt>;
                 let res : Nullable<IfStmt_$0> = null;
                 if(true
-                    && this.match_($$dpth + 1, cr) != null
                     && this.regexAccept(String.raw`n[oó]`, $$dpth+1, cr) != null
                     && this.match_($$dpth + 1, cr) != null
                     && (stmt = this.matchNonAsgnStmt($$dpth + 1, cr)) != null
@@ -424,6 +446,7 @@ export class Parser {
                     && this.regexAccept(String.raw`{`, $$dpth+1, cr) != null
                     && (blk = this.loop<AsgnStmt>(()=> this.matchAsgnStmt($$dpth + 1, cr), true)) != null
                     && this.regexAccept(String.raw`}`, $$dpth+1, cr) != null
+                    && this.match_($$dpth + 1, cr) != null
                 )
                     res = {kind: ASTKinds.BlockStmt, blk : blk};
                 return res;
@@ -442,8 +465,38 @@ export class Parser {
                     && this.regexAccept(String.raw`nuair a`, $$dpth+1, cr) != null
                     && (expr = this.matchExpr($$dpth + 1, cr)) != null
                     && (stmt = this.matchNonAsgnStmt($$dpth + 1, cr)) != null
+                    && this.match_($$dpth + 1, cr) != null
                 )
                     res = {kind: ASTKinds.NuairStmt, expr : expr, stmt : stmt};
+                return res;
+            }, cr)();
+    }
+    matchLeStmt($$dpth : number, cr? : ContextRecorder) : Nullable<LeStmt> {
+        return this.runner<LeStmt>($$dpth,
+            (log) => {
+                if(log)
+                    log('LeStmt');
+                let id : Nullable<ID>;
+                let strt : Nullable<Expr>;
+                let end : Nullable<Expr>;
+                let stmt : Nullable<NonAsgnStmt>;
+                let res : Nullable<LeStmt> = null;
+                if(true
+                    && this.match_($$dpth + 1, cr) != null
+                    && this.regexAccept(String.raw`le`, $$dpth+1, cr) != null
+                    && this.match_($$dpth + 1, cr) != null
+                    && (id = this.matchID($$dpth + 1, cr)) != null
+                    && this.match_($$dpth + 1, cr) != null
+                    && this.regexAccept(String.raw`idir`, $$dpth+1, cr) != null
+                    && this.match_($$dpth + 1, cr) != null
+                    && this.regexAccept(String.raw`\(`, $$dpth+1, cr) != null
+                    && (strt = this.matchExpr($$dpth + 1, cr)) != null
+                    && this.regexAccept(String.raw`,`, $$dpth+1, cr) != null
+                    && (end = this.matchExpr($$dpth + 1, cr)) != null
+                    && this.regexAccept(String.raw`\)`, $$dpth+1, cr) != null
+                    && (stmt = this.matchNonAsgnStmt($$dpth + 1, cr)) != null
+                )
+                    res = {kind: ASTKinds.LeStmt, id : id, strt : strt, end : end, stmt : stmt};
                 return res;
             }, cr)();
     }
@@ -462,6 +515,7 @@ export class Parser {
                     && this.regexAccept(String.raw`:=`, $$dpth+1, cr) != null
                     && this.match_($$dpth + 1, cr) != null
                     && (expr = this.matchExpr($$dpth + 1, cr)) != null
+                    && this.match_($$dpth + 1, cr) != null
                 )
                     res = {kind: ASTKinds.DefnStmt, id : id, expr : expr};
                 return res;
@@ -482,6 +536,7 @@ export class Parser {
                     && this.regexAccept(String.raw`=`, $$dpth+1, cr) != null
                     && this.match_($$dpth + 1, cr) != null
                     && (expr = this.matchExpr($$dpth + 1, cr)) != null
+                    && this.match_($$dpth + 1, cr) != null
                 )
                     res = {kind: ASTKinds.AssgnStmt, id : id, expr : expr};
                 return res;

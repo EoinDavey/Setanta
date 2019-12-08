@@ -45,6 +45,9 @@ export class Interpreter {
             case ASTKinds.NuairStmt:
                 this.execNuair(st);
                 break;
+            case ASTKinds.LeStmt:
+                this.execLeStmt(st);
+                break;
             default:
                 this.evalExpr(st);
                 break;
@@ -54,6 +57,20 @@ export class Interpreter {
         while(isTrue(this.evalExpr(n.expr))){
             this.execStmt(n.stmt);
         }
+    }
+    execLeStmt(n : P.LeStmt) {
+        const prev = this.env;
+        this.env = new Environment(this.env);
+
+        const strt = assertNumber(this.evalExpr(n.strt), '"le idir" loop');
+        const end = assertNumber(this.evalExpr(n.end), '"le idir" loop');
+
+        for(let i = strt; i < end; ++i) {
+            this.env.define(n.id.id, i);
+            this.execStmt(n.stmt);
+        }
+
+        this.env = prev;
     }
     execMá(f : P.IfStmt) {
         const v = this.evalExpr(f.expr);
