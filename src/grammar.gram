@@ -18,11 +18,15 @@ Eq          := head=Comp tail={op='[!=]=' trm=Comp}*
 Comp        := head=Sum tail={op=Compare trm=Sum}*
 Sum         := head=Product tail={op=PlusMinus trm=Product}*
 Product     := head=Atom tail={op=MulDiv trm=Atom}*
-Atom        := _ trm=INT _ | _ trm=ID _ | _ '\(' trm=Expr '\)' _
+Atom        := Int
+             | Bool
+             | ID
+             | _ '\(' trm=Expr '\)' _
 PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '(<=)|(>=)|<|>'
-Keyword     := 'm[áa]' | 'n[oó]' | 'nuair a'
-ID          := !Keyword id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
-INT         := '[0-9]+'
+Keyword     := 'm[áa]' | 'n[oó]' | 'nuair a' | 'f[ií]or|breag'
+ID          := _ !Keyword id='[a-zA-Z_áéíóúÁÉÍÓÚ]+' _
+Bool        := _ bool='f[ií]or|breag' _
+Int         := _ int='[0-9]+' _
 _           := '\s*'

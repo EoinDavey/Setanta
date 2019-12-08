@@ -137,17 +137,24 @@ export class Interpreter {
         }, this.evalAtom(p.head));
     }
     evalAtom(at : P.Atom) : Value {
-        if(at.kind === ASTKinds.Atom_1)
-            return this.evalINT(at.trm);
-        if(at.kind === ASTKinds.Atom_2)
-            return this.evalID(at.trm);
+        switch(at.kind){
+            case ASTKinds.Int:
+                return this.evalInt(at);
+            case ASTKinds.Bool:
+                return this.evalBool(at);
+            case ASTKinds.ID:
+                return this.evalID(at);
+        }
         return this.evalExpr(at.trm);
     }
     evalID(id : P.ID) : Value {
         return this.env.get(id.id);
     }
-    evalINT(i : P.INT) : number {
-        return parseInt(i);
+    evalBool(b : P.Bool) : boolean {
+        return /f[ií]or/.test(b.bool);
+    }
+    evalInt(i : P.Int) : number {
+        return parseInt(i.int);
     }
 }
 

@@ -20,13 +20,17 @@
 * Comp        := head=Sum tail={op=Compare trm=Sum}*
 * Sum         := head=Product tail={op=PlusMinus trm=Product}*
 * Product     := head=Atom tail={op=MulDiv trm=Atom}*
-* Atom        := _ trm=INT _ | _ trm=ID _ | _ '\(' trm=Expr '\)' _
+* Atom        := Int
+*              | Bool
+*              | ID
+*              | _ '\(' trm=Expr '\)' _
 * PlusMinus   := '\+|-'
 * MulDiv      := '\*|\/|%'
 * Compare     := '(<=)|(>=)|<|>'
-* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair a'
-* ID          := !Keyword id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
-* INT         := '[0-9]+'
+* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair a' | 'f[ií]or|breag'
+* ID          := _ !Keyword id='[a-zA-Z_áéíóúÁÉÍÓÚ]+' _
+* Bool        := _ bool='f[ií]or|breag' _
+* Int         := _ int='[0-9]+' _
 * _           := '\s*'
 */
 type Nullable<T> = T | null;
@@ -72,14 +76,17 @@ export enum ASTKinds {
     Atom_1,
     Atom_2,
     Atom_3,
+    Atom_4,
     PlusMinus,
     MulDiv,
     Compare,
     Keyword_1,
     Keyword_2,
     Keyword_3,
+    Keyword_4,
     ID,
-    INT,
+    Bool,
+    Int,
     _,
 }
 export type Program = AsgnStmt[];
@@ -184,31 +191,34 @@ export interface Product_$0 {
     op : MulDiv;
     trm : Atom;
 }
-export type Atom = Atom_1 | Atom_2 | Atom_3;
-export interface Atom_1 {
-    kind : ASTKinds.Atom_1;
-    trm : INT;
-}
-export interface Atom_2 {
-    kind : ASTKinds.Atom_2;
-    trm : ID;
-}
-export interface Atom_3 {
-    kind : ASTKinds.Atom_3;
+export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4;
+export type Atom_1 = Int;
+export type Atom_2 = Bool;
+export type Atom_3 = ID;
+export interface Atom_4 {
+    kind : ASTKinds.Atom_4;
     trm : Expr;
 }
 export type PlusMinus = string;
 export type MulDiv = string;
 export type Compare = string;
-export type Keyword = Keyword_1 | Keyword_2 | Keyword_3;
+export type Keyword = Keyword_1 | Keyword_2 | Keyword_3 | Keyword_4;
 export type Keyword_1 = string;
 export type Keyword_2 = string;
 export type Keyword_3 = string;
+export type Keyword_4 = string;
 export interface ID {
     kind : ASTKinds.ID;
     id : string;
 }
-export type INT = string;
+export interface Bool {
+    kind : ASTKinds.Bool;
+    bool : string;
+}
+export interface Int {
+    kind : ASTKinds.Int;
+    int : string;
+}
 export type _ = string;
 export class Parser {
     private pos : PosInfo;
@@ -675,47 +685,25 @@ export class Parser {
             () => { return this.matchAtom_1($$dpth + 1, cr) },
             () => { return this.matchAtom_2($$dpth + 1, cr) },
             () => { return this.matchAtom_3($$dpth + 1, cr) },
+            () => { return this.matchAtom_4($$dpth + 1, cr) },
         ]);
     }
     matchAtom_1($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_1> {
-        return this.runner<Atom_1>($$dpth,
-            (log) => {
-                if(log)
-                    log('Atom_1');
-                let trm : Nullable<INT>;
-                let res : Nullable<Atom_1> = null;
-                if(true
-                    && this.match_($$dpth + 1, cr) != null
-                    && (trm = this.matchINT($$dpth + 1, cr)) != null
-                    && this.match_($$dpth + 1, cr) != null
-                )
-                    res = {kind: ASTKinds.Atom_1, trm : trm};
-                return res;
-            }, cr)();
+        return this.matchInt($$dpth + 1, cr);
     }
     matchAtom_2($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_2> {
-        return this.runner<Atom_2>($$dpth,
-            (log) => {
-                if(log)
-                    log('Atom_2');
-                let trm : Nullable<ID>;
-                let res : Nullable<Atom_2> = null;
-                if(true
-                    && this.match_($$dpth + 1, cr) != null
-                    && (trm = this.matchID($$dpth + 1, cr)) != null
-                    && this.match_($$dpth + 1, cr) != null
-                )
-                    res = {kind: ASTKinds.Atom_2, trm : trm};
-                return res;
-            }, cr)();
+        return this.matchBool($$dpth + 1, cr);
     }
     matchAtom_3($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_3> {
-        return this.runner<Atom_3>($$dpth,
+        return this.matchID($$dpth + 1, cr);
+    }
+    matchAtom_4($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_4> {
+        return this.runner<Atom_4>($$dpth,
             (log) => {
                 if(log)
-                    log('Atom_3');
+                    log('Atom_4');
                 let trm : Nullable<Expr>;
-                let res : Nullable<Atom_3> = null;
+                let res : Nullable<Atom_4> = null;
                 if(true
                     && this.match_($$dpth + 1, cr) != null
                     && this.regexAccept(String.raw`\(`, $$dpth+1, cr) != null
@@ -723,7 +711,7 @@ export class Parser {
                     && this.regexAccept(String.raw`\)`, $$dpth+1, cr) != null
                     && this.match_($$dpth + 1, cr) != null
                 )
-                    res = {kind: ASTKinds.Atom_3, trm : trm};
+                    res = {kind: ASTKinds.Atom_4, trm : trm};
                 return res;
             }, cr)();
     }
@@ -741,6 +729,7 @@ export class Parser {
             () => { return this.matchKeyword_1($$dpth + 1, cr) },
             () => { return this.matchKeyword_2($$dpth + 1, cr) },
             () => { return this.matchKeyword_3($$dpth + 1, cr) },
+            () => { return this.matchKeyword_4($$dpth + 1, cr) },
         ]);
     }
     matchKeyword_1($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_1> {
@@ -752,6 +741,9 @@ export class Parser {
     matchKeyword_3($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_3> {
         return this.regexAccept(String.raw`nuair a`, $$dpth+1, cr);
     }
+    matchKeyword_4($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_4> {
+        return this.regexAccept(String.raw`f[ií]or|breag`, $$dpth+1, cr);
+    }
     matchID($$dpth : number, cr? : ContextRecorder) : Nullable<ID> {
         return this.runner<ID>($$dpth,
             (log) => {
@@ -760,15 +752,46 @@ export class Parser {
                 let id : Nullable<string>;
                 let res : Nullable<ID> = null;
                 if(true
+                    && this.match_($$dpth + 1, cr) != null
                     && this.negate(() => this.matchKeyword($$dpth + 1, cr)) != null
                     && (id = this.regexAccept(String.raw`[a-zA-Z_áéíóúÁÉÍÓÚ]+`, $$dpth+1, cr)) != null
+                    && this.match_($$dpth + 1, cr) != null
                 )
                     res = {kind: ASTKinds.ID, id : id};
                 return res;
             }, cr)();
     }
-    matchINT($$dpth : number, cr? : ContextRecorder) : Nullable<INT> {
-        return this.regexAccept(String.raw`[0-9]+`, $$dpth+1, cr);
+    matchBool($$dpth : number, cr? : ContextRecorder) : Nullable<Bool> {
+        return this.runner<Bool>($$dpth,
+            (log) => {
+                if(log)
+                    log('Bool');
+                let bool : Nullable<string>;
+                let res : Nullable<Bool> = null;
+                if(true
+                    && this.match_($$dpth + 1, cr) != null
+                    && (bool = this.regexAccept(String.raw`f[ií]or|breag`, $$dpth+1, cr)) != null
+                    && this.match_($$dpth + 1, cr) != null
+                )
+                    res = {kind: ASTKinds.Bool, bool : bool};
+                return res;
+            }, cr)();
+    }
+    matchInt($$dpth : number, cr? : ContextRecorder) : Nullable<Int> {
+        return this.runner<Int>($$dpth,
+            (log) => {
+                if(log)
+                    log('Int');
+                let int : Nullable<string>;
+                let res : Nullable<Int> = null;
+                if(true
+                    && this.match_($$dpth + 1, cr) != null
+                    && (int = this.regexAccept(String.raw`[0-9]+`, $$dpth+1, cr)) != null
+                    && this.match_($$dpth + 1, cr) != null
+                )
+                    res = {kind: ASTKinds.Int, int : int};
+                return res;
+            }, cr)();
     }
     match_($$dpth : number, cr? : ContextRecorder) : Nullable<_> {
         return this.regexAccept(String.raw`\s*`, $$dpth+1, cr);

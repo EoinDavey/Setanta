@@ -13,7 +13,11 @@ test('test expressions', () => {
         {inp : '1 <= 0', exp : false},
         {inp : '1 >= 0', exp : true},
         {inp : 'big > small', exp : true, env: Environment.from([["big", 100], ["small", 1]])},
-        {inp : 'x*x + y*y - z*z', exp : 0, env: Environment.from([["x", 3], ["y", 4], ["z", 5]])}
+        {inp : 'x*x + y*y - z*z', exp : 0, env: Environment.from([["x", 3], ["y", 4], ["z", 5]])},
+        {inp : 'fíor == fíor', exp: true},
+        {inp : 'fíor == breag', exp: false},
+        {inp : 'fíor & fíor != breag', exp: true},
+        {inp : 'fíor | breag == 5 >= 5', exp: true},
     ];
     for(let c of cases){
         const i = new Interpreter();
