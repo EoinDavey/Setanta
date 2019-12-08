@@ -24,7 +24,7 @@
 * PlusMinus   := '\+|-'
 * MulDiv      := '\*|\/|%'
 * Compare     := '(<=)|(>=)|<|>'
-* ID          := '[a-zA-Z_]+'
+* ID          := '[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 * INT         := '[0-9]+'
 * _           := '\s*'
 */
@@ -726,7 +726,7 @@ export class Parser {
         return this.regexAccept(String.raw`(<=)|(>=)|<|>`, $$dpth+1, cr);
     }
     matchID($$dpth : number, cr? : ContextRecorder) : Nullable<ID> {
-        return this.regexAccept(String.raw`[a-zA-Z_]+`, $$dpth+1, cr);
+        return this.regexAccept(String.raw`[a-zA-Z_áéíóúÁÉÍÓÚ]+`, $$dpth+1, cr);
     }
     matchINT($$dpth : number, cr? : ContextRecorder) : Nullable<INT> {
         return this.regexAccept(String.raw`[0-9]+`, $$dpth+1, cr);

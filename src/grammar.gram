@@ -22,6 +22,6 @@ Atom        := _ trm=INT _ | _ trm=ID _ | _ '\(' trm=Expr '\)' _
 PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '(<=)|(>=)|<|>'
-ID          := '[a-zA-Z_]+'
+ID          := '[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 INT         := '[0-9]+'
 _           := '\s*'
