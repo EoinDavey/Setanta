@@ -7,7 +7,7 @@ import { Environment } from './env';
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
 function assertNumber(x : Value, op : string) : number {
-    if(typeof x === "number")
+    if(isNumber(x))
         return x;
     throw new RuntimeError(`Operands to ${op} must be numbers`);
 }
@@ -26,6 +26,10 @@ function assertComparable(a : Value, b : Value) : [number | boolean, number | bo
 
 export class Interpreter {
     env : Environment = new Environment();
+    constructor(builtins? : ArrayLike<[string, Value]>){
+        if(builtins)
+            this.env = Environment.from(builtins);
+    }
     interpret(p : P.Program) {
         this.execStmts(p.stmts);
     }

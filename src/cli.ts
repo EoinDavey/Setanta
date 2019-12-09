@@ -3,13 +3,13 @@ import * as readline from 'readline';
 import { Interpreter } from './i10r';
 import { RuntimeError } from './error';
 import { Parser, ASTKinds } from './parser';
+import { Value } from './values';
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+import * as fs from 'fs';
 
-function getLine() : Promise<string> {
+const [,, ...args] = process.argv;
+
+function getLine(rl : readline.Interface) : Promise<string> {
     return new Promise(resolve => {
         rl.question('λ: ', resp => {
             resolve(resp);
@@ -17,10 +17,22 @@ function getLine() : Promise<string> {
     });
 }
 
-async function main() {
-    const i = new Interpreter();
+const builtins : [[string, Value]] = [
+    [
+        "scríobh", {
+            arity : () => 1,
+            call : (args : Value[]) : Value => {
+                console.log(...args);
+                return null;
+            }
+        },
+    ],
+];
+
+async function repl(rl : readline.Interface) {
+    const i = new Interpreter(builtins);
     while(true){
-        const res = await getLine();
+        const res = await getLine(rl);
         const parser = new Parser(res);
         const p = parser.parse();
         if(p.err){
@@ -40,6 +52,30 @@ async function main() {
             else
                 console.log(err);
         }
+    }
+}
+
+async function runFile() {
+    const i = new Interpreter(builtins);
+    const inFile = fs.readFileSync(args[0], { encoding: 'utf8' });
+    const parser = new Parser(inFile);
+    const res = parser.parse();
+    if(res.err){
+        console.error(res.err);
+        return;
+    }
+    i.interpret(res.ast!);
+}
+
+async function main() {
+    if(args.length > 0)
+        runFile();
+    else{
+        const rl : readline.Interface = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        repl(rl);
     }
 }
 
