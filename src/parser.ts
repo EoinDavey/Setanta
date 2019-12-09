@@ -36,7 +36,7 @@
 * PlusMinus   := '\+|-'
 * MulDiv      := '\*|\/|%'
 * Compare     := '(<=)|(>=)|<|>'
-* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
+* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag' | 'gn[ií]omh'
 * ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 * Bool        := _ bool='f[ií]or|breag'
 * Int         := _ int='[0-9]+'
@@ -105,6 +105,7 @@ export enum ASTKinds {
     Keyword_2,
     Keyword_3,
     Keyword_4,
+    Keyword_5,
     ID,
     ID_$0,
     Bool,
@@ -271,11 +272,12 @@ export interface CSIDs_$0 {
 export type PlusMinus = string;
 export type MulDiv = string;
 export type Compare = string;
-export type Keyword = Keyword_1 | Keyword_2 | Keyword_3 | Keyword_4;
+export type Keyword = Keyword_1 | Keyword_2 | Keyword_3 | Keyword_4 | Keyword_5;
 export type Keyword_1 = string;
 export type Keyword_2 = string;
 export type Keyword_3 = string;
 export type Keyword_4 = string;
+export type Keyword_5 = string;
 export interface ID {
     kind : ASTKinds.ID;
     id : string;
@@ -993,6 +995,7 @@ export class Parser {
             () => { return this.matchKeyword_2($$dpth + 1, cr) },
             () => { return this.matchKeyword_3($$dpth + 1, cr) },
             () => { return this.matchKeyword_4($$dpth + 1, cr) },
+            () => { return this.matchKeyword_5($$dpth + 1, cr) },
         ]);
     }
     matchKeyword_1($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_1> {
@@ -1006,6 +1009,9 @@ export class Parser {
     }
     matchKeyword_4($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_4> {
         return this.regexAccept(String.raw`f[ií]or|breag`, $$dpth+1, cr);
+    }
+    matchKeyword_5($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_5> {
+        return this.regexAccept(String.raw`gn[ií]omh`, $$dpth+1, cr);
     }
     matchID($$dpth : number, cr? : ContextRecorder) : Nullable<ID> {
         return this.runner<ID>($$dpth,

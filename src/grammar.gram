@@ -34,7 +34,7 @@ CSIDs       := head=ID tail={_ ',' id=ID}*
 PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '(<=)|(>=)|<|>'
-Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
+Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag' | 'gn[ií]omh'
 ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 Bool        := _ bool='f[ií]or|breag'
 Int         := _ int='[0-9]+'
