@@ -1,6 +1,6 @@
 import * as P from './parser';
 import { ASTKinds } from './parser';
-import { Value, isTrue, isCallable, isNumber, isBool, Callable } from './values';
+import { Gníomh, Value, isTrue, isCallable, isNumber, isBool, Callable } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 
@@ -64,10 +64,25 @@ export class Interpreter {
             case ASTKinds.LeStmt:
                 this.execLeStmt(st);
                 break;
+            case ASTKinds.GniomhStmt:
+                this.execGniomhStmt(st);
+                break;
             default:
                 this.evalExpr(st);
                 break;
         }
+    }
+    execGniomhStmt(fn : P.GniomhStmt){
+        const execFn = (body : Stmt[], env : Environment) : Value => {
+            const prev = this.env;
+            this.env = env;
+            this.execStmts(body);
+            this.env = prev;
+            return null;
+        }
+        const args = fn.args ? this.evalCSIDs(fn.args) : [];
+        const gníomh = new Gníomh(fn.stmts, args, this.env, execFn);
+        this.env.define(fn.id.id, gníomh);
     }
     execNuair(n : P.NuairStmt) {
         while(isTrue(this.evalExpr(n.expr))){
@@ -194,6 +209,9 @@ export class Interpreter {
     }
     evalCSArgs(args : P.CSArgs) : Value[] {
         return [this.evalExpr(args.head)].concat(args.tail.map(x => this.evalExpr(x.exp)));
+    }
+    evalCSIDs(ids : P.CSIDs) : string[] {
+        return [ids.head.id].concat(ids.tail.map(x=>x.id.id));
     }
     evalID(id : P.ID) : Value {
         return this.env.get(id.id);

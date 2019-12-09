@@ -245,3 +245,58 @@ test('test function calls', () => {
     }
 });
 
+test('test function definitions', () => {
+    interface tc { inp: string, exp: Value, env?: Environment};
+    const cases : tc[] = [
+        {
+            inp : `
+            res := 0
+            gníomh addToRes(x) {
+                res = res + x
+            }
+            le i idir (1, 10)
+                addToRes(i)
+            `,
+            exp : 45,
+        },
+        {
+            inp : `
+            res := 0
+            gníomh recurse(acc, d) {
+                má d == 0 {
+                    res = acc
+                } nó {
+                    recurse(acc + 1, d-1)
+                }
+            }
+            recurse(0, 10)
+            `,
+            exp : 10,
+        },
+        {
+            inp : `
+            res := 0
+            gníomh recurse(d) {
+                val := d
+                má d != 0 {
+                    recurse(d-1)
+                }
+                res = res + val
+            }
+            recurse(10)
+            `,
+            exp : 55,
+        },
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        if(c.env)
+            i.env = c.env;
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        i.interpret(res.ast!);
+        expect(i.env.get('res')).toEqual(c.exp);
+    }
+});

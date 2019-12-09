@@ -3,6 +3,7 @@ AsgnStmt    := IfStmt
              | BlockStmt
              | NuairStmt
              | LeStmt
+             | GniomhStmt
              | AssgnStmt
              | DefnStmt
              | Expr
@@ -13,6 +14,9 @@ NuairStmt   := _ 'nuair' gap 'a' expr=Expr &gap stmt=NonAsgnStmt
 LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr _ '\)' stmt=NonAsgnStmt
 DefnStmt    := _ id=ID _ ':=' _ expr=Expr
 AssgnStmt   := _ id=ID _ '=' _ expr=Expr
+GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
+    stmts=AsgnStmt*
+_ '}'
 Expr        := And
 And         := head=Or tail={_ '\&' trm=Or}*
 Or          := head=Eq tail={_ '\|' trm=Eq}*
@@ -26,6 +30,7 @@ Atom        := Int
              | Bool
              | _ '\(' trm=Expr '\)'
 CSArgs      := head=Expr tail={_ ',' exp=Expr}*
+CSIDs       := head=ID tail={_ ',' id=ID}*
 PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '(<=)|(>=)|<|>'
