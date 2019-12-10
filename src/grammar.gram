@@ -3,11 +3,12 @@ AsgnStmt    := IfStmt
              | BlockStmt
              | NuairStmt
              | LeStmt
+             | BrisStmt
              | GniomhStmt
              | AssgnStmt
              | DefnStmt
              | Expr
-NonAsgnStmt := IfStmt | NuairStmt | LeStmt | BlockStmt | AssgnStmt | Expr
+NonAsgnStmt := IfStmt | NuairStmt | LeStmt | BrisStmt | BlockStmt | AssgnStmt | Expr
 IfStmt      := _ 'm[áa]' &gap expr=Expr &gap stmt=NonAsgnStmt elsebranch={_ 'n[oó]' &gap stmt=NonAsgnStmt}?
 BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
 NuairStmt   := _ 'nuair' gap 'a' expr=Expr &gap stmt=NonAsgnStmt
@@ -17,6 +18,7 @@ AssgnStmt   := _ id=ID _ '=' _ expr=Expr
 GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
     stmts=AsgnStmt*
 _ '}'
+BrisStmt    := _ 'bris'
 Expr        := And
 And         := head=Or tail={_ '\&' trm=Or}*
 Or          := head=Eq tail={_ '\|' trm=Eq}*

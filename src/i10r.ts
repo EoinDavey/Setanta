@@ -6,6 +6,8 @@ import { Environment } from './env';
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
+const BrisException = "BREAK";
+
 function assertNumber(x : Value, op : string) : number {
     if(isNumber(x))
         return x;
@@ -39,7 +41,7 @@ export class Interpreter {
         }
     }
     execStmtBlock(blk : P.BlockStmt) {
-        const prev = this.env;
+       const prev = this.env;
         this.env = new Environment(this.env);
         this.execStmts(blk.blk);
         this.env = prev;
@@ -67,10 +69,16 @@ export class Interpreter {
             case ASTKinds.GniomhStmt:
                 this.execGniomhStmt(st);
                 break;
+            case ASTKinds.BrisStmt:
+                this.execBrisStmt(st);
+                break;
             default:
                 this.evalExpr(st);
                 break;
         }
+    }
+    execBrisStmt(b : P.BrisStmt) {
+        throw BrisException;
     }
     execGniomhStmt(fn : P.GniomhStmt){
         const execFn = (body : Stmt[], env : Environment) : Value => {
@@ -86,7 +94,13 @@ export class Interpreter {
     }
     execNuair(n : P.NuairStmt) {
         while(isTrue(this.evalExpr(n.expr))){
-            this.execStmt(n.stmt);
+            try {
+                this.execStmt(n.stmt);
+            } catch(e) {
+                if(e === BrisException)
+                    break;
+                throw e;
+            }
         }
     }
     execLeStmt(n : P.LeStmt) {
@@ -98,7 +112,13 @@ export class Interpreter {
 
         for(let i = strt; i < end; ++i) {
             this.env.define(n.id.id, i);
-            this.execStmt(n.stmt);
+            try {
+                this.execStmt(n.stmt);
+            } catch(e) {
+                if(e === BrisException)
+                    break;
+                throw e;
+            }
         }
 
         this.env = prev;
