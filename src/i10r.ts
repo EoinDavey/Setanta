@@ -9,6 +9,13 @@ type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 const BrisException = 'BREAK';
 const CCException = 'CC';
 
+class Toradh{
+    luach: Value
+    constructor(v : Value) {
+        this.luach = v;
+    }
+}
+
 function assertNumber(x : Value, op : string) : number {
     if(isNumber(x))
         return x;
@@ -44,8 +51,11 @@ export class Interpreter {
     execStmtBlock(blk : P.BlockStmt) {
        const prev = this.env;
         this.env = new Environment(this.env);
-        this.execStmts(blk.blk);
-        this.env = prev;
+        try {
+            this.execStmts(blk.blk);
+        } finally {
+            this.env = prev;
+        }
     }
     execStmt(st : P.AsgnStmt | P.NonAsgnStmt) {
         switch(st.kind) {
@@ -70,6 +80,9 @@ export class Interpreter {
             case ASTKinds.GniomhStmt:
                 this.execGniomhStmt(st);
                 break;
+            case ASTKinds.ToradhStmt:
+                this.execToradhStmt(st);
+                break;
             case ASTKinds.CCStmt:
                 this.execCCStmt(st);
                 break;
@@ -87,12 +100,23 @@ export class Interpreter {
     execBrisStmt(b : P.BrisStmt) {
         throw BrisException;
     }
+    execToradhStmt(b : P.ToradhStmt) {
+        throw new Toradh(b.exp ? this.evalExpr(b.exp) : null);
+    }
     execGniomhStmt(fn : P.GniomhStmt){
         const execFn = (body : Stmt[], env : Environment) : Value => {
             const prev = this.env;
             this.env = env;
-            this.execStmts(body);
-            this.env = prev;
+            try {
+                this.execStmts(body);
+            } catch(e) {
+                if(e instanceof Toradh)
+                    return e.luach;
+                if(e !== BrisException)
+                    throw e;
+            } finally {
+                this.env = prev;
+            }
             return null;
         }
         const args = fn.args ? this.evalCSIDs(fn.args) : [];
@@ -119,20 +143,22 @@ export class Interpreter {
         const strt = assertNumber(this.evalExpr(n.strt), '"le idir" loop');
         const end = assertNumber(this.evalExpr(n.end), '"le idir" loop');
 
-        for(let i = strt; i < end; ++i) {
-            this.env.define(n.id.id, i);
-            try {
-                this.execStmt(n.stmt);
-            } catch(e) {
-                if(e === BrisException)
-                    break;
-                if(e === CCException)
-                    continue;
-                throw e;
+        try {
+            for(let i = strt; i < end; ++i) {
+                this.env.define(n.id.id, i);
+                try {
+                    this.execStmt(n.stmt);
+                } catch(e) {
+                    if(e === BrisException)
+                        break;
+                    if(e === CCException)
+                        continue;
+                    throw e;
+                }
             }
+        } finally {
+            this.env = prev;
         }
-
-        this.env = prev;
     }
     execMá(f : P.IfStmt) {
         const v = this.evalExpr(f.expr);

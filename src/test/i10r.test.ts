@@ -358,3 +358,51 @@ test('test function definitions', () => {
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
+
+test('test toradh', () => {
+    interface tc { inp: string, exp: Value, env?: Environment};
+    const cases : tc[] = [
+        {
+            inp: `
+            gníomh sq(x) {
+                toradh x * x
+            }
+            gníomh sm(a, b) {
+                toradh a + b
+            }
+            res := sm(sq(3), sq(4))
+            `,
+            exp: 25
+        },
+        { // Feidhm Ackermann
+            inp: `
+            gníomh A(m, n) {
+                má m == 0
+                    toradh n + 1
+                má m > 0 & n == 0
+                    toradh A(m - 1, 1)
+                toradh A(m - 1, A(m, n - 1))
+            }
+            res := A(1, 2)
+            `,
+            exp: 4
+        },
+        {
+            inp: `
+            gníomh f(x) { }
+            res := f(3)`,
+            exp: null
+        }
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        if(c.env)
+            i.env = c.env;
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        i.interpret(res.ast!);
+        expect(i.env.get('res')).toEqual(c.exp);
+    }
+});

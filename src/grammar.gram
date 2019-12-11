@@ -6,10 +6,19 @@ AsgnStmt    := IfStmt
              | CCStmt
              | BrisStmt
              | GniomhStmt
+             | ToradhStmt
              | AssgnStmt
              | DefnStmt
              | Expr
-NonAsgnStmt := IfStmt | NuairStmt | LeStmt | CCStmt | BrisStmt | BlockStmt | AssgnStmt | Expr
+NonAsgnStmt := IfStmt
+             | NuairStmt
+             | LeStmt
+             | CCStmt
+             | BrisStmt
+             | ToradhStmt
+             | BlockStmt
+             | AssgnStmt
+             | Expr
 IfStmt      := _ 'm[áa]' &gap expr=Expr &gap stmt=NonAsgnStmt elsebranch={_ 'n[oó]' &gap stmt=NonAsgnStmt}?
 BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
 NuairStmt   := _ 'nuair' gap 'a' expr=Expr &gap stmt=NonAsgnStmt
@@ -21,6 +30,7 @@ GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
 _ '}'
 BrisStmt    := _ 'bris'
 CCStmt      := _ 'chun\s+cinn'
+ToradhStmt  := _ 'toradh' &gap exp=Expr?
 Expr        := And
 And         := head=Or tail={_ '\&' trm=Or}*
 Or          := head=Eq tail={_ '\|' trm=Eq}*
@@ -40,7 +50,7 @@ PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '(<=)|(>=)|<|>'
 Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
-    | 'gn[ií]omh' | 'chun\s+cinn' | 'neamhn[ií]'
+    | 'gn[ií]omh' | 'chun\s+cinn' | 'neamhn[ií]' | 'toradh'
 ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 Bool        := _ bool='f[ií]or|breag'
 Neamhni     := _ 'neamhn[ií]'

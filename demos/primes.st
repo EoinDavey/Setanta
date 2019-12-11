@@ -1,26 +1,16 @@
-gníomh triail(x, freagair) {
-    má x <= 2 {
-        freagair(x == 2)
-    } nó {
-        príomha := fíor
-        le i idir(2, x) {
-            má i*i > x
-                bris
-            má x % i == 0 {
-                príomha = breag
-                bris
-            }
-        }
-        freagair(príomha)
+gníomh triail(x) {
+    má x <= 2
+        toradh x == 2
+    le i idir(2, x) {
+        má i*i > x
+            bris
+        má x % i == 0
+            toradh breag
     }
+    toradh fíor
 }
 
 le i idir (2, 100) {
-    príomha := breag
-    gníomh f(x) {
-        príomha = x
-    }
-    triail(i, f)
-    má príomha
+    má triail(i)
         scríobh(i)
 }
