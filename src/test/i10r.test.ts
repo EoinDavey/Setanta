@@ -18,6 +18,11 @@ test('test expressions', () => {
         {inp : 'fíor == breag', exp: false},
         {inp : 'fíor & fíor != breag', exp: true},
         {inp : 'fíor | breag == 5 >= 5', exp: true},
+        {inp : 'neamhní == neamhní', exp: true},
+        {inp : 'neamhní == fíor', exp: false},
+        {inp : 'neamhní == breag', exp: false},
+        {inp : 'neamhní == 0', exp: false},
+        {inp : 'neamhní == 1', exp: false},
     ];
     for(let c of cases){
         const i = new Interpreter();

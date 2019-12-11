@@ -235,6 +235,8 @@ export class Interpreter {
                 return this.evalBool(at);
             case ASTKinds.ID:
                 return this.evalID(at);
+            case ASTKinds.Neamhni:
+                return null;
         }
         return this.evalExpr(at.trm);
     }

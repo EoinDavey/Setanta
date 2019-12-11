@@ -32,15 +32,18 @@ PostOp      := at=Atom ops={'\(' args=CSArgs? _ '\)'}*
 Atom        := Int
              | ID
              | Bool
+             | Neamhni
              | _ '\(' trm=Expr '\)'
 CSArgs      := head=Expr tail={_ ',' exp=Expr}*
 CSIDs       := head=ID tail={_ ',' id=ID}*
 PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '(<=)|(>=)|<|>'
-Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag' | 'gn[ií]omh' | 'chun\s+cinn'
+Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
+    | 'gn[ií]omh' | 'chun\s+cinn' | 'neamhn[ií]'
 ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 Bool        := _ bool='f[ií]or|breag'
+Neamhni     := _ 'neamhn[ií]'
 Int         := _ int='[0-9]+'
 _           := '\s*'
-gap         := '(^|\s|$)+'
+gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'

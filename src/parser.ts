@@ -34,18 +34,21 @@
 * Atom        := Int
 *              | ID
 *              | Bool
+*              | Neamhni
 *              | _ '\(' trm=Expr '\)'
 * CSArgs      := head=Expr tail={_ ',' exp=Expr}*
 * CSIDs       := head=ID tail={_ ',' id=ID}*
 * PlusMinus   := '\+|-'
 * MulDiv      := '\*|\/|%'
 * Compare     := '(<=)|(>=)|<|>'
-* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag' | 'gn[ií]omh' | 'chun\s+cinn'
+* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
+*     | 'gn[ií]omh' | 'chun\s+cinn' | 'neamhn[ií]'
 * ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 * Bool        := _ bool='f[ií]or|breag'
+* Neamhni     := _ 'neamhn[ií]'
 * Int         := _ int='[0-9]+'
 * _           := '\s*'
-* gap         := '(^|\s|$)+'
+* gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'
 */
 type Nullable<T> = T | null;
 type $$RuleType<T> = (log? : (msg : string) => void) => Nullable<T>;
@@ -104,6 +107,7 @@ export enum ASTKinds {
     Atom_2,
     Atom_3,
     Atom_4,
+    Atom_5,
     CSArgs,
     CSArgs_$0,
     CSIDs,
@@ -117,9 +121,11 @@ export enum ASTKinds {
     Keyword_4,
     Keyword_5,
     Keyword_6,
+    Keyword_7,
     ID,
     ID_$0,
     Bool,
+    Neamhni,
     Int,
     _,
     gap,
@@ -264,12 +270,13 @@ export interface PostOp_$0 {
     kind : ASTKinds.PostOp_$0;
     args : Nullable<CSArgs>;
 }
-export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4;
+export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4 | Atom_5;
 export type Atom_1 = Int;
 export type Atom_2 = ID;
 export type Atom_3 = Bool;
-export interface Atom_4 {
-    kind : ASTKinds.Atom_4;
+export type Atom_4 = Neamhni;
+export interface Atom_5 {
+    kind : ASTKinds.Atom_5;
     trm : Expr;
 }
 export interface CSArgs {
@@ -293,13 +300,14 @@ export interface CSIDs_$0 {
 export type PlusMinus = string;
 export type MulDiv = string;
 export type Compare = string;
-export type Keyword = Keyword_1 | Keyword_2 | Keyword_3 | Keyword_4 | Keyword_5 | Keyword_6;
+export type Keyword = Keyword_1 | Keyword_2 | Keyword_3 | Keyword_4 | Keyword_5 | Keyword_6 | Keyword_7;
 export type Keyword_1 = string;
 export type Keyword_2 = string;
 export type Keyword_3 = string;
 export type Keyword_4 = string;
 export type Keyword_5 = string;
 export type Keyword_6 = string;
+export type Keyword_7 = string;
 export interface ID {
     kind : ASTKinds.ID;
     id : string;
@@ -310,6 +318,9 @@ export interface ID_$0 {
 export interface Bool {
     kind : ASTKinds.Bool;
     bool : string;
+}
+export interface Neamhni {
+    kind : ASTKinds.Neamhni;
 }
 export interface Int {
     kind : ASTKinds.Int;
@@ -954,6 +965,7 @@ export class Parser {
             () => { return this.matchAtom_2($$dpth + 1, cr) },
             () => { return this.matchAtom_3($$dpth + 1, cr) },
             () => { return this.matchAtom_4($$dpth + 1, cr) },
+            () => { return this.matchAtom_5($$dpth + 1, cr) },
         ]);
     }
     matchAtom_1($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_1> {
@@ -966,19 +978,22 @@ export class Parser {
         return this.matchBool($$dpth + 1, cr);
     }
     matchAtom_4($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_4> {
-        return this.runner<Atom_4>($$dpth,
+        return this.matchNeamhni($$dpth + 1, cr);
+    }
+    matchAtom_5($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_5> {
+        return this.runner<Atom_5>($$dpth,
             (log) => {
                 if(log)
-                    log('Atom_4');
+                    log('Atom_5');
                 let trm : Nullable<Expr>;
-                let res : Nullable<Atom_4> = null;
+                let res : Nullable<Atom_5> = null;
                 if(true
                     && this.match_($$dpth + 1, cr) != null
                     && this.regexAccept(String.raw`\(`, $$dpth+1, cr) != null
                     && (trm = this.matchExpr($$dpth + 1, cr)) != null
                     && this.regexAccept(String.raw`\)`, $$dpth+1, cr) != null
                 )
-                    res = {kind: ASTKinds.Atom_4, trm : trm};
+                    res = {kind: ASTKinds.Atom_5, trm : trm};
                 return res;
             }, cr)();
     }
@@ -1063,6 +1078,7 @@ export class Parser {
             () => { return this.matchKeyword_4($$dpth + 1, cr) },
             () => { return this.matchKeyword_5($$dpth + 1, cr) },
             () => { return this.matchKeyword_6($$dpth + 1, cr) },
+            () => { return this.matchKeyword_7($$dpth + 1, cr) },
         ]);
     }
     matchKeyword_1($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_1> {
@@ -1082,6 +1098,9 @@ export class Parser {
     }
     matchKeyword_6($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_6> {
         return this.regexAccept(String.raw`chun\s+cinn`, $$dpth+1, cr);
+    }
+    matchKeyword_7($$dpth : number, cr? : ContextRecorder) : Nullable<Keyword_7> {
+        return this.regexAccept(String.raw`neamhn[ií]`, $$dpth+1, cr);
     }
     matchID($$dpth : number, cr? : ContextRecorder) : Nullable<ID> {
         return this.runner<ID>($$dpth,
@@ -1128,6 +1147,20 @@ export class Parser {
                 return res;
             }, cr)();
     }
+    matchNeamhni($$dpth : number, cr? : ContextRecorder) : Nullable<Neamhni> {
+        return this.runner<Neamhni>($$dpth,
+            (log) => {
+                if(log)
+                    log('Neamhni');
+                let res : Nullable<Neamhni> = null;
+                if(true
+                    && this.match_($$dpth + 1, cr) != null
+                    && this.regexAccept(String.raw`neamhn[ií]`, $$dpth+1, cr) != null
+                )
+                    res = {kind: ASTKinds.Neamhni, };
+                return res;
+            }, cr)();
+    }
     matchInt($$dpth : number, cr? : ContextRecorder) : Nullable<Int> {
         return this.runner<Int>($$dpth,
             (log) => {
@@ -1147,7 +1180,7 @@ export class Parser {
         return this.regexAccept(String.raw`\s*`, $$dpth+1, cr);
     }
     matchgap($$dpth : number, cr? : ContextRecorder) : Nullable<gap> {
-        return this.regexAccept(String.raw`(^|\s|$)+`, $$dpth+1, cr);
+        return this.regexAccept(String.raw`(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+`, $$dpth+1, cr);
     }
     parse() : ParseResult {
         const mrk = this.mark();

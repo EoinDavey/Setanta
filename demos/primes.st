@@ -3,7 +3,7 @@ gníomh triail(x, freagair) {
         freagair(x == 2)
     } nó {
         príomha := fíor
-        le i idir(2, x - 1) {
+        le i idir(2, x) {
             má i*i > x
                 bris
             má x % i == 0 {

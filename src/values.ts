@@ -7,7 +7,7 @@ export type Value = number | boolean | Callable | null;
 export type Stmt = AsgnStmt | NonAsgnStmt;
 
 export function isTrue(v : Value) {
-    return v !== 0 && v !== false;
+    return v !== 0 && v !== false && v !== null;
 }
 
 export function isCallable(v : Value) : v is Callable {
