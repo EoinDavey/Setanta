@@ -6,7 +6,8 @@ import { Environment } from './env';
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
-const BrisException = "BREAK";
+const BrisException = 'BREAK';
+const CCException = 'CC';
 
 function assertNumber(x : Value, op : string) : number {
     if(isNumber(x))
@@ -69,6 +70,9 @@ export class Interpreter {
             case ASTKinds.GniomhStmt:
                 this.execGniomhStmt(st);
                 break;
+            case ASTKinds.CCStmt:
+                this.execCCStmt(st);
+                break;
             case ASTKinds.BrisStmt:
                 this.execBrisStmt(st);
                 break;
@@ -76,6 +80,9 @@ export class Interpreter {
                 this.evalExpr(st);
                 break;
         }
+    }
+    execCCStmt(b : P.CCStmt) {
+        throw CCException;
     }
     execBrisStmt(b : P.BrisStmt) {
         throw BrisException;
@@ -99,6 +106,8 @@ export class Interpreter {
             } catch(e) {
                 if(e === BrisException)
                     break;
+                if(e === CCException)
+                    continue;
                 throw e;
             }
         }
@@ -117,6 +126,8 @@ export class Interpreter {
             } catch(e) {
                 if(e === BrisException)
                     break;
+                if(e === CCException)
+                    continue;
                 throw e;
             }
         }

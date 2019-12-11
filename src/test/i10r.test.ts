@@ -162,6 +162,19 @@ test('test nuair a loops', () => {
             }`,
             exp : 10,
         },
+        {
+            inp: `
+            res := 0
+            i := 0
+            nuair a i < 10 {
+                i = i + 1
+                má i % 2 == 0 {
+                    chun cinn
+                }
+                res = res + i
+            }`,
+            exp : 25,
+        },
     ];
     for(let c of cases){
         const i = new Interpreter();
@@ -199,7 +212,7 @@ test('test le idir loops', () => {
             res := 1
             le i idir(3, 100) {
                 príomha := fíor
-                le j idir(2, i - 1) {
+                le j idir(2, i) {
                     má j * j > i
                         bris
                     má i % j == 0 {
@@ -207,11 +220,22 @@ test('test le idir loops', () => {
                         bris
                     }
                 }
-                má príomha {
+                má príomha
                     res = res + 1
-                }
             }`,
             exp : 25,
+        },
+        {
+            inp : `
+            res := 0
+            le x idir (0, 20) {
+                le i idir (0, x) {
+                    má i % 3 == 0
+                        chun cinn
+                    res = res + i
+                }
+            }`,
+            exp : 762,
         },
     ];
     for(let c of cases){
