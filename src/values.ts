@@ -2,12 +2,19 @@ import { ID, AsgnStmt, NonAsgnStmt } from './parser';
 import { Environment } from './env';
 import { Interpreter } from './i10r';
 
-export type Value = number | boolean | Callable | null;
+export type Value = number | boolean | Callable | null | ValLs;
+interface ValLs extends Array<Value> {}
 
 export type Stmt = AsgnStmt | NonAsgnStmt;
 
 export function isTrue(v : Value) {
     return v !== 0 && v !== false && v !== null;
+}
+
+export function isEqual(a : Value, b : Value) : boolean {
+    if(Array.isArray(a) && Array.isArray(b) && a.length === b.length)
+        return a.map((x,i) => [x, b[i]]).every(x => isEqual(x[0],x[1]));
+    return a == b;
 }
 
 export function isCallable(v : Value) : v is Callable {

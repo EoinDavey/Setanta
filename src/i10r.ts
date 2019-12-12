@@ -1,6 +1,6 @@
 import * as P from './parser';
 import { ASTKinds } from './parser';
-import { Gníomh, Value, isTrue, isCallable, isNumber, isBool, Callable } from './values';
+import { Gníomh, Value, isEqual, isTrue, isCallable, isNumber, isBool, Callable } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 
@@ -203,8 +203,8 @@ export class Interpreter {
         return e.tail.reduce((x, y) => {
             const at = this.evalComp(y.trm);
             if(y.op === '==')
-                return x === at;
-            return x !== at;
+                return isEqual(x, at);
+            return !isEqual(x, at);
         }, this.evalComp(e.head));
     }
     evalComp(p : P.Comp) : Value {
@@ -261,10 +261,15 @@ export class Interpreter {
                 return this.evalBool(at);
             case ASTKinds.ID:
                 return this.evalID(at);
+            case ASTKinds.ListLit:
+                return this.evalListLit(at);
             case ASTKinds.Neamhni:
                 return null;
         }
         return this.evalExpr(at.trm);
+    }
+    evalListLit(ls : P.ListLit) : Value {
+        return ls.els ? this.evalCSArgs(ls.els) : [];
     }
     evalCSArgs(args : P.CSArgs) : Value[] {
         return [this.evalExpr(args.head)].concat(args.tail.map(x => this.evalExpr(x.exp)));

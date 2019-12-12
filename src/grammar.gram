@@ -39,13 +39,15 @@ Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
 Product     := head=PostOp tail={_ op=MulDiv trm=PostOp}*
 PostOp      := at=Atom ops={'\(' args=CSArgs? _ '\)'}*
-Atom        := Int
+Atom        :=  _ '\(' trm=Expr '\)'
+             | Int
              | ID
              | Bool
              | Neamhni
-             | _ '\(' trm=Expr '\)'
+             | ListLit
 CSArgs      := head=Expr tail={_ ',' exp=Expr}*
 CSIDs       := head=ID tail={_ ',' id=ID}*
+ListLit     := _ '\[' els=CSArgs? _ '\]'
 PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '(<=)|(>=)|<|>'

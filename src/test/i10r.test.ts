@@ -1,7 +1,26 @@
 import { Interpreter } from '../../src/i10r';
-import { Value } from '../../src/values';
+import { isEqual, Value } from '../../src/values';
 import { Parser } from '../../src/parser';
 import { Environment } from '../../src/env';
+
+test('test isEqual', () => {
+    interface tc { a: Value, b: Value, eq: boolean}
+    const cases : tc[] = [
+        {a : 3, b : 3, eq : true},
+        {a : null, b : 0, eq : false},
+        {a : null, b : false, eq : false},
+        {a : null, b : null, eq : true},
+        {a : false, b : true, eq : false},
+        {a : false, b : false, eq : true},
+        {a : true, b : true, eq : true},
+        {a : [3,false,null], b : [3,false,null], eq : true},
+        {a : [[],[1,2,3]], b : [[],[1,2,3]], eq : true},
+        {a : [[],[]], b : [[]], eq : false},
+    ];
+    for(let c of cases){
+        expect(isEqual(c.a, c.b)).toEqual(c.eq);
+    }
+});
 
 test('test expressions', () => {
     interface tc { inp: string, exp: Value, env?: Environment}
@@ -23,6 +42,9 @@ test('test expressions', () => {
         {inp : 'neamhní == breag', exp: false},
         {inp : 'neamhní == 0', exp: false},
         {inp : 'neamhní == 1', exp: false},
+        {inp : '[1,2,3] == [1,2,3]', exp: true},
+        {inp : '[1,2,4] == [1,2,3]', exp: false},
+        {inp : '[] == [1,2,3]', exp: false},
     ];
     for(let c of cases){
         const i = new Interpreter();

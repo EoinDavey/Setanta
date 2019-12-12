@@ -1,4 +1,4 @@
-gníomh triail(x) {
+gníomh príómha(x) {
     má x <= 2
         toradh x == 2
     le i idir(2, x) {
@@ -11,6 +11,6 @@ gníomh triail(x) {
 }
 
 le i idir (2, 100) {
-    má triail(i)
+    má príómha(i)
         scríobh(i)
 }

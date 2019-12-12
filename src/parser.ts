@@ -41,13 +41,15 @@
 * Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
 * Product     := head=PostOp tail={_ op=MulDiv trm=PostOp}*
 * PostOp      := at=Atom ops={'\(' args=CSArgs? _ '\)'}*
-* Atom        := Int
+* Atom        :=  _ '\(' trm=Expr '\)'
+*              | Int
 *              | ID
 *              | Bool
 *              | Neamhni
-*              | _ '\(' trm=Expr '\)'
+*              | ListLit
 * CSArgs      := head=Expr tail={_ ',' exp=Expr}*
 * CSIDs       := head=ID tail={_ ',' id=ID}*
+* ListLit     := _ '\[' els=CSArgs? _ '\]'
 * PlusMinus   := '\+|-'
 * MulDiv      := '\*|\/|%'
 * Compare     := '(<=)|(>=)|<|>'
@@ -121,10 +123,12 @@ export enum ASTKinds {
     Atom_3,
     Atom_4,
     Atom_5,
+    Atom_6,
     CSArgs,
     CSArgs_$0,
     CSIDs,
     CSIDs_$0,
+    ListLit,
     PlusMinus,
     MulDiv,
     Compare,
@@ -290,15 +294,16 @@ export interface PostOp_$0 {
     kind : ASTKinds.PostOp_$0;
     args : Nullable<CSArgs>;
 }
-export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4 | Atom_5;
-export type Atom_1 = Int;
-export type Atom_2 = ID;
-export type Atom_3 = Bool;
-export type Atom_4 = Neamhni;
-export interface Atom_5 {
-    kind : ASTKinds.Atom_5;
+export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4 | Atom_5 | Atom_6;
+export interface Atom_1 {
+    kind : ASTKinds.Atom_1;
     trm : Expr;
 }
+export type Atom_2 = Int;
+export type Atom_3 = ID;
+export type Atom_4 = Bool;
+export type Atom_5 = Neamhni;
+export type Atom_6 = ListLit;
 export interface CSArgs {
     kind : ASTKinds.CSArgs;
     head : Expr;
@@ -316,6 +321,10 @@ export interface CSIDs {
 export interface CSIDs_$0 {
     kind : ASTKinds.CSIDs_$0;
     id : ID;
+}
+export interface ListLit {
+    kind : ASTKinds.ListLit;
+    els : Nullable<CSArgs>;
 }
 export type PlusMinus = string;
 export type MulDiv = string;
@@ -1012,36 +1021,40 @@ export class Parser {
             () => { return this.matchAtom_3($$dpth + 1, cr) },
             () => { return this.matchAtom_4($$dpth + 1, cr) },
             () => { return this.matchAtom_5($$dpth + 1, cr) },
+            () => { return this.matchAtom_6($$dpth + 1, cr) },
         ]);
     }
     matchAtom_1($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_1> {
-        return this.matchInt($$dpth + 1, cr);
-    }
-    matchAtom_2($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_2> {
-        return this.matchID($$dpth + 1, cr);
-    }
-    matchAtom_3($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_3> {
-        return this.matchBool($$dpth + 1, cr);
-    }
-    matchAtom_4($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_4> {
-        return this.matchNeamhni($$dpth + 1, cr);
-    }
-    matchAtom_5($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_5> {
-        return this.runner<Atom_5>($$dpth,
+        return this.runner<Atom_1>($$dpth,
             (log) => {
                 if(log)
-                    log('Atom_5');
+                    log('Atom_1');
                 let trm : Nullable<Expr>;
-                let res : Nullable<Atom_5> = null;
+                let res : Nullable<Atom_1> = null;
                 if(true
                     && this.match_($$dpth + 1, cr) != null
                     && this.regexAccept(String.raw`\(`, $$dpth+1, cr) != null
                     && (trm = this.matchExpr($$dpth + 1, cr)) != null
                     && this.regexAccept(String.raw`\)`, $$dpth+1, cr) != null
                 )
-                    res = {kind: ASTKinds.Atom_5, trm : trm};
+                    res = {kind: ASTKinds.Atom_1, trm : trm};
                 return res;
             }, cr)();
+    }
+    matchAtom_2($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_2> {
+        return this.matchInt($$dpth + 1, cr);
+    }
+    matchAtom_3($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_3> {
+        return this.matchID($$dpth + 1, cr);
+    }
+    matchAtom_4($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_4> {
+        return this.matchBool($$dpth + 1, cr);
+    }
+    matchAtom_5($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_5> {
+        return this.matchNeamhni($$dpth + 1, cr);
+    }
+    matchAtom_6($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_6> {
+        return this.matchListLit($$dpth + 1, cr);
     }
     matchCSArgs($$dpth : number, cr? : ContextRecorder) : Nullable<CSArgs> {
         return this.runner<CSArgs>($$dpth,
@@ -1104,6 +1117,24 @@ export class Parser {
                     && (id = this.matchID($$dpth + 1, cr)) != null
                 )
                     res = {kind: ASTKinds.CSIDs_$0, id : id};
+                return res;
+            }, cr)();
+    }
+    matchListLit($$dpth : number, cr? : ContextRecorder) : Nullable<ListLit> {
+        return this.runner<ListLit>($$dpth,
+            (log) => {
+                if(log)
+                    log('ListLit');
+                let els : Nullable<Nullable<CSArgs>>;
+                let res : Nullable<ListLit> = null;
+                if(true
+                    && this.match_($$dpth + 1, cr) != null
+                    && this.regexAccept(String.raw`\[`, $$dpth+1, cr) != null
+                    && ((els = this.matchCSArgs($$dpth + 1, cr)) || true)
+                    && this.match_($$dpth + 1, cr) != null
+                    && this.regexAccept(String.raw`\]`, $$dpth+1, cr) != null
+                )
+                    res = {kind: ASTKinds.ListLit, els : els};
                 return res;
             }, cr)();
     }
