@@ -472,3 +472,46 @@ test('test postfix ops', () => {
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
+
+test('test array setting', () => {
+    interface tc { inp: string, exp: Value, env?: Environment};
+    const cases : tc[] = [
+        {
+            inp : `
+            res := [0,0,0]
+            le i idir (0, 3) {
+                res[i] = i
+            }
+            `,
+            exp: [0,1,2], 
+        },
+        {
+            inp : `
+            arr := [
+                [0,0,0],
+                [0,0,0],
+                [0,0,0]
+            ]
+            le i idir (0, 3)
+                le j idir(0, 3)
+                    arr[i][j] = i + j
+            res := 0
+            le i idir (0, 3)
+                le j idir (0, 3)
+                    res = res + arr[i][j]
+            `,
+            exp: 18
+        },
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        if(c.env)
+            i.env = c.env;
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        i.interpret(res.ast!);
+        expect(i.env.get('res')).toEqual(c.exp);
+    }
+});

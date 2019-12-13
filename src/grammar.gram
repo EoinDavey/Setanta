@@ -24,7 +24,7 @@ BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
 NuairStmt   := _ 'nuair' gap 'a' expr=Expr &gap stmt=NonAsgnStmt
 LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr _ '\)' stmt=NonAsgnStmt
 DefnStmt    := _ id=ID _ ':=' _ expr=Expr
-AssgnStmt   := _ id=ID _ '=' _ expr=Expr
+AssgnStmt   := _ id=LSpec _ '=' _ expr=Expr
 GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
     stmts=AsgnStmt*
 _ '}'
@@ -37,14 +37,16 @@ Or          := head=Eq tail={_ '\|' trm=Eq}*
 Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
 Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
-Product     := head=PostOp tail={_ op=MulDiv trm=PostOp}*
-PostOp      := at=Atom ops={'\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'}*
+Product     := head=Postfix tail={_ op=MulDiv trm=Postfix}*
+Postfix     := at=Atom ops=PostOp*
+PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 Atom        :=  _ '\(' trm=Expr '\)'
              | Int
              | ID
              | Bool
              | Neamhni
              | ListLit
+LSpec       := id=ID ops=PostOp*
 CSArgs      := head=Expr tail={_ ',' exp=Expr}*
 CSIDs       := head=ID tail={_ ',' id=ID}*
 ListLit     := _ '\[' els=CSArgs? _ '\]'
@@ -56,6 +58,6 @@ Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
 ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 Bool        := _ bool='f[ií]or|breag'
 Neamhni     := _ 'neamhn[ií]'
-Int         := _ int='[0-9]+'
+Int         := _ int='-?[0-9]+'
 _           := '\s*'
 gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'

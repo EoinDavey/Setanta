@@ -182,7 +182,31 @@ export class Interpreter {
     }
     execAssgn(a : P.AssgnStmt) {
         const val = this.evalExpr(a.expr);
-        this.env.assign(a.id.id, val);
+        if(a.id.ops.length){
+            let rt : Value = this.evalID(a.id.id);
+            const ops = a.id.ops;
+            // Eval all but last postfix operand
+            for(let i = 0; i < ops.length-1; ++i){
+                const op = ops[i];
+                if('args' in op){
+                    rt = this.callFunc(rt, op.args ? this.evalCSArgs(op.args) : []);
+                } else {
+                    rt = this.idxList(rt, op.expr);
+                }
+            }
+            // Last operand must be array lookup
+            const op = ops[ops.length-1];
+            if(!('expr' in op))
+                throw new RuntimeError(`Cannot assign to function call`);
+            // Get array
+            const arr = assertIndexable(rt);
+            const idx = assertNumber(this.evalExpr(op.expr),"[]");
+            if(idx < 0 || idx >= arr.length)
+                throw new RuntimeError(`Index ${idx} out of bounds`);
+            arr[idx] = val;
+        } else {
+            this.env.assign(a.id.id.id, val);
+        }
     }
     evalExpr(expr : P.Expr) : Value {
         return this.evalAnd(expr);
@@ -237,7 +261,7 @@ export class Interpreter {
     }
     evalProduct(p : P.Product) : Value {
         return p.tail.reduce((x, y) => {
-            const at = assertNumber(this.evalPostOp(y.trm), y.op);
+            const at = assertNumber(this.evalPostfix(y.trm), y.op);
             x = assertNumber(x, y.op);
             if(y.op === '*')
                 return x*at;
@@ -247,9 +271,9 @@ export class Interpreter {
                 return x/at;
             }
             return x%at;
-        }, this.evalPostOp(p.head));
+        }, this.evalPostfix(p.head));
     }
-    evalPostOp(p : P.PostOp) : Value {
+    evalPostfix(p : P.Postfix) : Value {
         return p.ops.reduce((x : Value, y) => {
             if('args' in y)
                 return this.callFunc(x, y.args ? this.evalCSArgs(y.args) : []);

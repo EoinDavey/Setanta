@@ -26,7 +26,7 @@
 * NuairStmt   := _ 'nuair' gap 'a' expr=Expr &gap stmt=NonAsgnStmt
 * LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr _ '\)' stmt=NonAsgnStmt
 * DefnStmt    := _ id=ID _ ':=' _ expr=Expr
-* AssgnStmt   := _ id=ID _ '=' _ expr=Expr
+* AssgnStmt   := _ id=LSpec _ '=' _ expr=Expr
 * GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
 *     stmts=AsgnStmt*
 * _ '}'
@@ -39,14 +39,16 @@
 * Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
 * Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 * Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
-* Product     := head=PostOp tail={_ op=MulDiv trm=PostOp}*
-* PostOp      := at=Atom ops={'\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'}*
+* Product     := head=Postfix tail={_ op=MulDiv trm=Postfix}*
+* Postfix     := at=Atom ops=PostOp*
+* PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 * Atom        :=  _ '\(' trm=Expr '\)'
 *              | Int
 *              | ID
 *              | Bool
 *              | Neamhni
 *              | ListLit
+* LSpec       := id=ID ops=PostOp*
 * CSArgs      := head=Expr tail={_ ',' exp=Expr}*
 * CSIDs       := head=ID tail={_ ',' id=ID}*
 * ListLit     := _ '\[' els=CSArgs? _ '\]'
@@ -58,7 +60,7 @@
 * ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 * Bool        := _ bool='f[ií]or|breag'
 * Neamhni     := _ 'neamhn[ií]'
-* Int         := _ int='[0-9]+'
+* Int         := _ int='-?[0-9]+'
 * _           := '\s*'
 * gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'
 */
@@ -116,15 +118,16 @@ export enum ASTKinds {
     Sum_$0,
     Product,
     Product_$0,
-    PostOp,
-    PostOp_$0_1,
-    PostOp_$0_2,
+    Postfix,
+    PostOp_1,
+    PostOp_2,
     Atom_1,
     Atom_2,
     Atom_3,
     Atom_4,
     Atom_5,
     Atom_6,
+    LSpec,
     CSArgs,
     CSArgs_$0,
     CSIDs,
@@ -208,7 +211,7 @@ export interface DefnStmt {
 }
 export interface AssgnStmt {
     kind : ASTKinds.AssgnStmt;
-    id : ID;
+    id : LSpec;
     expr : Expr;
 }
 export interface GniomhStmt {
@@ -278,26 +281,26 @@ export interface Sum_$0 {
 }
 export interface Product {
     kind : ASTKinds.Product;
-    head : PostOp;
+    head : Postfix;
     tail : Product_$0[];
 }
 export interface Product_$0 {
     kind : ASTKinds.Product_$0;
     op : MulDiv;
-    trm : PostOp;
+    trm : Postfix;
 }
-export interface PostOp {
-    kind : ASTKinds.PostOp;
+export interface Postfix {
+    kind : ASTKinds.Postfix;
     at : Atom;
-    ops : PostOp_$0[];
+    ops : PostOp[];
 }
-export type PostOp_$0 = PostOp_$0_1 | PostOp_$0_2;
-export interface PostOp_$0_1 {
-    kind : ASTKinds.PostOp_$0_1;
+export type PostOp = PostOp_1 | PostOp_2;
+export interface PostOp_1 {
+    kind : ASTKinds.PostOp_1;
     args : Nullable<CSArgs>;
 }
-export interface PostOp_$0_2 {
-    kind : ASTKinds.PostOp_$0_2;
+export interface PostOp_2 {
+    kind : ASTKinds.PostOp_2;
     expr : Expr;
 }
 export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4 | Atom_5 | Atom_6;
@@ -310,6 +313,11 @@ export type Atom_3 = ID;
 export type Atom_4 = Bool;
 export type Atom_5 = Neamhni;
 export type Atom_6 = ListLit;
+export interface LSpec {
+    kind : ASTKinds.LSpec;
+    id : ID;
+    ops : PostOp[];
+}
 export interface CSArgs {
     kind : ASTKinds.CSArgs;
     head : Expr;
@@ -699,12 +707,12 @@ export class Parser {
             (log) => {
                 if(log)
                     log('AssgnStmt');
-                let id : Nullable<ID>;
+                let id : Nullable<LSpec>;
                 let expr : Nullable<Expr>;
                 let res : Nullable<AssgnStmt> = null;
                 if(true
                     && this.match_($$dpth + 1, cr) != null
-                    && (id = this.matchID($$dpth + 1, cr)) != null
+                    && (id = this.matchLSpec($$dpth + 1, cr)) != null
                     && this.match_($$dpth + 1, cr) != null
                     && this.regexAccept(String.raw`=`, $$dpth+1, cr) != null
                     && this.match_($$dpth + 1, cr) != null
@@ -959,11 +967,11 @@ export class Parser {
             (log) => {
                 if(log)
                     log('Product');
-                let head : Nullable<PostOp>;
+                let head : Nullable<Postfix>;
                 let tail : Nullable<Product_$0[]>;
                 let res : Nullable<Product> = null;
                 if(true
-                    && (head = this.matchPostOp($$dpth + 1, cr)) != null
+                    && (head = this.matchPostfix($$dpth + 1, cr)) != null
                     && (tail = this.loop<Product_$0>(()=> this.matchProduct_$0($$dpth + 1, cr), true)) != null
                 )
                     res = {kind: ASTKinds.Product, head : head, tail : tail};
@@ -976,69 +984,69 @@ export class Parser {
                 if(log)
                     log('Product_$0');
                 let op : Nullable<MulDiv>;
-                let trm : Nullable<PostOp>;
+                let trm : Nullable<Postfix>;
                 let res : Nullable<Product_$0> = null;
                 if(true
                     && this.match_($$dpth + 1, cr) != null
                     && (op = this.matchMulDiv($$dpth + 1, cr)) != null
-                    && (trm = this.matchPostOp($$dpth + 1, cr)) != null
+                    && (trm = this.matchPostfix($$dpth + 1, cr)) != null
                 )
                     res = {kind: ASTKinds.Product_$0, op : op, trm : trm};
                 return res;
             }, cr)();
     }
-    matchPostOp($$dpth : number, cr? : ContextRecorder) : Nullable<PostOp> {
-        return this.runner<PostOp>($$dpth,
+    matchPostfix($$dpth : number, cr? : ContextRecorder) : Nullable<Postfix> {
+        return this.runner<Postfix>($$dpth,
             (log) => {
                 if(log)
-                    log('PostOp');
+                    log('Postfix');
                 let at : Nullable<Atom>;
-                let ops : Nullable<PostOp_$0[]>;
-                let res : Nullable<PostOp> = null;
+                let ops : Nullable<PostOp[]>;
+                let res : Nullable<Postfix> = null;
                 if(true
                     && (at = this.matchAtom($$dpth + 1, cr)) != null
-                    && (ops = this.loop<PostOp_$0>(()=> this.matchPostOp_$0($$dpth + 1, cr), true)) != null
+                    && (ops = this.loop<PostOp>(()=> this.matchPostOp($$dpth + 1, cr), true)) != null
                 )
-                    res = {kind: ASTKinds.PostOp, at : at, ops : ops};
+                    res = {kind: ASTKinds.Postfix, at : at, ops : ops};
                 return res;
             }, cr)();
     }
-    matchPostOp_$0($$dpth : number, cr? : ContextRecorder) : Nullable<PostOp_$0> {
-        return this.choice<PostOp_$0>([
-            () => { return this.matchPostOp_$0_1($$dpth + 1, cr) },
-            () => { return this.matchPostOp_$0_2($$dpth + 1, cr) },
+    matchPostOp($$dpth : number, cr? : ContextRecorder) : Nullable<PostOp> {
+        return this.choice<PostOp>([
+            () => { return this.matchPostOp_1($$dpth + 1, cr) },
+            () => { return this.matchPostOp_2($$dpth + 1, cr) },
         ]);
     }
-    matchPostOp_$0_1($$dpth : number, cr? : ContextRecorder) : Nullable<PostOp_$0_1> {
-        return this.runner<PostOp_$0_1>($$dpth,
+    matchPostOp_1($$dpth : number, cr? : ContextRecorder) : Nullable<PostOp_1> {
+        return this.runner<PostOp_1>($$dpth,
             (log) => {
                 if(log)
-                    log('PostOp_$0_1');
+                    log('PostOp_1');
                 let args : Nullable<Nullable<CSArgs>>;
-                let res : Nullable<PostOp_$0_1> = null;
+                let res : Nullable<PostOp_1> = null;
                 if(true
                     && this.regexAccept(String.raw`\(`, $$dpth+1, cr) != null
                     && ((args = this.matchCSArgs($$dpth + 1, cr)) || true)
                     && this.match_($$dpth + 1, cr) != null
                     && this.regexAccept(String.raw`\)`, $$dpth+1, cr) != null
                 )
-                    res = {kind: ASTKinds.PostOp_$0_1, args : args};
+                    res = {kind: ASTKinds.PostOp_1, args : args};
                 return res;
             }, cr)();
     }
-    matchPostOp_$0_2($$dpth : number, cr? : ContextRecorder) : Nullable<PostOp_$0_2> {
-        return this.runner<PostOp_$0_2>($$dpth,
+    matchPostOp_2($$dpth : number, cr? : ContextRecorder) : Nullable<PostOp_2> {
+        return this.runner<PostOp_2>($$dpth,
             (log) => {
                 if(log)
-                    log('PostOp_$0_2');
+                    log('PostOp_2');
                 let expr : Nullable<Expr>;
-                let res : Nullable<PostOp_$0_2> = null;
+                let res : Nullable<PostOp_2> = null;
                 if(true
                     && this.regexAccept(String.raw`\[`, $$dpth+1, cr) != null
                     && (expr = this.matchExpr($$dpth + 1, cr)) != null
                     && this.regexAccept(String.raw`\]`, $$dpth+1, cr) != null
                 )
-                    res = {kind: ASTKinds.PostOp_$0_2, expr : expr};
+                    res = {kind: ASTKinds.PostOp_2, expr : expr};
                 return res;
             }, cr)();
     }
@@ -1083,6 +1091,22 @@ export class Parser {
     }
     matchAtom_6($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_6> {
         return this.matchListLit($$dpth + 1, cr);
+    }
+    matchLSpec($$dpth : number, cr? : ContextRecorder) : Nullable<LSpec> {
+        return this.runner<LSpec>($$dpth,
+            (log) => {
+                if(log)
+                    log('LSpec');
+                let id : Nullable<ID>;
+                let ops : Nullable<PostOp[]>;
+                let res : Nullable<LSpec> = null;
+                if(true
+                    && (id = this.matchID($$dpth + 1, cr)) != null
+                    && (ops = this.loop<PostOp>(()=> this.matchPostOp($$dpth + 1, cr), true)) != null
+                )
+                    res = {kind: ASTKinds.LSpec, id : id, ops : ops};
+                return res;
+            }, cr)();
     }
     matchCSArgs($$dpth : number, cr? : ContextRecorder) : Nullable<CSArgs> {
         return this.runner<CSArgs>($$dpth,
@@ -1279,7 +1303,7 @@ export class Parser {
                 let res : Nullable<Int> = null;
                 if(true
                     && this.match_($$dpth + 1, cr) != null
-                    && (int = this.regexAccept(String.raw`[0-9]+`, $$dpth+1, cr)) != null
+                    && (int = this.regexAccept(String.raw`-?[0-9]+`, $$dpth+1, cr)) != null
                 )
                     res = {kind: ASTKinds.Int, int : int};
                 return res;
