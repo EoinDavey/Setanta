@@ -1,5 +1,5 @@
 import { Interpreter } from '../../src/i10r';
-import { isEqual, Value } from '../../src/values';
+import { Checks, Value } from '../../src/values';
 import { Parser } from '../../src/parser';
 import { Environment } from '../../src/env';
 
@@ -18,7 +18,7 @@ test('test isEqual', () => {
         {a : [[],[]], b : [[]], eq : false},
     ];
     for(let c of cases){
-        expect(isEqual(c.a, c.b)).toEqual(c.eq);
+        expect(Checks.isEqual(c.a, c.b)).toEqual(c.eq);
     }
 });
 

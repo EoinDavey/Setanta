@@ -1,11 +1,13 @@
 import * as P from './parser';
 import { ASTKinds } from './parser';
-import { Gníomh, Value, isEqual, isTrue, Callable, Asserts } from './values';
+import { Comparable, TypeCheck, Gníomh, Value, Checks, Callable, Asserts } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 import { Builtins } from './builtins';
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
+
+type BinOp = (a : Value, b : Value) => Value;
 
 const BrisException = 'BREAK';
 const CCException = 'CC';
@@ -16,6 +18,47 @@ class Toradh{
         this.luach = v;
     }
 }
+
+interface binOpEntry { lcheck : TypeCheck, rcheck : TypeCheck, op : BinOp };
+
+function makeBinOp<L extends Value, R extends Value>(lassert : (v : Value) => L,
+    rassert : (v : Value) => R, op : (a : L, b : R) => Value) : BinOp {
+        return (a : Value, b : Value) =>  { 
+            return op(lassert(a), rassert(b));
+        }
+}
+
+function numBinOpEntry(f : (a : number, b : number) => Value) : binOpEntry {
+    return {
+        lcheck : Checks.isNumber,
+        rcheck: Checks.isNumber,
+        op : makeBinOp(Asserts.assertNumber, Asserts.assertNumber, f)
+    };
+}
+
+function compBinOpEntry(f : (a : Comparable, b : Comparable) => Value) : binOpEntry {
+    return {
+        lcheck : Checks.isComparable,
+        rcheck: Checks.isComparable,
+        op : makeBinOp(Asserts.assertComparable, Asserts.assertComparable, f)
+    };
+}
+
+const binOpTable : Map<string, [binOpEntry]> = new Map([
+    ['+', [numBinOpEntry((a, b) => a + b)]],
+    ['-', [numBinOpEntry((a, b) => a - b)]],
+    ['*', [numBinOpEntry((a, b) => a * b)]],
+    ['%', [numBinOpEntry((a, b) => a % b)]],
+    ['/', [numBinOpEntry((a, b) => { 
+                if(b == 0)
+                    throw new RuntimeError(`Division by zero`);
+                return a / b
+        })]],
+    ['<', [compBinOpEntry((a, b) => a < b)]],
+    ['>', [compBinOpEntry((a, b) => a > b)]],
+    ['<=', [compBinOpEntry((a, b) => a <= b)]],
+    ['>=', [compBinOpEntry((a, b) => a >= b)]]
+]);
 
 export class Interpreter {
     env : Environment = new Environment();
@@ -109,7 +152,7 @@ export class Interpreter {
         this.env.define(fn.id.id, gníomh);
     }
     execNuair(n : P.NuairStmt) {
-        while(isTrue(this.evalExpr(n.expr))){
+        while(Checks.isTrue(this.evalExpr(n.expr))){
             try {
                 this.execStmt(n.stmt);
             } catch(e) {
@@ -125,8 +168,8 @@ export class Interpreter {
         const prev = this.env;
         this.env = new Environment(this.env);
 
-        const strt = Asserts.assertNumber(this.evalExpr(n.strt), '"le idir" loop');
-        const end = Asserts.assertNumber(this.evalExpr(n.end), '"le idir" loop');
+        const strt = Asserts.assertNumber(this.evalExpr(n.strt));
+        const end = Asserts.assertNumber(this.evalExpr(n.end));
 
         try {
             for(let i = strt; i < end; ++i) {
@@ -147,7 +190,7 @@ export class Interpreter {
     }
     execMá(f : P.IfStmt) {
         const v = this.evalExpr(f.expr);
-        if(isTrue(v)){
+        if(Checks.isTrue(v)){
             this.execStmt(f.stmt);
             return;
         }
@@ -179,13 +222,21 @@ export class Interpreter {
                 throw new RuntimeError(`Cannot assign to function call`);
             // Get array
             const arr = Asserts.assertIndexable(rt);
-            const idx = Asserts.assertNumber(this.evalExpr(op.expr),"[]");
+            const idx = Asserts.assertNumber(this.evalExpr(op.expr));
             if(idx < 0 || idx >= arr.length)
                 throw new RuntimeError(`Index ${idx} out of bounds`);
             arr[idx] = val;
         } else {
             this.env.assign(a.id.id.id, val);
         }
+    }
+    evalBinOp(a : Value, b : Value, op : string) : Value {
+        const g = binOpTable.get(op);
+        if(g)
+            for(let x of g)
+                if(x.lcheck(a) && x.rcheck(b))
+                    return x.op(a, b);
+        throw new RuntimeError(`Can't apply ${op} to ${a} and ${b}`); // TODO RUNTIME ERROR
     }
     evalExpr(expr : P.Expr) : Value {
         return this.evalAnd(expr);
@@ -211,46 +262,22 @@ export class Interpreter {
     evalEq(e : P.Eq) : Value {
         return e.tail.reduce((x, y) => {
             const at = this.evalComp(y.trm);
-            if(y.op === '==')
-                return isEqual(x, at);
-            return !isEqual(x, at);
+            const eq = Checks.isEqual(x, at);
+            return y.op === '==' ? eq : !eq;
         }, this.evalComp(e.head));
     }
     evalComp(p : P.Comp) : Value {
         return p.tail.reduce((x, y) => {
-            let yv = this.evalSum(y.trm);
-            [x, yv] = Asserts.assertComparable(x, yv);
-            if(y.op === '>=')
-                return x >= yv;
-            if(y.op === '<=')
-                return x <= yv;
-            if(y.op === '<')
-                return x < yv;
-            return x > yv;
+            return this.evalBinOp(x, this.evalSum(y.trm), y.op);
         }, this.evalSum(p.head));
     }
     evalSum(p : P.Sum) : Value {
-        return p.tail.reduce((x, y) => {
-            const at = Asserts.assertNumber(this.evalProduct(y.trm), y.op);
-            x = Asserts.assertNumber(x, y.op);
-            if(y.op === '+')
-                return x+at;
-            return x-at;
-        }, this.evalProduct(p.head));
+        return p.tail.reduce((x, y) => this.evalBinOp(x, this.evalProduct(y.trm), y.op),
+            this.evalProduct(p.head));
     }
     evalProduct(p : P.Product) : Value {
-        return p.tail.reduce((x, y) => {
-            const at = Asserts.assertNumber(this.evalPostfix(y.trm), y.op);
-            x = Asserts.assertNumber(x, y.op);
-            if(y.op === '*')
-                return x*at;
-            if(y.op === '/') {
-                if(at === 0)
-                    throw new RuntimeError("Division by zero");
-                return x/at;
-            }
-            return x%at;
-        }, this.evalPostfix(p.head));
+        return p.tail.reduce((x, y) => this.evalBinOp(x, this.evalPostfix(y.trm), y.op),
+            this.evalPostfix(p.head));
     }
     evalPostfix(p : P.Postfix) : Value {
         return p.ops.reduce((x : Value, y) => {
@@ -261,7 +288,7 @@ export class Interpreter {
     }
     idxList(x : Value, idx : P.Expr) : Value {
         x = Asserts.assertIndexable(x);
-        const v = Asserts.assertNumber(this.evalExpr(idx), "[]");
+        const v = Asserts.assertNumber(this.evalExpr(idx));
         if(v < 0 || v >= x.length)
             throw new RuntimeError(`Index ${v} out of bounds`);
         return x[v];

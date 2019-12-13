@@ -6,55 +6,65 @@ import { RuntimeError } from './error';
 export type Value = number | boolean | Callable | null | ValLs;
 interface ValLs extends Array<Value> {}
 
+export type TypeCheck = (v : Value) => boolean
+
 export type Stmt = AsgnStmt | NonAsgnStmt;
 
-export function isTrue(v : Value) {
-    return v !== 0 && v !== false && v !== null;
-}
+export type Comparable = number | boolean;
 
-export function isEqual(a : Value, b : Value) : boolean {
-    if(isLiosta(a) && isLiosta(b) && a.length === b.length)
-        return a.map((x,i) => [x, b[i]]).every(x => isEqual(x[0],x[1]));
-    return a === b;
-}
+export namespace Checks {
+    export function isTrue(v : Value) {
+        return v !== 0 && v !== false && v !== null;
+    }
 
-export function isCallable(v : Value) : v is Callable {
-    return !(v === null || typeof v === "number" || typeof v === "boolean" || isLiosta(v));
-}
+    export function isEqual(a : Value, b : Value) : boolean {
+        if(isLiosta(a) && isLiosta(b) && a.length === b.length)
+            return a.map((x,i) => [x, b[i]]).every(x => isEqual(x[0],x[1]));
+        return a === b;
+    }
 
-export function isNumber(v : Value) : v is number {
-    return typeof v === "number";
-}
+    export function isCallable(v : Value) : v is Callable {
+        return !(v === null || typeof v === "number" || typeof v === "boolean" || isLiosta(v));
+    }
 
-export function isBool(v : Value) : v is boolean {
-    return typeof v === "boolean";
-}
+    export function isNumber(v : Value) : v is number {
+        return typeof v === "number";
+    }
 
-export function isLiosta(v : Value) : v is ValLs {
-    return Array.isArray(v);
+    export function isBool(v : Value) : v is boolean {
+        return typeof v === "boolean";
+    }
+
+    export function isComparable(v : Value) : v is Comparable {
+        return isBool(v) || isNumber(v);
+    }
+
+    export function isLiosta(v : Value) : v is ValLs {
+        return Array.isArray(v);
+    }
 }
 
 export namespace Asserts {
-    export function assertNumber(x : Value, op : string) : number {
-        if(isNumber(x))
+    export function assertNumber(x : Value) : number {
+        if(Checks.isNumber(x))
             return x;
-        throw new RuntimeError(`Operands to ${op} must be numbers`);
+        throw new RuntimeError(`${x} is not number`);
     }
 
     export function assertCallable(x : Value) : Callable {
-        if(isCallable(x))
+        if(Checks.isCallable(x))
             return x;
         throw new RuntimeError(`${x} is not callable`);
     }
 
-    export function assertComparable(a : Value, b : Value) : [number | boolean, number | boolean] {
-        if(isNumber(a) && isNumber(b) || (isBool(a) && isBool(b)))
-            return [a,b];
-        throw new RuntimeError(`${a} is not comparable to ${b}`);
+    export function assertComparable(a : Value) : Comparable {
+        if(Checks.isComparable(a))
+            return a;
+        throw new RuntimeError(`${a} is not comparable`);
     }
 
     export function assertIndexable(a : Value) : Value[] {
-        if(isLiosta(a))
+        if(Checks.isLiosta(a))
             return a;
         throw new RuntimeError(`${a} is not indexable`);
     }
