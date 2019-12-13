@@ -473,7 +473,7 @@ test('test postfix ops', () => {
     }
 });
 
-test('test array setting', () => {
+test('test arrays', () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
         {
@@ -484,6 +484,18 @@ test('test array setting', () => {
             }
             `,
             exp: [0,1,2], 
+        },
+        {
+            inp : `
+            res := fad([0,0,0])
+            `,
+            exp: 3, 
+        },
+        {
+            inp : `
+            res := fad([])
+            `,
+            exp: 0, 
         },
         {
             inp : `

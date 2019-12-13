@@ -17,7 +17,7 @@ function getLine(rl : readline.Interface) : Promise<string> {
     });
 }
 
-const builtins : [[string, Value]] = [
+const externals : [[string, Value]] = [
     [
         "scríobh", {
             arity : () => 1,
@@ -30,7 +30,7 @@ const builtins : [[string, Value]] = [
 ];
 
 async function repl(rl : readline.Interface) {
-    const i = new Interpreter(builtins);
+    const i = new Interpreter(externals);
     while(true){
         const res = await getLine(rl);
         const parser = new Parser(res);
@@ -56,7 +56,7 @@ async function repl(rl : readline.Interface) {
 }
 
 async function runFile() {
-    const i = new Interpreter(builtins);
+    const i = new Interpreter(externals);
     const inFile = fs.readFileSync(args[0], { encoding: 'utf8' });
     const parser = new Parser(inFile);
     const res = parser.parse();

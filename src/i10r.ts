@@ -1,8 +1,9 @@
 import * as P from './parser';
 import { ASTKinds } from './parser';
-import { Gníomh, Value, isEqual, isTrue, isCallable, isNumber, isLiosta, isBool, Callable } from './values';
+import { Gníomh, Value, isEqual, isTrue, Callable, Asserts } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
+import { Builtins } from './builtins';
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
@@ -16,35 +17,13 @@ class Toradh{
     }
 }
 
-function assertNumber(x : Value, op : string) : number {
-    if(isNumber(x))
-        return x;
-    throw new RuntimeError(`Operands to ${op} must be numbers`);
-}
-
-function assertCallable(x : Value) : Callable {
-    if(isCallable(x))
-        return x;
-    throw new RuntimeError(`${x} is not callable`);
-}
-
-function assertComparable(a : Value, b : Value) : [number | boolean, number | boolean] {
-    if(isNumber(a) && isNumber(b) || (isBool(a) && isBool(b)))
-        return [a,b];
-    throw new RuntimeError(`${a} is not comparable to ${b}`);
-}
-
-function assertIndexable(a : Value) : Value[] {
-    if(isLiosta(a))
-        return a;
-    throw new RuntimeError(`${a} is not indexable`);
-}
-
 export class Interpreter {
     env : Environment = new Environment();
-    constructor(builtins? : ArrayLike<[string, Value]>){
-        if(builtins)
-            this.env = Environment.from(builtins);
+    constructor(externals? : ArrayLike<[string, Value]>){
+        this.env = Environment.from(Builtins);
+        if(externals)
+            for(let i = 0; i < externals.length; ++i)
+                this.env.define(externals[i][0], externals[i][1]);
     }
     interpret(p : P.Program) {
         this.execStmts(p.stmts);
@@ -146,8 +125,8 @@ export class Interpreter {
         const prev = this.env;
         this.env = new Environment(this.env);
 
-        const strt = assertNumber(this.evalExpr(n.strt), '"le idir" loop');
-        const end = assertNumber(this.evalExpr(n.end), '"le idir" loop');
+        const strt = Asserts.assertNumber(this.evalExpr(n.strt), '"le idir" loop');
+        const end = Asserts.assertNumber(this.evalExpr(n.end), '"le idir" loop');
 
         try {
             for(let i = strt; i < end; ++i) {
@@ -199,8 +178,8 @@ export class Interpreter {
             if(!('expr' in op))
                 throw new RuntimeError(`Cannot assign to function call`);
             // Get array
-            const arr = assertIndexable(rt);
-            const idx = assertNumber(this.evalExpr(op.expr),"[]");
+            const arr = Asserts.assertIndexable(rt);
+            const idx = Asserts.assertNumber(this.evalExpr(op.expr),"[]");
             if(idx < 0 || idx >= arr.length)
                 throw new RuntimeError(`Index ${idx} out of bounds`);
             arr[idx] = val;
@@ -240,7 +219,7 @@ export class Interpreter {
     evalComp(p : P.Comp) : Value {
         return p.tail.reduce((x, y) => {
             let yv = this.evalSum(y.trm);
-            [x, yv] = assertComparable(x, yv);
+            [x, yv] = Asserts.assertComparable(x, yv);
             if(y.op === '>=')
                 return x >= yv;
             if(y.op === '<=')
@@ -252,8 +231,8 @@ export class Interpreter {
     }
     evalSum(p : P.Sum) : Value {
         return p.tail.reduce((x, y) => {
-            const at = assertNumber(this.evalProduct(y.trm), y.op);
-            x = assertNumber(x, y.op);
+            const at = Asserts.assertNumber(this.evalProduct(y.trm), y.op);
+            x = Asserts.assertNumber(x, y.op);
             if(y.op === '+')
                 return x+at;
             return x-at;
@@ -261,8 +240,8 @@ export class Interpreter {
     }
     evalProduct(p : P.Product) : Value {
         return p.tail.reduce((x, y) => {
-            const at = assertNumber(this.evalPostfix(y.trm), y.op);
-            x = assertNumber(x, y.op);
+            const at = Asserts.assertNumber(this.evalPostfix(y.trm), y.op);
+            x = Asserts.assertNumber(x, y.op);
             if(y.op === '*')
                 return x*at;
             if(y.op === '/') {
@@ -281,14 +260,14 @@ export class Interpreter {
         }, this.evalAtom(p.at));
     }
     idxList(x : Value, idx : P.Expr) : Value {
-        x = assertIndexable(x);
-        const v = assertNumber(this.evalExpr(idx), "[]");
+        x = Asserts.assertIndexable(x);
+        const v = Asserts.assertNumber(this.evalExpr(idx), "[]");
         if(v < 0 || v >= x.length)
             throw new RuntimeError(`Index ${v} out of bounds`);
         return x[v];
     }
     callFunc(x : Value, args : Value[]){
-        x = assertCallable(x);
+        x = Asserts.assertCallable(x);
         const ar = x.arity();
         if(args.length !== x.arity())
             throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);

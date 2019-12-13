@@ -1,6 +1,7 @@
 import { ID, AsgnStmt, NonAsgnStmt } from './parser';
 import { Environment } from './env';
 import { Interpreter } from './i10r';
+import { RuntimeError } from './error';
 
 export type Value = number | boolean | Callable | null | ValLs;
 interface ValLs extends Array<Value> {}
@@ -31,6 +32,32 @@ export function isBool(v : Value) : v is boolean {
 
 export function isLiosta(v : Value) : v is ValLs {
     return Array.isArray(v);
+}
+
+export namespace Asserts {
+    export function assertNumber(x : Value, op : string) : number {
+        if(isNumber(x))
+            return x;
+        throw new RuntimeError(`Operands to ${op} must be numbers`);
+    }
+
+    export function assertCallable(x : Value) : Callable {
+        if(isCallable(x))
+            return x;
+        throw new RuntimeError(`${x} is not callable`);
+    }
+
+    export function assertComparable(a : Value, b : Value) : [number | boolean, number | boolean] {
+        if(isNumber(a) && isNumber(b) || (isBool(a) && isBool(b)))
+            return [a,b];
+        throw new RuntimeError(`${a} is not comparable to ${b}`);
+    }
+
+    export function assertIndexable(a : Value) : Value[] {
+        if(isLiosta(a))
+            return a;
+        throw new RuntimeError(`${a} is not indexable`);
+    }
 }
 
 export interface Callable {
