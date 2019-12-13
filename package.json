@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "gen": "tspeg src/grammar.gram src/parser.ts",
-    "build": "tspeg src/grammar.gram src/parser.ts && tsc",
+    "gen": "tspeg src/grammar.gram src/gen_parser.ts",
+    "build": "tspeg src/grammar.gram src/gen_parser.ts && tsc",
     "clean": "rm -rf node-build"
   },
   "bin": {

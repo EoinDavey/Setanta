@@ -1,6 +1,6 @@
 import { Interpreter } from '../../src/i10r';
 import { Checks, Value } from '../../src/values';
-import { Parser } from '../../src/parser';
+import { Parser } from '../../src/gen_parser';
 import { Environment } from '../../src/env';
 
 test('test isEqual', () => {

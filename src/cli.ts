@@ -2,7 +2,7 @@
 import * as readline from 'readline';
 import { Interpreter } from './i10r';
 import { RuntimeError } from './error';
-import { Parser, ASTKinds } from './parser';
+import { Parser, ASTKinds } from './gen_parser';
 import { Value } from './values';
 
 import * as fs from 'fs';

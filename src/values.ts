@@ -1,4 +1,4 @@
-import { ID, AsgnStmt, NonAsgnStmt } from './parser';
+import { ID, AsgnStmt, NonAsgnStmt } from './gen_parser';
 import { Environment } from './env';
 import { Interpreter } from './i10r';
 import { RuntimeError } from './error';

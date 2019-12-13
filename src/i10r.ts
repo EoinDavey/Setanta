@@ -1,5 +1,5 @@
-import * as P from './parser';
-import { ASTKinds } from './parser';
+import * as P from './gen_parser';
+import { ASTKinds } from './gen_parser';
 import { callFunc, Comparable, TypeCheck, Gníomh, Value, Checks, Callable, Asserts } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
