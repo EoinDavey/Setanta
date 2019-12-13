@@ -4,6 +4,7 @@ import { Comparable, TypeCheck, Gníomh, Value, Checks, Callable, Asserts } from
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 import { Builtins } from './builtins';
+import { repeat, cat } from './liosta';
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
@@ -44,10 +45,26 @@ function compBinOpEntry(f : (a : Comparable, b : Comparable) => Value) : binOpEn
     };
 }
 
-const binOpTable : Map<string, [binOpEntry]> = new Map([
-    ['+', [numBinOpEntry((a, b) => a + b)]],
+const binOpTable : Map<string, binOpEntry[]> = new Map([
+    ['+', [
+        numBinOpEntry((a, b) => a + b),
+        {
+            lcheck : Checks.isLiosta,
+            rcheck : Checks.isLiosta,
+            op : makeBinOp(Asserts.assertIndexable, Asserts.assertIndexable,
+                (a : Value[], b : Value[]) => cat(a,b))
+        }
+    ]],
     ['-', [numBinOpEntry((a, b) => a - b)]],
-    ['*', [numBinOpEntry((a, b) => a * b)]],
+    ['*', [
+        numBinOpEntry((a, b) => a * b),
+        {
+            lcheck : Checks.isLiosta,
+            rcheck : Checks.isNumber,
+            op : makeBinOp(Asserts.assertIndexable, Asserts.assertNumber,
+                (a : Value[], b : number) => repeat(a, b))
+        }
+    ]],
     ['%', [numBinOpEntry((a, b) => a % b)]],
     ['/', [numBinOpEntry((a, b) => { 
                 if(b == 0)

@@ -514,6 +514,31 @@ test('test arrays', () => {
             `,
             exp: 18
         },
+        {
+            inp : `
+            lsa := [1,2,3]
+            lsb := [4,5,6]
+            res := lsa + lsb
+            lsa[0] = 0
+            lsb[0] = 0
+            `,
+            exp: [1,2,3,4,5,6]
+        },
+        {
+            inp : `
+            ls := [1,2,3]
+            res := ls*2
+            ls[1] = 1
+            `,
+            exp: [1,2,3,1,2,3]
+        },
+        {
+            inp : `
+            ls := [1,2,3]
+            res := (ls*2)+(ls+ls)
+            `,
+            exp: [1,2,3,1,2,3,1,2,3,1,2,3]
+        },
     ];
     for(let c of cases){
         const i = new Interpreter();
