@@ -1,0 +1,7 @@
+gníomh fac(x) {
+    má x <= 1
+        toradh 1
+    toradh x * fac(x - 1)
+}
+
+scríobh(fac(10))
