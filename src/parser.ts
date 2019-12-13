@@ -40,7 +40,7 @@
 * Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 * Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
 * Product     := head=PostOp tail={_ op=MulDiv trm=PostOp}*
-* PostOp      := at=Atom ops={'\(' args=CSArgs? _ '\)'}*
+* PostOp      := at=Atom ops={'\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'}*
 * Atom        :=  _ '\(' trm=Expr '\)'
 *              | Int
 *              | ID
@@ -117,7 +117,8 @@ export enum ASTKinds {
     Product,
     Product_$0,
     PostOp,
-    PostOp_$0,
+    PostOp_$0_1,
+    PostOp_$0_2,
     Atom_1,
     Atom_2,
     Atom_3,
@@ -290,9 +291,14 @@ export interface PostOp {
     at : Atom;
     ops : PostOp_$0[];
 }
-export interface PostOp_$0 {
-    kind : ASTKinds.PostOp_$0;
+export type PostOp_$0 = PostOp_$0_1 | PostOp_$0_2;
+export interface PostOp_$0_1 {
+    kind : ASTKinds.PostOp_$0_1;
     args : Nullable<CSArgs>;
+}
+export interface PostOp_$0_2 {
+    kind : ASTKinds.PostOp_$0_2;
+    expr : Expr;
 }
 export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4 | Atom_5 | Atom_6;
 export interface Atom_1 {
@@ -998,19 +1004,41 @@ export class Parser {
             }, cr)();
     }
     matchPostOp_$0($$dpth : number, cr? : ContextRecorder) : Nullable<PostOp_$0> {
-        return this.runner<PostOp_$0>($$dpth,
+        return this.choice<PostOp_$0>([
+            () => { return this.matchPostOp_$0_1($$dpth + 1, cr) },
+            () => { return this.matchPostOp_$0_2($$dpth + 1, cr) },
+        ]);
+    }
+    matchPostOp_$0_1($$dpth : number, cr? : ContextRecorder) : Nullable<PostOp_$0_1> {
+        return this.runner<PostOp_$0_1>($$dpth,
             (log) => {
                 if(log)
-                    log('PostOp_$0');
+                    log('PostOp_$0_1');
                 let args : Nullable<Nullable<CSArgs>>;
-                let res : Nullable<PostOp_$0> = null;
+                let res : Nullable<PostOp_$0_1> = null;
                 if(true
                     && this.regexAccept(String.raw`\(`, $$dpth+1, cr) != null
                     && ((args = this.matchCSArgs($$dpth + 1, cr)) || true)
                     && this.match_($$dpth + 1, cr) != null
                     && this.regexAccept(String.raw`\)`, $$dpth+1, cr) != null
                 )
-                    res = {kind: ASTKinds.PostOp_$0, args : args};
+                    res = {kind: ASTKinds.PostOp_$0_1, args : args};
+                return res;
+            }, cr)();
+    }
+    matchPostOp_$0_2($$dpth : number, cr? : ContextRecorder) : Nullable<PostOp_$0_2> {
+        return this.runner<PostOp_$0_2>($$dpth,
+            (log) => {
+                if(log)
+                    log('PostOp_$0_2');
+                let expr : Nullable<Expr>;
+                let res : Nullable<PostOp_$0_2> = null;
+                if(true
+                    && this.regexAccept(String.raw`\[`, $$dpth+1, cr) != null
+                    && (expr = this.matchExpr($$dpth + 1, cr)) != null
+                    && this.regexAccept(String.raw`\]`, $$dpth+1, cr) != null
+                )
+                    res = {kind: ASTKinds.PostOp_$0_2, expr : expr};
                 return res;
             }, cr)();
     }

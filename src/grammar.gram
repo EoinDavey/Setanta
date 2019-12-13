@@ -38,7 +38,7 @@ Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
 Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
 Product     := head=PostOp tail={_ op=MulDiv trm=PostOp}*
-PostOp      := at=Atom ops={'\(' args=CSArgs? _ '\)'}*
+PostOp      := at=Atom ops={'\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'}*
 Atom        :=  _ '\(' trm=Expr '\)'
              | Int
              | ID

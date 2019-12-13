@@ -1,6 +1,6 @@
 import * as P from './parser';
 import { ASTKinds } from './parser';
-import { Gníomh, Value, isEqual, isTrue, isCallable, isNumber, isBool, Callable } from './values';
+import { Gníomh, Value, isEqual, isTrue, isCallable, isNumber, isLiosta, isBool, Callable } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 
@@ -32,6 +32,12 @@ function assertComparable(a : Value, b : Value) : [number | boolean, number | bo
     if(isNumber(a) && isNumber(b) || (isBool(a) && isBool(b)))
         return [a,b];
     throw new RuntimeError(`${a} is not comparable to ${b}`);
+}
+
+function assertIndexable(a : Value) : Value[] {
+    if(isLiosta(a))
+        return a;
+    throw new RuntimeError(`${a} is not indexable`);
 }
 
 export class Interpreter {
@@ -243,15 +249,26 @@ export class Interpreter {
             return x%at;
         }, this.evalPostOp(p.head));
     }
-    evalPostOp(p : P.PostOp) : Value { // Call function
+    evalPostOp(p : P.PostOp) : Value {
         return p.ops.reduce((x : Value, y) => {
-            x = assertCallable(x);
-            const args : Value[] = y.args ? this.evalCSArgs(y.args) : [];
-            const ar = x.arity();
-            if(args.length !== ar)
-                throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);
-            return x.call(args);
+            if('args' in y)
+                return this.callFunc(x, y.args ? this.evalCSArgs(y.args) : []);
+            return this.idxList(x, y.expr);
         }, this.evalAtom(p.at));
+    }
+    idxList(x : Value, idx : P.Expr) : Value {
+        x = assertIndexable(x);
+        const v = assertNumber(this.evalExpr(idx), "[]");
+        if(v < 0 || v >= x.length)
+            throw new RuntimeError(`Index ${v} out of bounds`);
+        return x[v];
+    }
+    callFunc(x : Value, args : Value[]){
+        x = assertCallable(x);
+        const ar = x.arity();
+        if(args.length !== x.arity())
+            throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);
+        return x.call(args);
     }
     evalAtom(at : P.Atom) : Value {
         switch(at.kind){

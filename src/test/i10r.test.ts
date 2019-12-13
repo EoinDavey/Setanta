@@ -45,6 +45,8 @@ test('test expressions', () => {
         {inp : '[1,2,3] == [1,2,3]', exp: true},
         {inp : '[1,2,4] == [1,2,3]', exp: false},
         {inp : '[] == [1,2,3]', exp: false},
+        {inp : '[1,2,3][0]', exp: 1},
+        {inp : '[1,[1,2],3][1]', exp: [1,2]},
     ];
     for(let c of cases){
         const i = new Interpreter();
@@ -414,6 +416,48 @@ test('test toradh', () => {
             gníomh f(x) { }
             res := f(3)`,
             exp: null
+        }
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        if(c.env)
+            i.env = c.env;
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        i.interpret(res.ast!);
+        expect(i.env.get('res')).toEqual(c.exp);
+    }
+});
+
+test('test postfix ops', () => {
+    interface tc { inp: string, exp: Value, env?: Environment};
+    const cases : tc[] = [
+        {
+            inp : `
+                gníomh glf() {
+                    gníomh i(x) {
+                        toradh [x]
+                    }
+                    toradh i
+                }
+                res := glf()(3)[0]
+            `,
+            exp: 3
+        },
+        {
+            inp : `
+                gníomh glf(x) {
+                    gníomh i() {
+                        toradh [x,2*x]
+                    }
+                    toradh i
+                }
+                ls := [glf(1), glf(2), glf(3)]
+                res := ls[1]()
+            `,
+            exp: [2,4]
         }
     ];
     for(let c of cases){

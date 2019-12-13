@@ -12,13 +12,13 @@ export function isTrue(v : Value) {
 }
 
 export function isEqual(a : Value, b : Value) : boolean {
-    if(Array.isArray(a) && Array.isArray(b) && a.length === b.length)
+    if(isLiosta(a) && isLiosta(b) && a.length === b.length)
         return a.map((x,i) => [x, b[i]]).every(x => isEqual(x[0],x[1]));
-    return a == b;
+    return a === b;
 }
 
 export function isCallable(v : Value) : v is Callable {
-    return !(v === null || typeof v === "number" || typeof v === "boolean");
+    return !(v === null || typeof v === "number" || typeof v === "boolean" || isLiosta(v));
 }
 
 export function isNumber(v : Value) : v is number {
@@ -27,6 +27,10 @@ export function isNumber(v : Value) : v is number {
 
 export function isBool(v : Value) : v is boolean {
     return typeof v === "boolean";
+}
+
+export function isLiosta(v : Value) : v is ValLs {
+    return Array.isArray(v);
 }
 
 export interface Callable {
