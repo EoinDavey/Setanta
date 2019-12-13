@@ -37,7 +37,8 @@ Or          := head=Eq tail={_ '\|' trm=Eq}*
 Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
 Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
-Product     := head=Postfix tail={_ op=MulDiv trm=Postfix}*
+Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
+Prefix      := op='-|!'? pf=Postfix
 Postfix     := at=Atom ops=PostOp*
 PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 Atom        :=  _ '\(' trm=Expr '\)'

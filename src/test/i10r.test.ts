@@ -47,6 +47,10 @@ test('test expressions', () => {
         {inp : '[] == [1,2,3]', exp: false},
         {inp : '[1,2,3][0]', exp: 1},
         {inp : '[1,[1,2],3][1]', exp: [1,2]},
+        {inp : '-x', exp: -2, env : Environment.from([["x",2]])},
+        {inp : '-x[0]', exp: -2, env : Environment.from([["x",[2]]])},
+        {inp : '!fíor', exp: false},
+        {inp : '!breag', exp: true},
     ];
     for(let c of cases){
         const i = new Interpreter();

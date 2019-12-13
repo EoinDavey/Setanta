@@ -51,8 +51,7 @@ const binOpTable : Map<string, binOpEntry[]> = new Map([
         {
             lcheck : Checks.isLiosta,
             rcheck : Checks.isLiosta,
-            op : makeBinOp(Asserts.assertIndexable, Asserts.assertIndexable,
-                (a : Value[], b : Value[]) => cat(a,b))
+            op : makeBinOp(Asserts.assertIndexable, Asserts.assertIndexable, cat)
         }
     ]],
     ['-', [numBinOpEntry((a, b) => a - b)]],
@@ -61,8 +60,7 @@ const binOpTable : Map<string, binOpEntry[]> = new Map([
         {
             lcheck : Checks.isLiosta,
             rcheck : Checks.isNumber,
-            op : makeBinOp(Asserts.assertIndexable, Asserts.assertNumber,
-                (a : Value[], b : number) => repeat(a, b))
+            op : makeBinOp(Asserts.assertIndexable, Asserts.assertNumber, repeat)
         }
     ]],
     ['%', [numBinOpEntry((a, b) => a % b)]],
@@ -253,7 +251,7 @@ export class Interpreter {
             for(let x of g)
                 if(x.lcheck(a) && x.rcheck(b))
                     return x.op(a, b);
-        throw new RuntimeError(`Can't apply ${op} to ${a} and ${b}`); // TODO RUNTIME ERROR
+        throw new RuntimeError(`Can't apply ${op} to ${a} and ${b}`);
     }
     evalExpr(expr : P.Expr) : Value {
         return this.evalAnd(expr);
@@ -293,8 +291,8 @@ export class Interpreter {
             this.evalProduct(p.head));
     }
     evalProduct(p : P.Product) : Value {
-        return p.tail.reduce((x, y) => this.evalBinOp(x, this.evalPostfix(y.trm), y.op),
-            this.evalPostfix(p.head));
+        return p.tail.reduce((x, y) => this.evalBinOp(x, this.evalPrefix(y.trm), y.op),
+            this.evalPrefix(p.head));
     }
     evalPostfix(p : P.Postfix) : Value {
         return p.ops.reduce((x : Value, y) => {
@@ -302,6 +300,14 @@ export class Interpreter {
                 return callFunc(x, y.args ? this.evalCSArgs(y.args) : []);
             return this.idxList(x, y.expr);
         }, this.evalAtom(p.at));
+    }
+    evalPrefix(p : P.Prefix) : Value {
+        const pf = this.evalPostfix(p.pf);
+        if(p.op === '-')
+            return -Asserts.assertNumber(pf);
+        if(p.op === '!')
+            return !Checks.isTrue(pf);
+        return pf;
     }
     idxList(x : Value, idx : P.Expr) : Value {
         x = Asserts.assertIndexable(x);

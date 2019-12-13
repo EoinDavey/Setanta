@@ -39,7 +39,8 @@
 * Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
 * Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 * Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
-* Product     := head=Postfix tail={_ op=MulDiv trm=Postfix}*
+* Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
+* Prefix      := op='-|!'? pf=Postfix
 * Postfix     := at=Atom ops=PostOp*
 * PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 * Atom        :=  _ '\(' trm=Expr '\)'
@@ -118,6 +119,7 @@ export enum ASTKinds {
     Sum_$0,
     Product,
     Product_$0,
+    Prefix,
     Postfix,
     PostOp_1,
     PostOp_2,
@@ -281,13 +283,18 @@ export interface Sum_$0 {
 }
 export interface Product {
     kind : ASTKinds.Product;
-    head : Postfix;
+    head : Prefix;
     tail : Product_$0[];
 }
 export interface Product_$0 {
     kind : ASTKinds.Product_$0;
     op : MulDiv;
-    trm : Postfix;
+    trm : Prefix;
+}
+export interface Prefix {
+    kind : ASTKinds.Prefix;
+    op : Nullable<string>;
+    pf : Postfix;
 }
 export interface Postfix {
     kind : ASTKinds.Postfix;
@@ -967,11 +974,11 @@ export class Parser {
             (log) => {
                 if(log)
                     log('Product');
-                let head : Nullable<Postfix>;
+                let head : Nullable<Prefix>;
                 let tail : Nullable<Product_$0[]>;
                 let res : Nullable<Product> = null;
                 if(true
-                    && (head = this.matchPostfix($$dpth + 1, cr)) != null
+                    && (head = this.matchPrefix($$dpth + 1, cr)) != null
                     && (tail = this.loop<Product_$0>(()=> this.matchProduct_$0($$dpth + 1, cr), true)) != null
                 )
                     res = {kind: ASTKinds.Product, head : head, tail : tail};
@@ -984,14 +991,30 @@ export class Parser {
                 if(log)
                     log('Product_$0');
                 let op : Nullable<MulDiv>;
-                let trm : Nullable<Postfix>;
+                let trm : Nullable<Prefix>;
                 let res : Nullable<Product_$0> = null;
                 if(true
                     && this.match_($$dpth + 1, cr) != null
                     && (op = this.matchMulDiv($$dpth + 1, cr)) != null
-                    && (trm = this.matchPostfix($$dpth + 1, cr)) != null
+                    && (trm = this.matchPrefix($$dpth + 1, cr)) != null
                 )
                     res = {kind: ASTKinds.Product_$0, op : op, trm : trm};
+                return res;
+            }, cr)();
+    }
+    matchPrefix($$dpth : number, cr? : ContextRecorder) : Nullable<Prefix> {
+        return this.runner<Prefix>($$dpth,
+            (log) => {
+                if(log)
+                    log('Prefix');
+                let op : Nullable<Nullable<string>>;
+                let pf : Nullable<Postfix>;
+                let res : Nullable<Prefix> = null;
+                if(true
+                    && ((op = this.regexAccept(String.raw`-|!`, $$dpth+1, cr)) || true)
+                    && (pf = this.matchPostfix($$dpth + 1, cr)) != null
+                )
+                    res = {kind: ASTKinds.Prefix, op : op, pf : pf};
                 return res;
             }, cr)();
     }
