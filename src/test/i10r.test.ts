@@ -242,7 +242,7 @@ test('test le idir loops', () => {
         },
         {  
             inp : `
-            // Comhair na uimhreacha príomha
+            >-- Comhair na uimhreacha príomha
             res := 1
             le i idir(3, 100) {
                 príomha := fíor
@@ -265,7 +265,7 @@ test('test le idir loops', () => {
             le x idir (0, 20) {
                 le i idir (0, x) {
                     má i % 3 == 0
-                        chun cinn // Lean ar aghaidh
+                        chun cinn >-- Lean ar aghaidh
                     res = res + i
                 }
             }`,
@@ -403,8 +403,9 @@ test('test toradh', () => {
             `,
             exp: 25
         },
-        { // Feidhm Ackermann
+        {
             inp: `
+            >-- Feidhm Ackermann --<
             gníomh A(m, n) {
                 má m == 0
                     toradh n + 1
