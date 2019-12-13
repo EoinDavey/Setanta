@@ -75,6 +75,14 @@ export interface Callable {
     call: (args : Value[]) => Value;
 }
 
+export function callFunc(x : Value, args : Value[]){
+    x = Asserts.assertCallable(x);
+    const ar = x.arity();
+    if(args.length !== x.arity())
+        throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);
+    return x.call(args);
+}
+
 export class Gníomh implements Callable {
     defn : Stmt[];
     args : string[];

@@ -1,6 +1,6 @@
 import * as P from './parser';
 import { ASTKinds } from './parser';
-import { Comparable, TypeCheck, Gníomh, Value, Checks, Callable, Asserts } from './values';
+import { callFunc, Comparable, TypeCheck, Gníomh, Value, Checks, Callable, Asserts } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 import { Builtins } from './builtins';
@@ -228,7 +228,7 @@ export class Interpreter {
             for(let i = 0; i < ops.length-1; ++i){
                 const op = ops[i];
                 if('args' in op){
-                    rt = this.callFunc(rt, op.args ? this.evalCSArgs(op.args) : []);
+                    rt = callFunc(rt, op.args ? this.evalCSArgs(op.args) : []);
                 } else {
                     rt = this.idxList(rt, op.expr);
                 }
@@ -299,7 +299,7 @@ export class Interpreter {
     evalPostfix(p : P.Postfix) : Value {
         return p.ops.reduce((x : Value, y) => {
             if('args' in y)
-                return this.callFunc(x, y.args ? this.evalCSArgs(y.args) : []);
+                return callFunc(x, y.args ? this.evalCSArgs(y.args) : []);
             return this.idxList(x, y.expr);
         }, this.evalAtom(p.at));
     }
@@ -309,13 +309,6 @@ export class Interpreter {
         if(v < 0 || v >= x.length)
             throw new RuntimeError(`Index ${v} out of bounds`);
         return x[v];
-    }
-    callFunc(x : Value, args : Value[]){
-        x = Asserts.assertCallable(x);
-        const ar = x.arity();
-        if(args.length !== x.arity())
-            throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);
-        return x.call(args);
     }
     evalAtom(at : P.Atom) : Value {
         switch(at.kind){

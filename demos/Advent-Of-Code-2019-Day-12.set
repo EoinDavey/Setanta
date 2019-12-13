@@ -13,9 +13,9 @@ vs := [
 ]
 
 gníomh ad(x, y) {
-    n := [0,0,0]
-    le i idir (0, 3)
-        n[i] = x[i] + y[i]
+    n := []
+    le i idir (0, fad(y))
+        n = n + [x[i] + y[i]]
     toradh n
 }
 
@@ -52,9 +52,8 @@ le t idir (0, 1000) {
             }
         }
     }
-    le k idir (0, 4){
+    le k idir (0, 4)
         mns[k] = ad(mns[k], vs[k])
-    }
 }
 
 sm := 0
@@ -98,8 +97,7 @@ le i idir (0, 3) {
                 vs[b] = vs[b] - df
             }
         }
-        le i idir (0, 4)
-            ps[i] = ps[i] + vs[i]
+        ps = ad(ps, vs)
         má vs == [0,0,0,0] {
             tms[i] = 2*t
             bris
