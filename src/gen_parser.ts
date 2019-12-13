@@ -62,7 +62,7 @@
 * Bool        := _ bool='f[ií]or|breag'
 * Neamhni     := _ 'neamhn[ií]'
 * Int         := _ int='-?[0-9]+'
-* _           := '\s*'
+* _           := '(?:\s|//.*\n)*'
 * gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'
 */
 type Nullable<T> = T | null;
@@ -1333,7 +1333,7 @@ export class Parser {
             }, cr)();
     }
     match_($$dpth : number, cr? : ContextRecorder) : Nullable<_> {
-        return this.regexAccept(String.raw`\s*`, $$dpth+1, cr);
+        return this.regexAccept(String.raw`(?:\s|//.*\n)*`, $$dpth+1, cr);
     }
     matchgap($$dpth : number, cr? : ContextRecorder) : Nullable<gap> {
         return this.regexAccept(String.raw`(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+`, $$dpth+1, cr);

@@ -240,8 +240,9 @@ test('test le idir loops', () => {
                     res = res + i `,
             exp : 450,
         },
-        {   // Comhair ná uimhreacha príomha
+        {  
             inp : `
+            // Comhair na uimhreacha príomha
             res := 1
             le i idir(3, 100) {
                 príomha := fíor
@@ -264,7 +265,7 @@ test('test le idir loops', () => {
             le x idir (0, 20) {
                 le i idir (0, x) {
                     má i % 3 == 0
-                        chun cinn
+                        chun cinn // Lean ar aghaidh
                     res = res + i
                 }
             }`,
