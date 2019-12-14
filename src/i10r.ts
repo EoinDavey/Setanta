@@ -51,7 +51,7 @@ const binOpTable : Map<string, binOpEntry[]> = new Map([
         {
             lcheck : Checks.isLiosta,
             rcheck : Checks.isLiosta,
-            op : makeBinOp(Asserts.assertIndexable, Asserts.assertIndexable, cat)
+            op : makeBinOp(Asserts.assertLiosta, Asserts.assertLiosta, cat)
         }
     ]],
     ['-', [numBinOpEntry((a, b) => a - b)]],
@@ -60,7 +60,7 @@ const binOpTable : Map<string, binOpEntry[]> = new Map([
         {
             lcheck : Checks.isLiosta,
             rcheck : Checks.isNumber,
-            op : makeBinOp(Asserts.assertIndexable, Asserts.assertNumber, repeat)
+            op : makeBinOp(Asserts.assertLiosta, Asserts.assertNumber, repeat)
         }
     ]],
     ['%', [numBinOpEntry((a, b) => a % b)]],
@@ -236,7 +236,7 @@ export class Interpreter {
             if(!('expr' in op))
                 throw new RuntimeError(`Cannot assign to function call`);
             // Get array
-            const arr = Asserts.assertIndexable(rt);
+            const arr = Asserts.assertLiosta(rt);
             const idx = Asserts.assertNumber(this.evalExpr(op.expr));
             if(idx < 0 || idx >= arr.length)
                 throw new RuntimeError(`Index ${idx} out of bounds`);
@@ -310,11 +310,11 @@ export class Interpreter {
         return pf;
     }
     idxList(x : Value, idx : P.Expr) : Value {
-        x = Asserts.assertIndexable(x);
+        const ls = Asserts.assertIndexable(x);
         const v = Asserts.assertNumber(this.evalExpr(idx));
-        if(v < 0 || v >= x.length)
+        if(v < 0 || v >= ls.length)
             throw new RuntimeError(`Index ${v} out of bounds`);
-        return x[v];
+        return ls[v];
     }
     evalAtom(at : P.Atom) : Value {
         switch(at.kind){

@@ -55,6 +55,12 @@ export namespace Asserts {
         throw new RuntimeError(`${x} is not number`);
     }
 
+    export function assertLiosta(x : Value) : Value[] {
+        if(Checks.isLiosta(x))
+            return x;
+        throw new RuntimeError(`${x} is not a list`);
+    }
+
     export function assertCallable(x : Value) : Callable {
         if(Checks.isCallable(x))
             return x;
@@ -67,8 +73,8 @@ export namespace Asserts {
         throw new RuntimeError(`${a} is not comparable`);
     }
 
-    export function assertIndexable(a : Value) : Value[] {
-        if(Checks.isLiosta(a))
+    export function assertIndexable(a : Value) : ArrayLike<Value> {
+        if(Checks.isLiosta(a) || Checks.isString(a))
             return a;
         throw new RuntimeError(`${a} is not indexable`);
     }

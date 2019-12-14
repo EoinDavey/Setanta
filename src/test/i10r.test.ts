@@ -51,6 +51,8 @@ test('test expressions', () => {
         {inp : '-x[0]', exp: -2, env : Environment.from([["x",[2]]])},
         {inp : '!fíor', exp: false},
         {inp : '!breag', exp: true},
+        {inp : 'fad(\'abc\')', exp: 3},
+        {inp : '\'abc\'[0]', exp: 'a'},
     ];
     for(let c of cases){
         const i = new Interpreter();
