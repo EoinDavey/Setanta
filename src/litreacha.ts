@@ -8,6 +8,10 @@ export function strcat(a : string, b : string) : string {
     return a.concat(b);
 }
 
+export function athchuir(a : string, b : string, c : string) : string {
+    return a.replace(b, c);
+}
+
 export function unescapeChars(s : string) : string {
     let out = '';
     const rep = new Map<string,string>([

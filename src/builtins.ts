@@ -1,5 +1,6 @@
 import { callFunc, Value, Asserts, Checks } from './values';
 import { RuntimeError } from './error';
+import { athchuir } from './litreacha';
 
 export const Builtins : [string, Value][] = [
     [
@@ -44,6 +45,17 @@ export const Builtins : [string, Value][] = [
                 const a = Asserts.assertLitreacha(args[0]);
                 const b = Asserts.assertLitreacha(args[1]);
                 return a.split(b);
+            }
+        },
+    ],
+    [
+        "athchuir", {
+            arity : () => 3,
+            call : (args : Value[]) : Value => {
+                const a = Asserts.assertLitreacha(args[0]);
+                const b = Asserts.assertLitreacha(args[1]);
+                const c = Asserts.assertLitreacha(args[2]);
+                return athchuir(a,b,c);
             }
         },
     ],

@@ -62,6 +62,7 @@ async function runFile() {
     const res = parser.parse();
     if(res.err){
         console.error(res.err);
+        process.exitCode = 1;
         return;
     }
     try {

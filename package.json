@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "full-test": "jest && ./rundemos.sh",
     "gen": "tspeg src/grammar.gram src/gen_parser.ts",
     "build": "tspeg src/grammar.gram src/gen_parser.ts && tsc",
     "clean": "rm -rf node_build"
