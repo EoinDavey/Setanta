@@ -44,6 +44,7 @@
 * Postfix     := at=Atom ops=PostOp*
 * PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 * Atom        :=  _ '\(' trm=Expr '\)'
+*              | Litreacha
 *              | Int
 *              | ID
 *              | Bool
@@ -62,6 +63,7 @@
 * Bool        := _ bool='f[ií]or|breag'
 * Neamhni     := _ 'neamhn[ií]'
 * Int         := _ int='-?[0-9]+'
+* Litreacha   := '\'' val='([^\'\\]|(\\.))*' '\''
 * _           := '(?:\s|>--(?:(?!--<).)*(--<|\n))*'
 * gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'
 */
@@ -129,6 +131,7 @@ export enum ASTKinds {
     Atom_4,
     Atom_5,
     Atom_6,
+    Atom_7,
     LSpec,
     CSArgs,
     CSArgs_$0,
@@ -151,6 +154,7 @@ export enum ASTKinds {
     Bool,
     Neamhni,
     Int,
+    Litreacha,
     _,
     gap,
 }
@@ -310,16 +314,17 @@ export interface PostOp_2 {
     kind : ASTKinds.PostOp_2;
     expr : Expr;
 }
-export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4 | Atom_5 | Atom_6;
+export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4 | Atom_5 | Atom_6 | Atom_7;
 export interface Atom_1 {
     kind : ASTKinds.Atom_1;
     trm : Expr;
 }
-export type Atom_2 = Int;
-export type Atom_3 = ID;
-export type Atom_4 = Bool;
-export type Atom_5 = Neamhni;
-export type Atom_6 = ListLit;
+export type Atom_2 = Litreacha;
+export type Atom_3 = Int;
+export type Atom_4 = ID;
+export type Atom_5 = Bool;
+export type Atom_6 = Neamhni;
+export type Atom_7 = ListLit;
 export interface LSpec {
     kind : ASTKinds.LSpec;
     id : ID;
@@ -376,6 +381,10 @@ export interface Neamhni {
 export interface Int {
     kind : ASTKinds.Int;
     int : string;
+}
+export interface Litreacha {
+    kind : ASTKinds.Litreacha;
+    val : string;
 }
 export type _ = string;
 export type gap = string;
@@ -1081,6 +1090,7 @@ export class Parser {
             () => { return this.matchAtom_4($$dpth + 1, cr) },
             () => { return this.matchAtom_5($$dpth + 1, cr) },
             () => { return this.matchAtom_6($$dpth + 1, cr) },
+            () => { return this.matchAtom_7($$dpth + 1, cr) },
         ]);
     }
     matchAtom_1($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_1> {
@@ -1101,18 +1111,21 @@ export class Parser {
             }, cr)();
     }
     matchAtom_2($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_2> {
-        return this.matchInt($$dpth + 1, cr);
+        return this.matchLitreacha($$dpth + 1, cr);
     }
     matchAtom_3($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_3> {
-        return this.matchID($$dpth + 1, cr);
+        return this.matchInt($$dpth + 1, cr);
     }
     matchAtom_4($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_4> {
-        return this.matchBool($$dpth + 1, cr);
+        return this.matchID($$dpth + 1, cr);
     }
     matchAtom_5($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_5> {
-        return this.matchNeamhni($$dpth + 1, cr);
+        return this.matchBool($$dpth + 1, cr);
     }
     matchAtom_6($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_6> {
+        return this.matchNeamhni($$dpth + 1, cr);
+    }
+    matchAtom_7($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_7> {
         return this.matchListLit($$dpth + 1, cr);
     }
     matchLSpec($$dpth : number, cr? : ContextRecorder) : Nullable<LSpec> {
@@ -1329,6 +1342,22 @@ export class Parser {
                     && (int = this.regexAccept(String.raw`-?[0-9]+`, $$dpth+1, cr)) != null
                 )
                     res = {kind: ASTKinds.Int, int : int};
+                return res;
+            }, cr)();
+    }
+    matchLitreacha($$dpth : number, cr? : ContextRecorder) : Nullable<Litreacha> {
+        return this.runner<Litreacha>($$dpth,
+            (log) => {
+                if(log)
+                    log('Litreacha');
+                let val : Nullable<string>;
+                let res : Nullable<Litreacha> = null;
+                if(true
+                    && this.regexAccept(String.raw`\'`, $$dpth+1, cr) != null
+                    && (val = this.regexAccept(String.raw`([^\'\\]|(\\.))*`, $$dpth+1, cr)) != null
+                    && this.regexAccept(String.raw`\'`, $$dpth+1, cr) != null
+                )
+                    res = {kind: ASTKinds.Litreacha, val : val};
                 return res;
             }, cr)();
     }

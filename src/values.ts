@@ -3,7 +3,7 @@ import { Environment } from './env';
 import { Interpreter } from './i10r';
 import { RuntimeError } from './error';
 
-export type Value = number | boolean | Callable | null | ValLs;
+export type Value = number | boolean | Callable | null | ValLs | string;
 interface ValLs extends Array<Value> {}
 
 export type TypeCheck = (v : Value) => boolean
@@ -24,7 +24,7 @@ export namespace Checks {
     }
 
     export function isCallable(v : Value) : v is Callable {
-        return !(v === null || typeof v === "number" || typeof v === "boolean" || isLiosta(v));
+        return !(v === null || isNumber(v) || isBool(v) || isString(v) || isLiosta(v));
     }
 
     export function isNumber(v : Value) : v is number {
@@ -35,8 +35,12 @@ export namespace Checks {
         return typeof v === "boolean";
     }
 
+    export function isString(v : Value) : v is string {
+        return typeof v === "string";
+    }
+
     export function isComparable(v : Value) : v is Comparable {
-        return isBool(v) || isNumber(v);
+        return isBool(v) || isNumber(v) || isString(v);
     }
 
     export function isLiosta(v : Value) : v is ValLs {
@@ -81,6 +85,30 @@ export function callFunc(x : Value, args : Value[]){
     if(args.length !== x.arity())
         throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);
     return x.call(args);
+}
+
+export function unescapeChars(s : string) : string {
+    let out = '';
+    const rep = new Map<string,string>([
+        ['n', '\n'],
+        ['r', '\r'],
+        ['t', '\t'],
+        ['0', '\0'],
+        ['\\', '\\'],
+        ['\'', '\''],
+    ]);
+    for(let i = 0; i < s.length; ++i){
+        if(s[i] !== '\\'){
+            out += s[i];
+            continue;
+        }
+        const g = rep.get(s[i+1]);
+        if(!g)
+            throw new RuntimeError(`Unknown escape code \\${s[i+1]}`);
+        out += g;
+        ++i;
+    }
+    return out;
 }
 
 export class Gníomh implements Callable {

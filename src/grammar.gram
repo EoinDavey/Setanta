@@ -42,6 +42,7 @@ Prefix      := op='-|!'? pf=Postfix
 Postfix     := at=Atom ops=PostOp*
 PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 Atom        :=  _ '\(' trm=Expr '\)'
+             | Litreacha
              | Int
              | ID
              | Bool
@@ -60,5 +61,6 @@ ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 Bool        := _ bool='f[ií]or|breag'
 Neamhni     := _ 'neamhn[ií]'
 Int         := _ int='-?[0-9]+'
+Litreacha   := '\'' val='([^\'\\]|(\\.))*' '\''
 _           := '(?:\s|>--(?:(?!--<).)*(--<|\n))*'
 gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'

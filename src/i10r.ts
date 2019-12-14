@@ -1,6 +1,6 @@
 import * as P from './gen_parser';
 import { ASTKinds } from './gen_parser';
-import { callFunc, Comparable, TypeCheck, Gníomh, Value, Checks, Callable, Asserts } from './values';
+import { unescapeChars, callFunc, Comparable, TypeCheck, Gníomh, Value, Checks, Callable, Asserts } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 import { Builtins } from './builtins';
@@ -326,10 +326,15 @@ export class Interpreter {
                 return this.evalID(at);
             case ASTKinds.ListLit:
                 return this.evalListLit(at);
+            case ASTKinds.Litreacha:
+                return this.evalLitreacha(at);
             case ASTKinds.Neamhni:
                 return null;
         }
         return this.evalExpr(at.trm);
+    }
+    evalLitreacha(ls : P.Litreacha) : Value {
+        return unescapeChars(ls.val);
     }
     evalListLit(ls : P.ListLit) : Value {
         return ls.els ? this.evalCSArgs(ls.els) : [];
