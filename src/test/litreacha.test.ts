@@ -1,4 +1,4 @@
-import { unescapeChars } from '../../src/values';
+import { unescapeChars } from '../../src/litreacha';
 test('test unescapeChars', () => {
     interface tc { inp: string, exp: string}
     const cases : tc[] = [
@@ -13,4 +13,3 @@ test('test unescapeChars', () => {
         expect(unescapeChars(c.inp)).toEqual(c.exp);
     }
 });
-

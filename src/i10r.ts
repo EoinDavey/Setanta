@@ -1,10 +1,11 @@
 import * as P from './gen_parser';
 import { ASTKinds } from './gen_parser';
-import { unescapeChars, callFunc, Comparable, TypeCheck, Gníomh, Value, Checks, Callable, Asserts } from './values';
+import { callFunc, Comparable, TypeCheck, Gníomh, Value, Checks, Callable, Asserts } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 import { Builtins } from './builtins';
 import { repeat, cat } from './liosta';
+import { unescapeChars, strcat, strrep } from './litreacha';
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
@@ -52,6 +53,11 @@ const binOpTable : Map<string, binOpEntry[]> = new Map([
             lcheck : Checks.isLiosta,
             rcheck : Checks.isLiosta,
             op : makeBinOp(Asserts.assertLiosta, Asserts.assertLiosta, cat)
+        },
+        {
+            lcheck : Checks.isLitreacha,
+            rcheck : Checks.isLitreacha,
+            op : makeBinOp(Asserts.assertLitreacha, Asserts.assertLitreacha, strcat)
         }
     ]],
     ['-', [numBinOpEntry((a, b) => a - b)]],
@@ -61,6 +67,11 @@ const binOpTable : Map<string, binOpEntry[]> = new Map([
             lcheck : Checks.isLiosta,
             rcheck : Checks.isNumber,
             op : makeBinOp(Asserts.assertLiosta, Asserts.assertNumber, repeat)
+        },
+        {
+            lcheck : Checks.isLitreacha,
+            rcheck : Checks.isNumber,
+            op : makeBinOp(Asserts.assertLitreacha, Asserts.assertNumber, strrep)
         }
     ]],
     ['%', [numBinOpEntry((a, b) => a % b)]],

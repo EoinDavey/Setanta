@@ -99,30 +99,6 @@ export function callFunc(x : Value, args : Value[]){
     return x.call(args);
 }
 
-export function unescapeChars(s : string) : string {
-    let out = '';
-    const rep = new Map<string,string>([
-        ['n', '\n'],
-        ['r', '\r'],
-        ['t', '\t'],
-        ['0', '\0'],
-        ['\\', '\\'],
-        ['\'', '\''],
-    ]);
-    for(let i = 0; i < s.length; ++i){
-        if(s[i] !== '\\'){
-            out += s[i];
-            continue;
-        }
-        const g = rep.get(s[i+1]);
-        if(!g)
-            throw new RuntimeError(`Unknown escape code \\${s[i+1]}`);
-        out += g;
-        ++i;
-    }
-    return out;
-}
-
 export class Gníomh implements Callable {
     defn : Stmt[];
     args : string[];
