@@ -24,7 +24,7 @@ export namespace Checks {
     }
 
     export function isCallable(v : Value) : v is Callable {
-        return !(v === null || isNumber(v) || isBool(v) || isString(v) || isLiosta(v));
+        return !(v === null || isNumber(v) || isBool(v) || isLitreacha(v) || isLiosta(v));
     }
 
     export function isNumber(v : Value) : v is number {
@@ -35,12 +35,12 @@ export namespace Checks {
         return typeof v === "boolean";
     }
 
-    export function isString(v : Value) : v is string {
+    export function isLitreacha(v : Value) : v is string {
         return typeof v === "string";
     }
 
     export function isComparable(v : Value) : v is Comparable {
-        return isBool(v) || isNumber(v) || isString(v);
+        return isBool(v) || isNumber(v) || isLitreacha(v);
     }
 
     export function isLiosta(v : Value) : v is ValLs {
@@ -61,6 +61,12 @@ export namespace Asserts {
         throw new RuntimeError(`${x} is not a list`);
     }
 
+    export function assertLitreacha(x : Value) : string {
+        if(Checks.isLitreacha(x))
+            return x;
+        throw new RuntimeError(`${x} is not a string`);
+    }
+
     export function assertCallable(x : Value) : Callable {
         if(Checks.isCallable(x))
             return x;
@@ -74,7 +80,7 @@ export namespace Asserts {
     }
 
     export function assertIndexable(a : Value) : ArrayLike<Value> {
-        if(Checks.isLiosta(a) || Checks.isString(a))
+        if(Checks.isLiosta(a) || Checks.isLitreacha(a))
             return a;
         throw new RuntimeError(`${a} is not indexable`);
     }

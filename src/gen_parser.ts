@@ -63,7 +63,7 @@
 * Bool        := _ bool='f[ií]or|breag'
 * Neamhni     := _ 'neamhn[ií]'
 * Int         := _ int='-?[0-9]+'
-* Litreacha   := '\'' val='([^\'\\]|(\\.))*' '\''
+* Litreacha   := _ '\'' val='([^\'\\]|(\\.))*' '\''
 * _           := '(?:\s|>--(?:(?!--<).)*(--<|\n))*'
 * gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'
 */
@@ -1353,6 +1353,7 @@ export class Parser {
                 let val : Nullable<string>;
                 let res : Nullable<Litreacha> = null;
                 if(true
+                    && this.match_($$dpth + 1, cr) != null
                     && this.regexAccept(String.raw`\'`, $$dpth+1, cr) != null
                     && (val = this.regexAccept(String.raw`([^\'\\]|(\\.))*`, $$dpth+1, cr)) != null
                     && this.regexAccept(String.raw`\'`, $$dpth+1, cr) != null
