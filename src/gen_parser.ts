@@ -40,7 +40,7 @@
 * Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 * Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
 * Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
-* Prefix      := op='-|!'? pf=Postfix
+* Prefix      := _ op='-|!'? pf=Postfix
 * Postfix     := at=Atom ops=PostOp*
 * PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 * Atom        :=  _ '\(' trm=Expr '\)'
@@ -1020,6 +1020,7 @@ export class Parser {
                 let pf : Nullable<Postfix>;
                 let res : Nullable<Prefix> = null;
                 if(true
+                    && this.match_($$dpth + 1, cr) != null
                     && ((op = this.regexAccept(String.raw`-|!`, $$dpth+1, cr)) || true)
                     && (pf = this.matchPostfix($$dpth + 1, cr)) != null
                 )
