@@ -64,7 +64,14 @@ async function runFile() {
         console.error(res.err);
         return;
     }
-    i.interpret(res.ast!);
+    try {
+        i.interpret(res.ast!);
+    } catch (err) {
+        if(err instanceof RuntimeError)
+            console.error(err);
+        else
+            throw err;
+    }
 }
 
 async function main() {
