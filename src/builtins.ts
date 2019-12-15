@@ -6,7 +6,7 @@ export const Builtins : [string, Value][] = [
     [
         "fad", {
             arity : () => 1,
-            call : (args : Value[]) : Value => {
+            call : async (args : Value[]) : Promise<Value> => {
                 return Asserts.assertIndexable(args[0]).length;
             }
         },
@@ -14,17 +14,17 @@ export const Builtins : [string, Value][] = [
     [
         "thar", {
             arity : () => 2,
-            call : (args : Value[]) : Value => {
+            call : async (args : Value[]) : Promise<Value> => {
                 const f = Asserts.assertCallable(args[0]);
                 const ls = Asserts.assertLiosta(args[1]);
-                return ls.map(x => callFunc(f, [x]));
+                return Promise.all(ls.map(x => callFunc(f, [x])));
             }
         },
     ],
     [
         "cuid", {
             arity : () => 3,
-            call : (args : Value[]) : Value => {
+            call : async (args : Value[]) : Promise<Value> => {
                 const l = Asserts.assertNumber(args[1]);
                 const r = Asserts.assertNumber(args[2]);
                 if(Checks.isLiosta(args[0])){
@@ -41,7 +41,7 @@ export const Builtins : [string, Value][] = [
     [
         "roinn", {
             arity : () => 2,
-            call : (args : Value[]) : Value => {
+            call : async (args : Value[]) : Promise<Value> => {
                 const a = Asserts.assertLitreacha(args[0]);
                 const b = Asserts.assertLitreacha(args[1]);
                 return a.split(b);
@@ -51,7 +51,7 @@ export const Builtins : [string, Value][] = [
     [
         "athchuir", {
             arity : () => 3,
-            call : (args : Value[]) : Value => {
+            call : async (args : Value[]) : Promise<Value> => {
                 const a = Asserts.assertLitreacha(args[0]);
                 const b = Asserts.assertLitreacha(args[1]);
                 const c = Asserts.assertLitreacha(args[2]);

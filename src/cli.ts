@@ -21,7 +21,7 @@ const externals : [[string, Value]] = [
     [
         "scríobh", {
             arity : () => 1,
-            call : (args : Value[]) : Value => {
+            call : async (args : Value[]) : Promise<Value> => {
                 console.log(...args);
                 return null;
             }
@@ -42,10 +42,10 @@ async function repl(rl : readline.Interface) {
         const ast = p.ast!;
         try {
             if(ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And){
-                    console.log(i.evalExpr(ast.stmts[0]));
+                    console.log(await i.evalExpr(ast.stmts[0]));
                 continue;
             }
-            i.interpret(ast);
+            await i.interpret(ast);
         } catch(err){
             if(err instanceof RuntimeError)
                 console.log(err.msg);
@@ -66,7 +66,7 @@ async function runFile() {
         return;
     }
     try {
-        i.interpret(res.ast!);
+        await i.interpret(res.ast!);
     } catch (err) {
         if(err instanceof RuntimeError)
             console.error(err);

@@ -22,7 +22,7 @@ test('test isEqual', () => {
     }
 });
 
-test('test expressions', () => {
+test('test expressions', async () => {
     interface tc { inp: string, exp: Value, env?: Environment}
     const cases : tc[] = [
         {inp : '12 + 3*5', exp : 27},
@@ -61,12 +61,12 @@ test('test expressions', () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = i.evalExpr(res!);
+        const got = await i.evalExpr(res!);
         expect(got).toEqual(c.exp);
     }
 });
 
-test('test assign', () => {
+test('test assign', async () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
         {
@@ -103,12 +103,12 @@ test('test assign', () => {
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
-        i.interpret(res.ast!);
+        await i.interpret(res.ast!);
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
 
-test('test if stmt', () => {
+test('test if stmt', async () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
         {
@@ -157,12 +157,12 @@ test('test if stmt', () => {
             console.log(c);
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
-        i.interpret(res.ast!);
+        await i.interpret(res.ast!);
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
 
-test('test nuair a loops', () => {
+test('test nuair a loops', async () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
         {
@@ -219,12 +219,12 @@ test('test nuair a loops', () => {
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
-        i.interpret(res.ast!);
+        await i.interpret(res.ast!);
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
 
-test('test le idir loops', () => {
+test('test le idir loops', async () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
         {
@@ -282,12 +282,12 @@ test('test le idir loops', () => {
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
-        i.interpret(res.ast!);
+        await i.interpret(res.ast!);
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
 
-test('test function calls', () => {
+test('test function calls', async () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
         {
@@ -296,7 +296,7 @@ test('test function calls', () => {
             env : Environment.from([
                 ['sum', {
                     arity: () => 2,
-                    call: (args) => {
+                    call: async (args) => {
                         return (args[0] as number)+(args[1] as number);
                     }
                 }],
@@ -308,13 +308,13 @@ test('test function calls', () => {
             env : Environment.from([
                 ['sum', {
                     arity: () => 2,
-                    call: (args) => {
+                    call: async (args) => {
                         return (args[0] as number)+(args[1] as number);
                     }
                 }],
                 ['square', {
                     arity: () => 1,
-                    call: (args) => {
+                    call: async (args) => {
                         return (args[0] as number)*(args[0] as number);
                     }
                 }],
@@ -329,12 +329,12 @@ test('test function calls', () => {
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
-        i.interpret(res.ast!);
+        await i.interpret(res.ast!);
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
 
-test('test function definitions', () => {
+test('test function definitions', async () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
         {
@@ -385,12 +385,12 @@ test('test function definitions', () => {
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
-        i.interpret(res.ast!);
+        await i.interpret(res.ast!);
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
 
-test('test toradh', () => {
+test('test toradh', async () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
         {
@@ -434,12 +434,12 @@ test('test toradh', () => {
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
-        i.interpret(res.ast!);
+        await i.interpret(res.ast!);
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
 
-test('test postfix ops', () => {
+test('test postfix ops', async () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
         {
@@ -476,12 +476,12 @@ test('test postfix ops', () => {
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
-        i.interpret(res.ast!);
+        await i.interpret(res.ast!);
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
 
-test('test arrays', () => {
+test('test arrays', async () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
         {
@@ -556,7 +556,7 @@ test('test arrays', () => {
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
-        i.interpret(res.ast!);
+        await i.interpret(res.ast!);
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });

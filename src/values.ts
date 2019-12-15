@@ -88,23 +88,23 @@ export namespace Asserts {
 
 export interface Callable {
     arity : () => number;
-    call: (args : Value[]) => Value;
+    call: (args : Value[]) => Promise<Value>;
 }
 
-export function callFunc(x : Value, args : Value[]){
+export async function callFunc(x : Value, args : Value[]){
     x = Asserts.assertCallable(x);
     const ar = x.arity();
     if(args.length !== x.arity())
         throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);
-    return x.call(args);
+    return await x.call(args);
 }
 
 export class Gníomh implements Callable {
     defn : Stmt[];
     args : string[];
     env : Environment;
-    execFn : (body : Stmt[], env : Environment) => Value;
-    constructor(defn : Stmt[], args : string[], env : Environment, execFn : (body : Stmt[], env : Environment)=>Value){
+    execFn : (body : Stmt[], env : Environment) => Promise<Value>;
+    constructor(defn : Stmt[], args : string[], env : Environment, execFn : (body : Stmt[], env : Environment) => Promise<Value>){
         this.defn = defn;
         this.args = args;
         this.env = env;
@@ -113,10 +113,10 @@ export class Gníomh implements Callable {
     arity() {
         return this.args.length;
     }
-    call(args : Value[]) : Value {
+    async call(args : Value[]) : Promise<Value> {
         const env : Environment = new Environment(this.env);
         for(let i = 0; i < args.length; ++i)
             env.define(this.args[i], args[i]);
-        return this.execFn(this.defn, env);
+        return await this.execFn(this.defn, env);
     }
 }

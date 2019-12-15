@@ -3,7 +3,7 @@ import { Interpreter } from '../../src/i10r';
 import { Parser } from '../../src/gen_parser';
 import { Environment } from '../../src/env';
 
-test('test fad', () => {
+test('test fad', async () => {
     interface tc { inp: string, exp: Value}
     const cases : tc[] = [
         { inp: 'fad([])', exp : 0},
@@ -15,12 +15,12 @@ test('test fad', () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = i.evalExpr(res!);
+        const got = await i.evalExpr(res!);
         expect(got).toEqual(c.exp);
     }
 });
 
-test('test roinn', () => {
+test('test roinn', async () => {
     interface tc { inp: string, exp: Value}
     const cases : tc[] = [
         { inp: "roinn('a b c', ' ')", exp : ['a','b','c']},
@@ -34,12 +34,12 @@ test('test roinn', () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = i.evalExpr(res!);
+        const got = await i.evalExpr(res!);
         expect(got).toEqual(c.exp);
     }
 });
 
-test('test cuid', () => {
+test('test cuid', async () => {
     interface tc { inp: string, exp: Value}
     const cases : tc[] = [
         { inp: "cuid('abc', 0, 2)", exp : 'ab'},
@@ -54,7 +54,7 @@ test('test cuid', () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = i.evalExpr(res!);
+        const got = await i.evalExpr(res!);
         expect(got).toEqual(c.exp);
     }
 });

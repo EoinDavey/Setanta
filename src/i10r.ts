@@ -94,57 +94,57 @@ export class Interpreter {
             for(let i = 0; i < externals.length; ++i)
                 this.env.define(externals[i][0], externals[i][1]);
     }
-    interpret(p : P.Program) {
-        this.execStmts(p.stmts);
+    async interpret(p : P.Program) {
+        await this.execStmts(p.stmts);
     }
-    execStmts(stmts : Stmt[]){
+    async execStmts(stmts : Stmt[]){
         for(let st of stmts){
-            this.execStmt(st);
+            await this.execStmt(st);
         }
     }
-    execStmtBlock(blk : P.BlockStmt) {
+    async execStmtBlock(blk : P.BlockStmt) {
        const prev = this.env;
         this.env = new Environment(this.env);
         try {
-            this.execStmts(blk.blk);
+            await this.execStmts(blk.blk);
         } finally {
             this.env = prev;
         }
     }
-    execStmt(st : P.AsgnStmt | P.NonAsgnStmt) {
+    async execStmt(st : P.AsgnStmt | P.NonAsgnStmt) {
         switch(st.kind) {
             case ASTKinds.IfStmt:
-                this.execMá(st);
+                await this.execMá(st);
                 break
             case ASTKinds.BlockStmt:
-                this.execStmtBlock(st);
+                await this.execStmtBlock(st);
                 break;
             case ASTKinds.AssgnStmt:
-                this.execAssgn(st);
+                await this.execAssgn(st);
                 break;
             case ASTKinds.DefnStmt:
-                this.execDefn(st);
+                await this.execDefn(st);
                 break;
             case ASTKinds.NuairStmt:
-                this.execNuair(st);
+                await this.execNuair(st);
                 break;
             case ASTKinds.LeStmt:
-                this.execLeStmt(st);
+                await this.execLeStmt(st);
                 break;
             case ASTKinds.GniomhStmt:
-                this.execGniomhStmt(st);
+                await this.execGniomhStmt(st);
                 break;
             case ASTKinds.ToradhStmt:
-                this.execToradhStmt(st);
+                await this.execToradhStmt(st);
                 break;
             case ASTKinds.CCStmt:
-                this.execCCStmt(st);
+                await this.execCCStmt(st);
                 break;
             case ASTKinds.BrisStmt:
-                this.execBrisStmt(st);
+                await this.execBrisStmt(st);
                 break;
             default:
-                this.evalExpr(st);
+                await this.evalExpr(st);
                 break;
         }
     }
@@ -154,15 +154,15 @@ export class Interpreter {
     execBrisStmt(b : P.BrisStmt) {
         throw BrisException;
     }
-    execToradhStmt(b : P.ToradhStmt) {
-        throw new Toradh(b.exp ? this.evalExpr(b.exp) : null);
+    async execToradhStmt(b : P.ToradhStmt) {
+        throw new Toradh(b.exp ? await this.evalExpr(b.exp) : null);
     }
     execGniomhStmt(fn : P.GniomhStmt){
-        const execFn = (body : Stmt[], env : Environment) : Value => {
+        const execFn = async (body : Stmt[], env : Environment) : Promise<Value> => {
             const prev = this.env;
             this.env = env;
             try {
-                this.execStmts(body);
+                await this.execStmts(body);
             } catch(e) {
                 if(e instanceof Toradh)
                     return e.luach;
@@ -177,10 +177,10 @@ export class Interpreter {
         const gníomh = new Gníomh(fn.stmts, args, this.env, execFn);
         this.env.define(fn.id.id, gníomh);
     }
-    execNuair(n : P.NuairStmt) {
-        while(Checks.isTrue(this.evalExpr(n.expr))){
+    async execNuair(n : P.NuairStmt) {
+        while(Checks.isTrue(await this.evalExpr(n.expr))){
             try {
-                this.execStmt(n.stmt);
+                await this.execStmt(n.stmt);
             } catch(e) {
                 if(e === BrisException)
                     break;
@@ -190,18 +190,18 @@ export class Interpreter {
             }
         }
     }
-    execLeStmt(n : P.LeStmt) {
+    async execLeStmt(n : P.LeStmt) {
         const prev = this.env;
         this.env = new Environment(this.env);
 
-        const strt = Asserts.assertNumber(this.evalExpr(n.strt));
-        const end = Asserts.assertNumber(this.evalExpr(n.end));
+        const strt = Asserts.assertNumber(await this.evalExpr(n.strt));
+        const end = Asserts.assertNumber(await this.evalExpr(n.end));
 
         try {
             for(let i = strt; i < end; ++i) {
                 this.env.define(n.id.id, i);
                 try {
-                    this.execStmt(n.stmt);
+                    await this.execStmt(n.stmt);
                 } catch(e) {
                     if(e === BrisException)
                         break;
@@ -214,22 +214,22 @@ export class Interpreter {
             this.env = prev;
         }
     }
-    execMá(f : P.IfStmt) {
-        const v = this.evalExpr(f.expr);
+    async execMá(f : P.IfStmt) {
+        const v = await this.evalExpr(f.expr);
         if(Checks.isTrue(v)){
-            this.execStmt(f.stmt);
+            await this.execStmt(f.stmt);
             return;
         }
         if(!f.elsebranch)
             return;
-        this.execStmt(f.elsebranch.stmt);
+        await this.execStmt(f.elsebranch.stmt);
     }
-    execDefn(a : P.DefnStmt) {
-        const val = this.evalExpr(a.expr);
+    async execDefn(a : P.DefnStmt) {
+        const val = await this.evalExpr(a.expr);
         this.env.define(a.id.id, val);
     }
-    execAssgn(a : P.AssgnStmt) {
-        const val = this.evalExpr(a.expr);
+    async execAssgn(a : P.AssgnStmt) {
+        const val = await this.evalExpr(a.expr);
         if(a.id.ops.length){
             let rt : Value = this.evalID(a.id.id);
             const ops = a.id.ops;
@@ -237,9 +237,9 @@ export class Interpreter {
             for(let i = 0; i < ops.length-1; ++i){
                 const op = ops[i];
                 if('args' in op){
-                    rt = callFunc(rt, op.args ? this.evalCSArgs(op.args) : []);
+                    rt = await callFunc(rt, op.args ? await this.evalCSArgs(op.args) : []);
                 } else {
-                    rt = this.idxList(rt, op.expr);
+                    rt = await this.idxList(rt, op.expr);
                 }
             }
             // Last operand must be array lookup
@@ -248,7 +248,7 @@ export class Interpreter {
                 throw new RuntimeError(`Cannot assign to function call`);
             // Get array
             const arr = Asserts.assertLiosta(rt);
-            const idx = Asserts.assertNumber(this.evalExpr(op.expr));
+            const idx = Asserts.assertNumber(await this.evalExpr(op.expr));
             if(idx < 0 || idx >= arr.length)
                 throw new RuntimeError(`Index ${idx} out of bounds`);
             arr[idx] = val;
@@ -264,70 +264,75 @@ export class Interpreter {
                     return x.op(a, b);
         throw new RuntimeError(`Can't apply ${op} to ${a} and ${b}`);
     }
-    evalExpr(expr : P.Expr) : Value {
+
+    evalExpr(expr : P.Expr) : Promise<Value> {
         return this.evalAnd(expr);
     }
-    evalAnd(o : P.And) : Value {
-        var head = this.evalOr(o.head);
+
+    async evalAnd(o : P.And) : Promise<Value> {
+        var head = await this.evalOr(o.head);
         for(let x of o.tail){
             if(!head)
                 break;
-            head = head && this.evalOr(x.trm);
+            head = head && await this.evalOr(x.trm);
         }
         return head;
     }
-    evalOr(o : P.Or) : Value {
-        var head = this.evalEq(o.head);
+    async evalOr(o : P.Or) : Promise<Value> {
+        var head = await this.evalEq(o.head);
         for(let x of o.tail){
             if(head)
                 break;
-            head = head || this.evalEq(x.trm);
+            head = head || await this.evalEq(x.trm);
         }
         return head;
     }
-    evalEq(e : P.Eq) : Value {
-        return e.tail.reduce((x, y) => {
-            const at = this.evalComp(y.trm);
-            const eq = Checks.isEqual(x, at);
+    async evalEq(e : P.Eq) : Promise<Value> {
+        return e.tail.reduce(async (x : Promise<Value>, y : P.Eq_$0) : Promise<Value> => {
+            const at = await this.evalComp(y.trm);
+            const eq = Checks.isEqual(await x, at);
             return y.op === '==' ? eq : !eq;
         }, this.evalComp(e.head));
     }
-    evalComp(p : P.Comp) : Value {
-        return p.tail.reduce((x, y) => {
-            return this.evalBinOp(x, this.evalSum(y.trm), y.op);
+    async evalComp(p : P.Comp) : Promise<Value> {
+        return p.tail.reduce(async (x : Promise<Value>, y : P.Comp_$0) : Promise<Value> => {
+            return this.evalBinOp(await x, await this.evalSum(y.trm), y.op);
         }, this.evalSum(p.head));
     }
-    evalSum(p : P.Sum) : Value {
-        return p.tail.reduce((x, y) => this.evalBinOp(x, this.evalProduct(y.trm), y.op),
-            this.evalProduct(p.head));
+    async evalSum(p : P.Sum) : Promise<Value> {
+        return p.tail.reduce(async (x : Promise<Value>, y : P.Sum_$0) : Promise<Value> =>
+            this.evalBinOp(await x, await this.evalProduct(y.trm), y.op), this.evalProduct(p.head));
     }
-    evalProduct(p : P.Product) : Value {
-        return p.tail.reduce((x, y) => this.evalBinOp(x, this.evalPrefix(y.trm), y.op),
-            this.evalPrefix(p.head));
+    async evalProduct(p : P.Product) : Promise<Value> {
+        return p.tail.reduce(async (x : Promise<Value>, y : P.Product_$0) : Promise<Value> => {
+            return this.evalBinOp(await x, await this.evalPrefix(y.trm), y.op)
+        }, this.evalPrefix(p.head));
     }
-    evalPostfix(p : P.Postfix) : Value {
-        return p.ops.reduce((x : Value, y) => {
-            if('args' in y)
-                return callFunc(x, y.args ? this.evalCSArgs(y.args) : []);
-            return this.idxList(x, y.expr);
-        }, this.evalAtom(p.at));
+    async evalPostfix(p : P.Postfix) : Promise<Value> {
+        const v = async (x : Promise<Value>, y : P.PostOp) : Promise<Value> => {
+            if('args' in y){
+                return callFunc(await x, await (y.args ? await this.evalCSArgs(y.args) : []));
+            }
+            return await this.idxList(await x, y.expr);
+        }
+        return p.ops.reduce(v, this.evalAtom(p.at));
     }
-    evalPrefix(p : P.Prefix) : Value {
-        const pf = this.evalPostfix(p.pf);
+    async evalPrefix(p : P.Prefix) : Promise<Value> {
+        const pf = await this.evalPostfix(p.pf);
         if(p.op === '-')
             return -Asserts.assertNumber(pf);
         if(p.op === '!')
             return !Checks.isTrue(pf);
         return pf;
     }
-    idxList(x : Value, idx : P.Expr) : Value {
+    async idxList(x : Value, idx : P.Expr) : Promise<Value> {
         const ls = Asserts.assertIndexable(x);
-        const v = Asserts.assertNumber(this.evalExpr(idx));
+        const v = Asserts.assertNumber(await this.evalExpr(idx));
         if(v < 0 || v >= ls.length)
             throw new RuntimeError(`Index ${v} out of bounds`);
         return ls[v];
     }
-    evalAtom(at : P.Atom) : Value {
+    async evalAtom(at : P.Atom) : Promise<Value> {
         switch(at.kind){
             case ASTKinds.Int:
                 return this.evalInt(at);
@@ -347,11 +352,15 @@ export class Interpreter {
     evalLitreacha(ls : P.Litreacha) : Value {
         return unescapeChars(ls.val);
     }
-    evalListLit(ls : P.ListLit) : Value {
-        return ls.els ? this.evalCSArgs(ls.els) : [];
+    evalListLit(ls : P.ListLit) : Promise<Value> {
+        return ls.els ? this.evalCSArgs(ls.els) : new Promise(r => r([]));
     }
-    evalCSArgs(args : P.CSArgs) : Value[] {
-        return [this.evalExpr(args.head)].concat(args.tail.map(x => this.evalExpr(x.exp)));
+    async evalCSArgs(args : P.CSArgs) : Promise<Value[]> {
+        const ls : Value [] = [await this.evalExpr(args.head)];
+        for(let x of args.tail) {
+            ls.push(await this.evalExpr(x.exp));
+        }
+        return ls;
     }
     evalCSIDs(ids : P.CSIDs) : string[] {
         return [ids.head.id].concat(ids.tail.map(x=>x.id.id));
