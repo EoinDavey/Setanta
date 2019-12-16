@@ -17,12 +17,12 @@ function getLine(rl : readline.Interface, ceist : string) : Promise<string> {
     });
 }
 
-function getExternals(ceistfn : (s : string) => Promise<string>) : [string, Value][]{
+function getExternals(ceistfn : (s : string) => Promise<string>) : [string[], Value][]{
     return [
         [
-            "scríobh", {
+            ['scríobh', 'scriobh'], {
                 ainm: 'scríobh',
-                arity : () => 1,
+                arity : () => -1,
                 call : async (args : Value[]) : Promise<Value> => {
                     console.log(...args.map(goLitreacha));
                     return null;
@@ -30,11 +30,20 @@ function getExternals(ceistfn : (s : string) => Promise<string>) : [string, Valu
             },
         ],
         [
-            "ceist", {
+            ['ceist'], {
                 ainm: 'ceist',
                 arity : () => 1,
                 call : (args : Value[]) : Promise<Value> => {
                     return ceistfn(Asserts.assertLitreacha(args[0]));
+                }
+            },
+        ],
+        [
+            ['léigh_líne', 'léigh_line', 'léigh_líne', 'leigh_line'], {
+                ainm: 'léigh_líne',
+                arity : () => 0,
+                call : (args : Value[]) : Promise<Value> => {
+                    return ceistfn('');
                 }
             },
         ],
@@ -55,11 +64,11 @@ async function repl(rl : readline.Interface) {
         const ast = p.ast!;
         try {
             if(ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And){
-                    console.log(await i.evalExpr(ast.stmts[0]));
+                    console.log(goLitreacha(await i.evalExpr(ast.stmts[0])));
                 continue;
             }
             await i.interpret(ast);
-        } catch(err){
+        } catch(err) {
             if(err instanceof RuntimeError)
                 console.log(err.msg);
             else

@@ -88,11 +88,12 @@ const binOpTable : Map<string, binOpEntry[]> = new Map([
 
 export class Interpreter {
     env : Environment = new Environment();
-    constructor(externals? : ArrayLike<[string, Value]>){
+    constructor(externals? : ArrayLike<[string[], Value]>){
         this.env = Environment.from(Builtins);
         if(externals)
             for(let i = 0; i < externals.length; ++i)
-                this.env.define(externals[i][0], externals[i][1]);
+                for(let a of externals[i][0])
+                    this.env.define(a, externals[i][1]);
     }
     interpret(p : P.Program) : Promise<void> {
         return this.execStmts(p.stmts);

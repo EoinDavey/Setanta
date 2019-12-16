@@ -95,7 +95,7 @@ export interface Callable {
 export function callFunc(x : Value, args : Value[]) : Promise<Value> {
     x = Asserts.assertCallable(x);
     const ar = x.arity();
-    if(args.length !== x.arity())
+    if(ar !== -1 && args.length !== x.arity())
         throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);
     return x.call(args);
 }
