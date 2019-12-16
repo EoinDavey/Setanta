@@ -348,7 +348,6 @@ test('test function definitions', async () => {
             `,
             exp : 45,
         },
-        /*
         {
             inp : `
             res := 0
@@ -377,7 +376,6 @@ test('test function definitions', async () => {
             `,
             exp : 55,
         },
-        */
     ];
     for(let c of cases){
         const i = new Interpreter();
@@ -392,7 +390,6 @@ test('test function definitions', async () => {
     }
 });
 
-/*
 test('test toradh', async () => {
     interface tc { inp: string, exp: Value, env?: Environment};
     const cases : tc[] = [
@@ -563,4 +560,3 @@ test('test arrays', async () => {
         expect(i.env.get('res')).toEqual(c.exp);
     }
 });
-*/
