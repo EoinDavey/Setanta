@@ -1,0 +1,2 @@
+ainm := ceist('Cad is ainm duit? ')
+scríobh('Dia duit ' + ainm)

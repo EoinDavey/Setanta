@@ -3,36 +3,47 @@ import * as readline from 'readline';
 import { Interpreter } from './i10r';
 import { RuntimeError } from './error';
 import { Parser, ASTKinds } from './gen_parser';
-import { Value } from './values';
+import { Asserts, Value } from './values';
 
 import * as fs from 'fs';
 
 const [,, ...args] = process.argv;
 
-function getLine(rl : readline.Interface) : Promise<string> {
+function getLine(rl : readline.Interface, ceist : string) : Promise<string> {
     return new Promise(resolve => {
-        rl.question('λ: ', resp => {
+        rl.question(ceist, resp => {
             resolve(resp);
         });
     });
 }
 
-const externals : [[string, Value]] = [
-    [
-        "scríobh", {
-            arity : () => 1,
-            call : async (args : Value[]) : Promise<Value> => {
-                console.log(...args);
-                return null;
-            }
-        },
-    ],
-];
+function getExternals(ceistfn : (s : string) => Promise<string>) : [string, Value][]{
+    return [
+        [
+            "scríobh", {
+                arity : () => 1,
+                call : async (args : Value[]) : Promise<Value> => {
+                    console.log(...args);
+                    return null;
+                }
+            },
+        ],
+        [
+            "ceist", {
+                arity : () => 1,
+                call : (args : Value[]) : Promise<Value> => {
+                    return ceistfn(Asserts.assertLitreacha(args[0]));
+                }
+            },
+        ],
+    ];
+}
 
 async function repl(rl : readline.Interface) {
-    const i = new Interpreter(externals);
+    const ceistFn = (s : string) => getLine(rl, s);
+    const i = new Interpreter(getExternals(ceistFn));
     while(true){
-        const res = await getLine(rl);
+        const res = await getLine(rl, 'λ: ');
         const parser = new Parser(res);
         const p = parser.parse();
         if(p.err){
@@ -55,8 +66,7 @@ async function repl(rl : readline.Interface) {
     }
 }
 
-async function runFile() {
-    const i = new Interpreter(externals);
+async function runFile(rl : readline.Interface) {
     const inFile = fs.readFileSync(args[0], { encoding: 'utf8' });
     const parser = new Parser(inFile);
     const res = parser.parse();
@@ -65,6 +75,10 @@ async function runFile() {
         process.exitCode = 1;
         return;
     }
+
+    const ceistFn = (s : string) => getLine(rl, s);
+    const i = new Interpreter(getExternals(ceistFn));
+
     try {
         await i.interpret(res.ast!);
     } catch (err) {
@@ -73,17 +87,19 @@ async function runFile() {
             process.exitCode = 1;
         }else
             throw err;
+    } finally {
+        rl.close();
     }
 }
 
 async function main() {
+    const rl : readline.Interface = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
     if(args.length > 0)
-        runFile();
+        runFile(rl);
     else{
-        const rl : readline.Interface = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
         repl(rl);
     }
 }
