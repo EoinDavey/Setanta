@@ -58,3 +58,42 @@ test('test cuid', async () => {
         expect(got).toEqual(c.exp);
     }
 });
+
+test('test go_uimh', async () => {
+    interface tc { inp: string, exp: number}
+    const cases : tc[] = [
+        { inp : "go_uimh('123')", exp : 123 },
+        { inp : "go_uimh('123.456')", exp : 123.456 },
+        { inp : "go_uimh(fíor)", exp : 1 },
+        { inp : "go_uimh(breag)", exp : 0 },
+        { inp : "go_uimh(1234)", exp : 1234 },
+        { inp : "go_uimh('míuimh')", exp : NaN },
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        const p = new Parser(c.inp);
+        const res = p.matchExpr(0);
+        expect(res).not.toBeNull();
+        const got = await i.evalExpr(res!);
+        expect(got).toEqual(c.exp);
+    }
+});
+
+test('test go_lit', async () => {
+    interface tc { inp: string, exp: string}
+    const cases : tc[] = [
+        { inp : "go_lit(123)", exp : '123' },
+        { inp : "go_lit(fíor)", exp : 'fíor' },
+        { inp : "go_lit(breag)", exp : 'breag' },
+        { inp : "go_lit('1234')", exp : '1234' },
+        { inp : "go_lit(go_lit)", exp : '< gníomh go_lit >' },
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        const p = new Parser(c.inp);
+        const res = p.matchExpr(0);
+        expect(res).not.toBeNull();
+        const got = await i.evalExpr(res!);
+        expect(got).toEqual(c.exp);
+    }
+});

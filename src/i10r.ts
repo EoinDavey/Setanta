@@ -1,6 +1,7 @@
 import * as P from './gen_parser';
 import { ASTKinds } from './gen_parser';
-import { callFunc, Comparable, TypeCheck, Gníomh, Value, Checks, Callable, Asserts } from './values';
+import { callFunc, Comparable, TypeCheck, Gníomh, Value,
+    goLitreacha, Checks, Callable, Asserts } from './values';
 import { RuntimeError, undefinedError } from './error';
 import { Environment } from './env';
 import { Builtins } from './builtins';
@@ -252,7 +253,7 @@ export class Interpreter {
                 this.evalExpr(op.expr).then(x => {
                     const idx = Asserts.assertNumber(x);
                     if(idx < 0 || idx >= arr.length)
-                        throw new RuntimeError(`Index ${idx} out of bounds`);
+                        throw new RuntimeError(`Index ${goLitreacha(idx)} out of bounds`);
                     arr[idx] = val;
                 })
             }));
@@ -265,7 +266,7 @@ export class Interpreter {
             for(let x of g)
                 if(x.lcheck(a) && x.rcheck(b))
                     return x.op(a, b);
-        throw new RuntimeError(`Can't apply ${op} to ${a} and ${b}`);
+        throw new RuntimeError(`Can't apply ${goLitreacha(op)} to ${goLitreacha(a)} and ${goLitreacha(b)}`);
     }
     evalExpr(expr : P.Expr) : Promise<Value> {
         return this.evalAnd(expr);
@@ -341,7 +342,7 @@ export class Interpreter {
         return this.evalExpr(idx).then(v => {
             v = Asserts.assertNumber(v);
             if(v < 0 || v >= ls.length)
-                throw new RuntimeError(`Index ${v} out of bounds`);
+                throw new RuntimeError(`Index ${goLitreacha(v)} out of bounds`);
             return ls[v];
         });
     }
@@ -384,7 +385,7 @@ export class Interpreter {
         return this.env.get(id.id);
     }
     evalBool(b : P.Bool) : boolean {
-        return /f[ií]or/.test(b.bool);
+        return b.bool === 'fíor' || b.bool == 'fior';
     }
     evalInt(i : P.Int) : number {
         return parseInt(i.int);

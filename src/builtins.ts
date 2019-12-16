@@ -1,4 +1,4 @@
-import { callFunc, Value, Asserts, Checks } from './values';
+import { goLitreacha, callFunc, Value, Asserts, Checks } from './values';
 import { RuntimeError } from './error';
 import { athchuir } from './litreacha';
 
@@ -37,7 +37,7 @@ export const Builtins : [string, Value][] = [
                     const s = Asserts.assertLitreacha(args[0]);
                     return s.substr(l, r);
                 }
-                throw new RuntimeError(`Níl liosta nó litreacha é ${args[0]}`);
+                throw new RuntimeError(`Níl liosta nó litreacha é ${goLitreacha(args[0])}`);
             }
         },
     ],
@@ -64,4 +64,26 @@ export const Builtins : [string, Value][] = [
             }
         },
     ],
+    [
+        "go_uimh", {
+            ainm : "go_uimh",
+            arity : () => 1,
+            call : (args : Value[]) : Promise<number> => {
+                if(Checks.isLitreacha(args[0]) || Checks.isBool(args[0]) || Checks.isNumber(args[0]))
+                    return Promise.resolve(Number(args[0]));
+                throw new RuntimeError(`Níl uimhir, litreacha nó bool é ${goLitreacha(args[0])}`);
+            }
+        }
+    ],
+    [
+        "go_lit", {
+            ainm : "go_lit",
+            arity : () => 1,
+            call : (args : Value[]) : Promise<string> => {
+                if(Checks.isLitreacha(args[0]))
+                    return Promise.resolve(args[0]);
+                return Promise.resolve(goLitreacha(args[0]));
+            }
+        }
+    ]
 ];
