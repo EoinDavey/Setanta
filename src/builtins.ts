@@ -5,6 +5,7 @@ import { athchuir } from './litreacha';
 export const Builtins : [string, Value][] = [
     [
         "fad", {
+            ainm: "fad",
             arity : () => 1,
             call : async (args : Value[]) : Promise<Value> => {
                 return Asserts.assertIndexable(args[0]).length;
@@ -13,6 +14,7 @@ export const Builtins : [string, Value][] = [
     ],
     [
         "thar", {
+            ainm: "thar",
             arity : () => 2,
             call : async (args : Value[]) : Promise<Value> => {
                 const f = Asserts.assertCallable(args[0]);
@@ -23,6 +25,7 @@ export const Builtins : [string, Value][] = [
     ],
     [
         "cuid", {
+            ainm: "cuid",
             arity : () => 3,
             call : async (args : Value[]) : Promise<Value> => {
                 const l = Asserts.assertNumber(args[1]);
@@ -40,6 +43,7 @@ export const Builtins : [string, Value][] = [
     ],
     [
         "roinn", {
+            ainm: "roinn",
             arity : () => 2,
             call : async (args : Value[]) : Promise<Value> => {
                 const a = Asserts.assertLitreacha(args[0]);
@@ -50,6 +54,7 @@ export const Builtins : [string, Value][] = [
     ],
     [
         "athchuir", {
+            ainm: "athchuir",
             arity : () => 3,
             call : async (args : Value[]) : Promise<Value> => {
                 const a = Asserts.assertLitreacha(args[0]);

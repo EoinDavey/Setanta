@@ -87,6 +87,7 @@ export namespace Asserts {
 }
 
 export interface Callable {
+    ainm : string;
     arity : () => number;
     call: (args : Value[]) => Promise<Value>;
 }
@@ -100,11 +101,13 @@ export function callFunc(x : Value, args : Value[]) : Promise<Value> {
 }
 
 export class Gníomh implements Callable {
+    ainm : string;
     defn : Stmt[];
     args : string[];
     env : Environment;
     execFn : (body : Stmt[], env : Environment) => Promise<Value>;
-    constructor(defn : Stmt[], args : string[], env : Environment, execFn : (body : Stmt[], env : Environment) => Promise<Value>){
+    constructor(ainm : string, defn : Stmt[], args : string[], env : Environment, execFn : (body : Stmt[], env : Environment) => Promise<Value>){
+        this.ainm = ainm;
         this.defn = defn;
         this.args = args;
         this.env = env;
@@ -119,4 +122,18 @@ export class Gníomh implements Callable {
             env.define(this.args[i], args[i]);
         return this.execFn(this.defn, env);
     }
+}
+
+export function goLitreacha(v : Value) : string {
+    if(Checks.isLitreacha(v))
+        return `'${v}'`;
+    if(Checks.isNumber(v))
+        return v.toString();
+    if(Checks.isBool(v))
+        return v ? 'fíor' : 'breag';
+    if(v === null)
+        return 'neamhní';
+    if(Checks.isLiosta(v))
+        return `[${v.map(goLitreacha).join(',')}]`;
+    return `< gníomh ${v.ainm} >`;
 }

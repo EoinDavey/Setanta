@@ -3,7 +3,7 @@ import * as readline from 'readline';
 import { Interpreter } from './i10r';
 import { RuntimeError } from './error';
 import { Parser, ASTKinds } from './gen_parser';
-import { Asserts, Value } from './values';
+import { Asserts, Value, goLitreacha } from './values';
 
 import * as fs from 'fs';
 
@@ -21,15 +21,17 @@ function getExternals(ceistfn : (s : string) => Promise<string>) : [string, Valu
     return [
         [
             "scríobh", {
+                ainm: 'scríobh',
                 arity : () => 1,
                 call : async (args : Value[]) : Promise<Value> => {
-                    console.log(...args);
+                    console.log(...args.map(goLitreacha));
                     return null;
                 }
             },
         ],
         [
             "ceist", {
+                ainm: 'ceist',
                 arity : () => 1,
                 call : (args : Value[]) : Promise<Value> => {
                     return ceistfn(Asserts.assertLitreacha(args[0]));

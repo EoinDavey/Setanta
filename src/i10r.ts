@@ -161,7 +161,7 @@ export class Interpreter {
                 });
             }
             const args = fn.args ? this.evalCSIDs(fn.args) : [];
-            const gníomh = new Gníomh(fn.stmts, args, this.env, execFn);
+            const gníomh = new Gníomh(fn.id.id, fn.stmts, args, this.env, execFn);
             this.env.define(fn.id.id, gníomh);
             r();
         });

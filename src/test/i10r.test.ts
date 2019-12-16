@@ -295,6 +295,7 @@ test('test function calls', async () => {
             exp : 42,
             env : Environment.from([
                 ['sum', {
+                    ainm : 'sum',
                     arity: () => 2,
                     call: async (args) => {
                         return (args[0] as number)+(args[1] as number);
@@ -307,12 +308,14 @@ test('test function calls', async () => {
             exp : 0,
             env : Environment.from([
                 ['sum', {
+                    ainm: 'sum',
                     arity: () => 2,
                     call: async (args) => {
                         return (args[0] as number)+(args[1] as number);
                     }
                 }],
                 ['square', {
+                    ainm : 'square',
                     arity: () => 1,
                     call: async (args) => {
                         return (args[0] as number)*(args[0] as number);
