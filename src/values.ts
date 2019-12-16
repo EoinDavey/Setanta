@@ -91,12 +91,12 @@ export interface Callable {
     call: (args : Value[]) => Promise<Value>;
 }
 
-export async function callFunc(x : Value, args : Value[]){
+export function callFunc(x : Value, args : Value[]) : Promise<Value> {
     x = Asserts.assertCallable(x);
     const ar = x.arity();
     if(args.length !== x.arity())
         throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);
-    return await x.call(args);
+    return x.call(args);
 }
 
 export class Gníomh implements Callable {
@@ -113,10 +113,10 @@ export class Gníomh implements Callable {
     arity() {
         return this.args.length;
     }
-    async call(args : Value[]) : Promise<Value> {
+    call(args : Value[]) : Promise<Value> {
         const env : Environment = new Environment(this.env);
         for(let i = 0; i < args.length; ++i)
             env.define(this.args[i], args[i]);
-        return await this.execFn(this.defn, env);
+        return this.execFn(this.defn, env);
     }
 }

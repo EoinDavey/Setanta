@@ -68,9 +68,10 @@ async function runFile() {
     try {
         await i.interpret(res.ast!);
     } catch (err) {
-        if(err instanceof RuntimeError)
+        if(err instanceof RuntimeError){
             console.error(err);
-        else
+            process.exitCode = 1;
+        }else
             throw err;
     }
 }

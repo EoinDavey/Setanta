@@ -94,167 +94,169 @@ export class Interpreter {
             for(let i = 0; i < externals.length; ++i)
                 this.env.define(externals[i][0], externals[i][1]);
     }
-    async interpret(p : P.Program) {
-        await this.execStmts(p.stmts);
+    interpret(p : P.Program) : Promise<void> {
+        return this.execStmts(p.stmts);
     }
-    async execStmts(stmts : Stmt[]){
-        for(let st of stmts){
-            await this.execStmt(st);
+    execStmts(stmts : Stmt[]) : Promise<void>{
+        const f = (x : Promise<void>, y : Stmt) : Promise<void> => {
+            return x.then(() => this.execStmt(y));
         }
+        return stmts.reduce(f, Promise.resolve());
     }
-    async execStmtBlock(blk : P.BlockStmt) {
-       const prev = this.env;
-        this.env = new Environment(this.env);
-        try {
-            await this.execStmts(blk.blk);
-        } finally {
-            this.env = prev;
-        }
-    }
-    async execStmt(st : P.AsgnStmt | P.NonAsgnStmt) {
-        switch(st.kind) {
-            case ASTKinds.IfStmt:
-                await this.execMá(st);
-                break
-            case ASTKinds.BlockStmt:
-                await this.execStmtBlock(st);
-                break;
-            case ASTKinds.AssgnStmt:
-                await this.execAssgn(st);
-                break;
-            case ASTKinds.DefnStmt:
-                await this.execDefn(st);
-                break;
-            case ASTKinds.NuairStmt:
-                await this.execNuair(st);
-                break;
-            case ASTKinds.LeStmt:
-                await this.execLeStmt(st);
-                break;
-            case ASTKinds.GniomhStmt:
-                await this.execGniomhStmt(st);
-                break;
-            case ASTKinds.ToradhStmt:
-                await this.execToradhStmt(st);
-                break;
-            case ASTKinds.CCStmt:
-                await this.execCCStmt(st);
-                break;
-            case ASTKinds.BrisStmt:
-                await this.execBrisStmt(st);
-                break;
-            default:
-                await this.evalExpr(st);
-                break;
-        }
-    }
-    execCCStmt(b : P.CCStmt) {
-        throw CCException;
-    }
-    execBrisStmt(b : P.BrisStmt) {
-        throw BrisException;
-    }
-    async execToradhStmt(b : P.ToradhStmt) {
-        throw new Toradh(b.exp ? await this.evalExpr(b.exp) : null);
-    }
-    execGniomhStmt(fn : P.GniomhStmt){
-        const execFn = async (body : Stmt[], env : Environment) : Promise<Value> => {
-            const prev = this.env;
-            this.env = env;
-            try {
-                await this.execStmts(body);
-            } catch(e) {
-                if(e instanceof Toradh)
-                    return e.luach;
-                if(e !== BrisException)
-                    throw e;
-            } finally {
-                this.env = prev;
-            }
-            return null;
-        }
-        const args = fn.args ? this.evalCSIDs(fn.args) : [];
-        const gníomh = new Gníomh(fn.stmts, args, this.env, execFn);
-        this.env.define(fn.id.id, gníomh);
-    }
-    async execNuair(n : P.NuairStmt) {
-        while(Checks.isTrue(await this.evalExpr(n.expr))){
-            try {
-                await this.execStmt(n.stmt);
-            } catch(e) {
-                if(e === BrisException)
-                    break;
-                if(e === CCException)
-                    continue;
-                throw e;
-            }
-        }
-    }
-    async execLeStmt(n : P.LeStmt) {
+    execStmtBlock(blk : P.BlockStmt) : Promise<void> {
         const prev = this.env;
         this.env = new Environment(this.env);
-
-        const strt = Asserts.assertNumber(await this.evalExpr(n.strt));
-        const end = Asserts.assertNumber(await this.evalExpr(n.end));
-
-        try {
-            for(let i = strt; i < end; ++i) {
-                this.env.define(n.id.id, i);
-                try {
-                    await this.execStmt(n.stmt);
-                } catch(e) {
-                    if(e === BrisException)
-                        break;
-                    if(e === CCException)
-                        continue;
-                    throw e;
-                }
+        return this.execStmts(blk.blk).finally(()=> this.env = prev);
+    }
+    execStmt(st : P.AsgnStmt | P.NonAsgnStmt) : Promise<void> {
+        switch(st.kind) {
+            case ASTKinds.IfStmt:
+                return this.execMá(st);
+            case ASTKinds.BlockStmt:
+                return this.execStmtBlock(st);
+            case ASTKinds.AssgnStmt:
+                return this.execAssgn(st);
+            case ASTKinds.DefnStmt:
+                return this.execDefn(st);
+            case ASTKinds.NuairStmt:
+                return this.execNuair(st);
+            case ASTKinds.LeStmt:
+                return this.execLeStmt(st);
+            case ASTKinds.GniomhStmt:
+                return this.execGniomhStmt(st);
+            case ASTKinds.ToradhStmt:
+                return this.execToradhStmt(st);
+            case ASTKinds.CCStmt:
+                return this.execCCStmt(st);
+            case ASTKinds.BrisStmt:
+                return this.execBrisStmt(st);
+            default:
+                return this.evalExpr(st).then(x=>{});
+        }
+    }
+    execCCStmt(b : P.CCStmt) : Promise<void> {
+        throw CCException;
+    }
+    execBrisStmt(b : P.BrisStmt) : Promise<void> {
+        throw BrisException;
+    }
+    execToradhStmt(b : P.ToradhStmt) : Promise<void> {
+        if(b.exp)
+            return this.evalExpr(b.exp).then(v => { throw new Toradh(v) });
+        return new Promise(r => { throw new Toradh(null) });
+    }
+    execGniomhStmt(fn : P.GniomhStmt) : Promise<void> {
+        return new Promise(r => {
+            const execFn = (body : Stmt[], env : Environment) : Promise<Value> => {
+                const prev = this.env;
+                this.env = env;
+                return this.execStmts(body).then(e => null).catch(e => {
+                    if(e instanceof Toradh)
+                        return e.luach;
+                    if(e !== BrisException)
+                        throw e;
+                    return null;
+                }).finally(() => {
+                    this.env = prev
+                });
             }
-        } finally {
-            this.env = prev;
-        }
+            const args = fn.args ? this.evalCSIDs(fn.args) : [];
+            const gníomh = new Gníomh(fn.stmts, args, this.env, execFn);
+            this.env.define(fn.id.id, gníomh);
+            r();
+        });
     }
-    async execMá(f : P.IfStmt) {
-        const v = await this.evalExpr(f.expr);
-        if(Checks.isTrue(v)){
-            await this.execStmt(f.stmt);
-            return;
-        }
-        if(!f.elsebranch)
-            return;
-        await this.execStmt(f.elsebranch.stmt);
+    execNuair(n : P.NuairStmt) : Promise<void> {
+        const step = () : Promise<void> => this.execStmt(n.stmt);
+        const run : () => Promise<void> = () => this.evalExpr(n.expr).then(x => {
+            if(!x)
+                return Promise.resolve();
+            return step().then(
+                () => run()
+            ).catch(e => {
+                if(e === BrisException)
+                    return Promise.resolve();
+                if(e === CCException)
+                    return run();
+                throw e;
+            });
+        });
+        return run();
     }
-    async execDefn(a : P.DefnStmt) {
-        const val = await this.evalExpr(a.expr);
-        this.env.define(a.id.id, val);
-    }
-    async execAssgn(a : P.AssgnStmt) {
-        const val = await this.evalExpr(a.expr);
-        if(a.id.ops.length){
-            let rt : Value = this.evalID(a.id.id);
-            const ops = a.id.ops;
-            // Eval all but last postfix operand
-            for(let i = 0; i < ops.length-1; ++i){
-                const op = ops[i];
-                if('args' in op){
-                    rt = await callFunc(rt, op.args ? await this.evalCSArgs(op.args) : []);
-                } else {
-                    rt = await this.idxList(rt, op.expr);
+    execLeStmt(n : P.LeStmt) : Promise<void> {
+        const prev = this.env
+        this.env = new Environment(this.env);
+
+        return this.evalExpr(n.strt).then(
+            st => this.evalExpr(n.end).then(
+                end => {
+                    const s = Asserts.assertNumber(st);
+                    const e = Asserts.assertNumber(end);
+
+                    const step = () : Promise<void> => this.execStmt(n.stmt);
+                    const run : (i : number) => Promise<void> = (i : number) => {
+                        if(i >= e)
+                            return Promise.resolve();
+                        this.env.define(n.id.id, i);
+                        return step().then(
+                            () => run(i+1)
+                        ).catch(e => {
+                            if(e === BrisException)
+                                return Promise.resolve();
+                            if(e === CCException)
+                                return run(i + 1);
+                            throw e;
+                        });
+                    };
+                    return run(s);
                 }
-            }
-            // Last operand must be array lookup
-            const op = ops[ops.length-1];
-            if(!('expr' in op))
-                throw new RuntimeError(`Cannot assign to function call`);
-            // Get array
-            const arr = Asserts.assertLiosta(rt);
-            const idx = Asserts.assertNumber(await this.evalExpr(op.expr));
-            if(idx < 0 || idx >= arr.length)
-                throw new RuntimeError(`Index ${idx} out of bounds`);
-            arr[idx] = val;
-        } else {
-            this.env.assign(a.id.id.id, val);
+            )
+        ).finally(() => this.env = prev);
+    }
+    execMá(f : P.IfStmt) : Promise<void> {
+        return this.evalExpr(f.expr).then(v => {
+            if(Checks.isTrue(v))
+                return this.execStmt(f.stmt);
+            if(!f.elsebranch)
+                return;
+            return this.execStmt(f.elsebranch.stmt);
+        });
+    }
+    execDefn(a : P.DefnStmt) : Promise<void> {
+        return this.evalExpr(a.expr).then(val => this.env.define(a.id.id, val));
+    }
+    execAssgn(a : P.AssgnStmt) {
+        const f = (x : Promise<Value>, y : P.PostOp) : Promise<Value> => {
+            return x.then(x => {
+                if('args' in y){
+                    if(y.args){
+                        return this.evalCSArgs(y.args).then(y => {
+                            return callFunc(x, y);
+                        });
+                    }
+                    return callFunc(x, []);
+                }
+                return this.idxList(x, y.expr);
+            });
         }
+        const ops = a.id.ops;
+        if(ops.length){
+            return this.evalExpr(a.expr).then(val =>
+                ops.slice(0, ops.length-1).reduce(f,
+                Promise.resolve(this.evalID(a.id.id))).then(rt => {
+                const op = ops[ops.length - 1];
+                if(!('expr' in op))
+                    throw new RuntimeError(`Cannot assign to function call`);
+                const arr = Asserts.assertLiosta(rt);
+                this.evalExpr(op.expr).then(x => {
+                    const idx = Asserts.assertNumber(x);
+                    if(idx < 0 || idx >= arr.length)
+                        throw new RuntimeError(`Index ${idx} out of bounds`);
+                    arr[idx] = val;
+                })
+            }));
+        }
+        return this.evalExpr(a.expr).then(x => this.env.assign(a.id.id.id, x));
     }
     evalBinOp(a : Value, b : Value, op : string) : Value {
         const g = binOpTable.get(op);
@@ -264,88 +266,98 @@ export class Interpreter {
                     return x.op(a, b);
         throw new RuntimeError(`Can't apply ${op} to ${a} and ${b}`);
     }
-
     evalExpr(expr : P.Expr) : Promise<Value> {
         return this.evalAnd(expr);
     }
-
-    async evalAnd(o : P.And) : Promise<Value> {
-        var head = await this.evalOr(o.head);
-        for(let x of o.tail){
-            if(!head)
-                break;
-            head = head && await this.evalOr(x.trm);
-        }
-        return head;
+    evalAnd(o : P.And) : Promise<Value> {
+        return o.tail.reduce((x : Promise<Value>, y : P.And_$0) : Promise<Value> => 
+            x.then(x => {
+                if(!x)
+                    return x;
+                return this.evalOr(y.trm);
+            })
+            , this.evalOr(o.head));
     }
-    async evalOr(o : P.Or) : Promise<Value> {
-        var head = await this.evalEq(o.head);
-        for(let x of o.tail){
-            if(head)
-                break;
-            head = head || await this.evalEq(x.trm);
-        }
-        return head;
+    evalOr(o : P.Or) : Promise<Value> {
+        return o.tail.reduce((x : Promise<Value>, y : P.Or_$0) : Promise<Value> => 
+            x.then(x => {
+                if(x)
+                    return x;
+                return this.evalEq(y.trm);
+            })
+            , this.evalEq(o.head));
     }
-    async evalEq(e : P.Eq) : Promise<Value> {
-        return e.tail.reduce(async (x : Promise<Value>, y : P.Eq_$0) : Promise<Value> => {
-            const at = await this.evalComp(y.trm);
-            const eq = Checks.isEqual(await x, at);
-            return y.op === '==' ? eq : !eq;
-        }, this.evalComp(e.head));
+    evalEq(e : P.Eq) : Promise<Value> {
+        return e.tail.reduce((x : Promise<Value>, y : P.Eq_$0) : Promise<Value> =>
+            x.then(a => this.evalComp(y.trm).then(b => {
+                const eq = Checks.isEqual(a, b);
+                return y.op === '==' ? eq : !eq;
+            }))
+        , this.evalComp(e.head));
     }
-    async evalComp(p : P.Comp) : Promise<Value> {
-        return p.tail.reduce(async (x : Promise<Value>, y : P.Comp_$0) : Promise<Value> => {
-            return this.evalBinOp(await x, await this.evalSum(y.trm), y.op);
-        }, this.evalSum(p.head));
+    evalComp(p : P.Comp) : Promise<Value> {
+        return p.tail.reduce((x : Promise<Value>, y : P.Comp_$0) : Promise<Value> =>
+            x.then(a => this.evalSum(y.trm).then(b => this.evalBinOp(a, b, y.op))),
+            this.evalSum(p.head));
     }
-    async evalSum(p : P.Sum) : Promise<Value> {
-        return p.tail.reduce(async (x : Promise<Value>, y : P.Sum_$0) : Promise<Value> =>
-            this.evalBinOp(await x, await this.evalProduct(y.trm), y.op), this.evalProduct(p.head));
+    evalSum(p : P.Sum) : Promise<Value> {
+        return p.tail.reduce((x : Promise<Value>, y : P.Sum_$0) : Promise<Value> =>
+            x.then(a => this.evalProduct(y.trm).then(b => this.evalBinOp(a, b, y.op))),
+            this.evalProduct(p.head));
     }
-    async evalProduct(p : P.Product) : Promise<Value> {
-        return p.tail.reduce(async (x : Promise<Value>, y : P.Product_$0) : Promise<Value> => {
-            return this.evalBinOp(await x, await this.evalPrefix(y.trm), y.op)
-        }, this.evalPrefix(p.head));
+    evalProduct(p : P.Product) : Promise<Value> {
+        return p.tail.reduce((x : Promise<Value>, y : P.Product_$0) : Promise<Value> =>
+            x.then(a => this.evalPrefix(y.trm).then(b => this.evalBinOp(a, b, y.op)))
+            , this.evalPrefix(p.head));
     }
-    async evalPostfix(p : P.Postfix) : Promise<Value> {
-        const v = async (x : Promise<Value>, y : P.PostOp) : Promise<Value> => {
-            if('args' in y){
-                return callFunc(await x, await (y.args ? await this.evalCSArgs(y.args) : []));
-            }
-            return await this.idxList(await x, y.expr);
+    evalPostfix(p : P.Postfix) : Promise<Value> {
+        const v = (x : Promise<Value>, y : P.PostOp) : Promise<Value> => {
+            return x.then(x => {
+                if('args' in y){
+                    if(y.args){
+                        return this.evalCSArgs(y.args).then(y => {
+                            return callFunc(x, y);
+                        });
+                    }
+                    return callFunc(x, []);
+                }
+                return this.idxList(x, y.expr);
+            });
         }
         return p.ops.reduce(v, this.evalAtom(p.at));
     }
-    async evalPrefix(p : P.Prefix) : Promise<Value> {
-        const pf = await this.evalPostfix(p.pf);
-        if(p.op === '-')
-            return -Asserts.assertNumber(pf);
-        if(p.op === '!')
-            return !Checks.isTrue(pf);
-        return pf;
+    evalPrefix(p : P.Prefix) : Promise<Value> {
+        return this.evalPostfix(p.pf).then(pf => {
+            if(p.op === '-')
+                return -Asserts.assertNumber(pf);
+            if(p.op === '!')
+                return !Checks.isTrue(pf);
+            return pf;
+        });
     }
-    async idxList(x : Value, idx : P.Expr) : Promise<Value> {
+    idxList(x : Value, idx : P.Expr) : Promise<Value> {
         const ls = Asserts.assertIndexable(x);
-        const v = Asserts.assertNumber(await this.evalExpr(idx));
-        if(v < 0 || v >= ls.length)
-            throw new RuntimeError(`Index ${v} out of bounds`);
-        return ls[v];
+        return this.evalExpr(idx).then(v => {
+            v = Asserts.assertNumber(v);
+            if(v < 0 || v >= ls.length)
+                throw new RuntimeError(`Index ${v} out of bounds`);
+            return ls[v];
+        });
     }
-    async evalAtom(at : P.Atom) : Promise<Value> {
+    evalAtom(at : P.Atom) : Promise<Value> {
         switch(at.kind){
             case ASTKinds.Int:
-                return this.evalInt(at);
+                return Promise.resolve(this.evalInt(at));
             case ASTKinds.Bool:
-                return this.evalBool(at);
+                return Promise.resolve(this.evalBool(at));
             case ASTKinds.ID:
-                return this.evalID(at);
+                return Promise.resolve(this.evalID(at));
             case ASTKinds.ListLit:
-                return this.evalListLit(at);
+                return Promise.resolve(this.evalListLit(at));
             case ASTKinds.Litreacha:
-                return this.evalLitreacha(at);
+                return Promise.resolve(this.evalLitreacha(at));
             case ASTKinds.Neamhni:
-                return null;
+                return Promise.resolve(null);
         }
         return this.evalExpr(at.trm);
     }
@@ -353,14 +365,16 @@ export class Interpreter {
         return unescapeChars(ls.val);
     }
     evalListLit(ls : P.ListLit) : Promise<Value> {
-        return ls.els ? this.evalCSArgs(ls.els) : new Promise(r => r([]));
+        return ls.els ? this.evalCSArgs(ls.els) : Promise.resolve([]);
     }
-    async evalCSArgs(args : P.CSArgs) : Promise<Value[]> {
-        const ls : Value [] = [await this.evalExpr(args.head)];
-        for(let x of args.tail) {
-            ls.push(await this.evalExpr(x.exp));
-        }
-        return ls;
+    evalCSArgs(args : P.CSArgs) : Promise<Value[]> {
+        return args.tail.reduce((x : Promise<Value[]>, y : P.CSArgs_$0) : Promise<Value[]> => {
+            return x.then(ls => {
+                return this.evalExpr(y.exp).then(v => {
+                    return ls.concat([v]);
+                });
+            });
+        }, this.evalExpr(args.head).then(x => [x]));
     }
     evalCSIDs(ids : P.CSIDs) : string[] {
         return [ids.head.id].concat(ids.tail.map(x=>x.id.id));
