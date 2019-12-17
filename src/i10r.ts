@@ -221,31 +221,37 @@ export class Interpreter {
     execDefn(a : P.DefnStmt, env : Environment) : Promise<void> {
         return this.evalExpr(a.expr, env).then(val => env.define(a.id.id, val));
     }
-    async execAssgn(a : P.AssgnStmt, env : Environment) {
-        const val = await this.evalExpr(a.expr, env);
-        const ops = a.id.ops;
-        if(ops.length){
-            let rt = await this.evalID(a.id.id, env);
-            for(let i = 0; i < ops.length - 1; ++i){
-                const op = ops[i];
-                if('args' in op) {
-                    const args = op.args ? await this.evalCSArgs(op.args, env) : [];
-                    rt = await callFunc(rt, args);
-                } else {
-                    rt = await this.idxList(rt, op.expr, env);
-                }
+    execAssgn(a : P.AssgnStmt, env : Environment) {
+        return this.evalExpr(a.expr, env).then(val => {
+            const ops : P.PostOp[] = a.id.ops;
+            const f = (x : Promise<Value>, op : P.PostOp) : Promise<Value> => {
+                return x.then(v => {
+                    if('args' in op) {
+                        if(op.args)
+                            return this.evalCSArgs(op.args, env).then(args => {
+                                return callFunc(v, args);
+                            })
+                        return callFunc(v, []);
+                    }
+                    return this.idxList(v, op.expr, env);
+                });
             }
-            const op = ops[ops.length-1];
-            if(!('expr' in op))
-                throw new RuntimeError(`Cannot assign to function val`);
-            const arr = Asserts.assertLiosta(rt);
-            const idx = Asserts.assertNumber(await this.evalExpr(op.expr, env));
-            if(idx < 0 || idx >= arr.length)
-                throw new RuntimeError(`Index ${goLitreacha(idx)} out of bounds`);
-            arr[idx] = val;
-        } else {
-            env.assign(a.id.id.id, await val);
-        }
+            if(ops.length){
+                const v : Promise<Value> = ops.slice(0, ops.length-1).reduce(f, Promise.resolve(this.evalID(a.id.id, env)));
+                return v.then(rt => {
+                    const op = ops[ops.length-1];
+                    if(!('expr' in op))
+                        throw new RuntimeError(`Cannot assign to function val`);
+                    const arr = Asserts.assertLiosta(rt);
+                    return this.evalExpr(op.expr, env).then(x => {
+                        const idx = Asserts.assertNumber(x);
+                        arr[idx] = val;
+                    });
+                });
+            } else {
+                env.assign(a.id.id.id, val);
+            }
+        })
     }
     evalBinOp(a : Value, b : Value, op : string) : Value {
         const g = binOpTable.get(op);
