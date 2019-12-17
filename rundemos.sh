@@ -1,6 +1,7 @@
 #!/bin/bash
-for i in demos/*; do
-    if ! time yes | node node_build/cli.js $i > /dev/null; then
+for i in demos/*.set; do
+    f=${i##*/}
+    if ! node node_build/cli.js $i < demos/inputs/${f//.set/.in} | diff - demos/outputs/${f//.set/.out}; then
         exit 1;
     fi;
 done;

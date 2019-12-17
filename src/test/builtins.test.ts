@@ -15,7 +15,7 @@ test('test fad', async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await i.evalExpr(res!);
+        const got = await i.evalExpr(res!, i.global);
         expect(got).toEqual(c.exp);
     }
 });
@@ -34,7 +34,7 @@ test('test roinn', async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await i.evalExpr(res!);
+        const got = await i.evalExpr(res!, i.global);
         expect(got).toEqual(c.exp);
     }
 });
@@ -54,7 +54,7 @@ test('test cuid', async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await i.evalExpr(res!);
+        const got = await i.evalExpr(res!, i.global);
         expect(got).toEqual(c.exp);
     }
 });
@@ -74,7 +74,7 @@ test('test go_uimh', async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await i.evalExpr(res!);
+        const got = await i.evalExpr(res!, i.global);
         expect(got).toEqual(c.exp);
     }
 });
@@ -93,7 +93,7 @@ test('test go_lit', async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await i.evalExpr(res!);
+        const got = await i.evalExpr(res!, i.global);
         expect(got).toEqual(c.exp);
     }
 });
