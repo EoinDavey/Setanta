@@ -241,7 +241,7 @@ export class Interpreter {
                 return v.then(rt => {
                     const op = ops[ops.length-1];
                     if(!('expr' in op))
-                        throw new RuntimeError(`Cannot assign to function val`);
+                        throw new RuntimeError(`Cannot assign to function`);
                     const arr = Asserts.assertLiosta(rt);
                     return this.evalExpr(op.expr, env).then(x => {
                         const idx = Asserts.assertNumber(x);

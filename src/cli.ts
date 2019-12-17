@@ -9,21 +9,13 @@ import * as fs from 'fs';
 
 const [,, ...args] = process.argv;
 
-function getLine(rl : readline.Interface, ceist : string) : Promise<string> {
-    return new Promise(resolve => {
-        rl.question(ceist, resp => {
-            resolve(resp);
-        });
-    });
-}
-
-function getExternals(ceistfn : (s : string) => Promise<string>) : [string[], Value][]{
+function getExternals(léighfn : () => Promise<string|null>) : [string[], Value][]{
     return [
         [
             ['scríobh', 'scriobh'], {
                 ainm: 'scríobh',
                 arity : () => -1,
-                call : async (args : Value[]) : Promise<Value> => {
+                call : async (args : Value[]) : Promise<string|null> => {
                     console.log(...args.map(goLitreacha));
                     return null;
                 }
@@ -33,8 +25,9 @@ function getExternals(ceistfn : (s : string) => Promise<string>) : [string[], Va
             ['ceist'], {
                 ainm: 'ceist',
                 arity : () => 1,
-                call : (args : Value[]) : Promise<Value> => {
-                    return ceistfn(Asserts.assertLitreacha(args[0]));
+                call : (args : Value[]) : Promise<string|null> => {
+                    process.stdout.write(Asserts.assertLitreacha(args[0]));
+                    return léighfn();
                 }
             },
         ],
@@ -43,19 +36,29 @@ function getExternals(ceistfn : (s : string) => Promise<string>) : [string[], Va
                 ainm: 'léigh_líne',
                 arity : () => 0,
                 call : (args : Value[]) : Promise<Value> => {
-                    return ceistfn('');
+                    return léighfn();
                 }
             },
         ],
     ];
 }
 
-async function repl(rl : readline.Interface) {
-    const ceistFn = (s : string) => getLine(rl, s);
-    const i = new Interpreter(getExternals(ceistFn));
+async function repl() {
+    const rl : readline.Interface = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+    const getLine = () : Promise<string|null> => {
+        return new Promise(r => {
+            rl.question('λ: ', resp => r(resp));
+        });
+    }
+    const i = new Interpreter(getExternals(getLine));
     while(true){
-        const res = await getLine(rl, 'λ: ');
-        const parser = new Parser(res);
+        const res = await getLine();
+        if(!res)
+            break;
+        const parser = new Parser(res as string);
         const p = parser.parse();
         if(p.err){
             console.log(''+p.err);
@@ -77,7 +80,7 @@ async function repl(rl : readline.Interface) {
     }
 }
 
-async function runFile(rl : readline.Interface) {
+async function runFile() {
     const inFile = fs.readFileSync(args[0], { encoding: 'utf8' });
     const parser = new Parser(inFile);
     const res = parser.parse();
@@ -86,9 +89,20 @@ async function runFile(rl : readline.Interface) {
         process.exitCode = 1;
         return;
     }
-
-    const ceistFn = (s : string) => getLine(rl, s);
-    const i = new Interpreter(getExternals(ceistFn));
+    const rl : readline.Interface = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        terminal : false
+    });
+    const it : AsyncIterableIterator<string> = rl[Symbol.asyncIterator]();
+    const léigh = () : Promise<string|null> => { 
+        return it.next().then(res => {
+            if(res.done)
+                return null;
+            return res.value;
+        });
+    }
+    const i = new Interpreter(getExternals(léigh));
 
     try {
         await i.interpret(res.ast!);
@@ -104,14 +118,10 @@ async function runFile(rl : readline.Interface) {
 }
 
 async function main() {
-    const rl : readline.Interface = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-    if(args.length > 0)
-        runFile(rl);
-    else{
-        repl(rl);
+    if(args.length > 0) {
+        runFile();
+    } else{
+        repl();
     }
 }
 
