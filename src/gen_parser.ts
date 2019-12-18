@@ -46,7 +46,7 @@
 * Atom        :=  _ '\(' trm=Expr '\)'
 *              | Litreacha
 *              | Int
-*              | ID
+*              | ObjLookups
 *              | Bool
 *              | Neamhni
 *              | ListLit
@@ -64,6 +64,7 @@
 * Neamhni     := _ 'neamhn[ií]'
 * Int         := _ int='-?[0-9]+'
 * Litreacha   := _ '\'' val='([^\'\\]|(\\.))*' '\''
+* ObjLookups  := _ head=ID tail={_ '@' id=ID}*
 * _           := '(?:\s|>--(?:(?!--<).)*(--<|\n))*'
 * gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'
 */
@@ -155,6 +156,8 @@ export enum ASTKinds {
     Neamhni,
     Int,
     Litreacha,
+    ObjLookups,
+    ObjLookups_$0,
     _,
     gap,
 }
@@ -321,7 +324,7 @@ export interface Atom_1 {
 }
 export type Atom_2 = Litreacha;
 export type Atom_3 = Int;
-export type Atom_4 = ID;
+export type Atom_4 = ObjLookups;
 export type Atom_5 = Bool;
 export type Atom_6 = Neamhni;
 export type Atom_7 = ListLit;
@@ -385,6 +388,15 @@ export interface Int {
 export interface Litreacha {
     kind : ASTKinds.Litreacha;
     val : string;
+}
+export interface ObjLookups {
+    kind : ASTKinds.ObjLookups;
+    head : ID;
+    tail : ObjLookups_$0[];
+}
+export interface ObjLookups_$0 {
+    kind : ASTKinds.ObjLookups_$0;
+    id : ID;
 }
 export type _ = string;
 export type gap = string;
@@ -1118,7 +1130,7 @@ export class Parser {
         return this.matchInt($$dpth + 1, cr);
     }
     matchAtom_4($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_4> {
-        return this.matchID($$dpth + 1, cr);
+        return this.matchObjLookups($$dpth + 1, cr);
     }
     matchAtom_5($$dpth : number, cr? : ContextRecorder) : Nullable<Atom_5> {
         return this.matchBool($$dpth + 1, cr);
@@ -1360,6 +1372,39 @@ export class Parser {
                     && this.regexAccept(String.raw`\'`, $$dpth+1, cr) != null
                 )
                     res = {kind: ASTKinds.Litreacha, val : val};
+                return res;
+            }, cr)();
+    }
+    matchObjLookups($$dpth : number, cr? : ContextRecorder) : Nullable<ObjLookups> {
+        return this.runner<ObjLookups>($$dpth,
+            (log) => {
+                if(log)
+                    log('ObjLookups');
+                let head : Nullable<ID>;
+                let tail : Nullable<ObjLookups_$0[]>;
+                let res : Nullable<ObjLookups> = null;
+                if(true
+                    && this.match_($$dpth + 1, cr) != null
+                    && (head = this.matchID($$dpth + 1, cr)) != null
+                    && (tail = this.loop<ObjLookups_$0>(()=> this.matchObjLookups_$0($$dpth + 1, cr), true)) != null
+                )
+                    res = {kind: ASTKinds.ObjLookups, head : head, tail : tail};
+                return res;
+            }, cr)();
+    }
+    matchObjLookups_$0($$dpth : number, cr? : ContextRecorder) : Nullable<ObjLookups_$0> {
+        return this.runner<ObjLookups_$0>($$dpth,
+            (log) => {
+                if(log)
+                    log('ObjLookups_$0');
+                let id : Nullable<ID>;
+                let res : Nullable<ObjLookups_$0> = null;
+                if(true
+                    && this.match_($$dpth + 1, cr) != null
+                    && this.regexAccept(String.raw`@`, $$dpth+1, cr) != null
+                    && (id = this.matchID($$dpth + 1, cr)) != null
+                )
+                    res = {kind: ASTKinds.ObjLookups_$0, id : id};
                 return res;
             }, cr)();
     }

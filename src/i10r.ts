@@ -345,8 +345,8 @@ export class Interpreter {
                 return Promise.resolve(this.evalInt(at));
             case ASTKinds.Bool:
                 return Promise.resolve(this.evalBool(at));
-            case ASTKinds.ID:
-                return Promise.resolve(this.evalID(at, env));
+            case ASTKinds.ObjLookups:
+                return Promise.resolve(this.evalObjLookups(at, env));
             case ASTKinds.ListLit:
                 return Promise.resolve(this.evalListLit(at, env));
             case ASTKinds.Litreacha:
@@ -355,6 +355,19 @@ export class Interpreter {
                 return Promise.resolve(null);
         }
         return this.evalExpr(at.trm, env);
+    }
+    evalObjLookups(o : P.ObjLookups, env : Environment) : Value {
+        if(o.tail.length === 0)
+            return this.evalID(o.head, env);
+        const tail = o.tail.map(x => x.id);
+        const h = tail[tail.length - 1];
+        tail.pop();
+        const rev = tail.reverse()
+        rev.push(o.head);
+        return rev.reduce((x : Value, y : P.ID) => {
+                const obj = Asserts.assertObj(x);
+                return obj.getAttr(y.id);
+        }, this.evalID(h, env));
     }
     evalLitreacha(ls : P.Litreacha) : Value {
         return unescapeChars(ls.val);

@@ -563,3 +563,51 @@ test('test arrays', async () => {
         expect(i.global.get('res')).toEqual(c.exp);
     }
 });
+
+test('test obj lookups', async () => {
+    interface tc { inp: string, exp: Value, env?: Environment};
+    const cases : tc[] = [
+        { 
+            inp : 'res := a@b', exp : true,
+            env : Environment.from([
+                ['b', { ainm: 'b', getAttr: (s : string)=> s === 'a' ? true : null }]
+            ])
+        },
+        { 
+            inp : 'res := b@b', exp : null,
+            env : Environment.from([
+                ['b', { ainm: 'b', getAttr: (s : string)=> s === 'a' ? true : null }]
+            ])
+        },
+        { 
+            inp : 'res := a@b@c()[0]', exp : '0',
+            env : Environment.from([
+                ['c', {
+                    ainm: 'c', getAttr: (s : string) => s === 'b' ? 
+                        {
+                            ainm: '',
+                            getAttr: (s : string) => s === 'a' ? {
+                                ainm: '',
+                                arity: ()=>0,
+                                call: (args : Value[]) : Promise<Value> => {
+                                    return Promise.resolve('0');
+                                }
+                            }: null,
+                        }
+                    : null
+                }]
+            ])
+        }
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        if(c.env)
+            i.global = c.env;
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        await i.interpret(res.ast!);
+        expect(i.global.get('res')).toEqual(c.exp);
+    }
+});

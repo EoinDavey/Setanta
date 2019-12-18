@@ -3,7 +3,7 @@ import { Environment } from './env';
 import { Interpreter } from './i10r';
 import { RuntimeError } from './error';
 
-export type Value = number | boolean | Callable | null | ValLs | string;
+export type Value = number | boolean | Callable | null | ValLs | string | Obj;
 interface ValLs extends Array<Value> {}
 
 export type TypeCheck = (v : Value) => boolean
@@ -24,7 +24,11 @@ export namespace Checks {
     }
 
     export function isCallable(v : Value) : v is Callable {
-        return !(v === null || isNumber(v) || isBool(v) || isLitreacha(v) || isLiosta(v));
+        return !(v === null || isNumber(v) || isBool(v) || isLitreacha(v) || isLiosta(v)) && 'call' in v;
+    }
+
+    export function isObj(v : Value) : v is Obj {
+        return !(v === null || isNumber(v) || isBool(v) || isLitreacha(v) || isLiosta(v)) && 'getAttr' in v;
     }
 
     export function isNumber(v : Value) : v is number {
@@ -73,6 +77,12 @@ export namespace Asserts {
         throw new RuntimeError(`${x} is not callable`);
     }
 
+    export function assertObj(x : Value) : Obj {
+        if(Checks.isObj(x))
+            return x;
+        throw new RuntimeError(`${x} is not callable`);
+    }
+
     export function assertComparable(a : Value) : Comparable {
         if(Checks.isComparable(a))
             return a;
@@ -90,6 +100,11 @@ export interface Callable {
     ainm : string;
     arity : () => number;
     call: (args : Value[]) => Promise<Value>;
+}
+
+export interface Obj {
+    ainm: string;
+    getAttr: (id : string) => Value;
 }
 
 export function callFunc(x : Value, args : Value[]) : Promise<Value> {
@@ -135,5 +150,7 @@ export function goLitreacha(v : Value) : string {
         return 'neamhní';
     if(Checks.isLiosta(v))
         return `[${v.map(goLitreacha).join(',')}]`;
-    return `< gníomh ${v.ainm} >`;
+    if(Checks.isCallable(v))
+        return `< gníomh ${v.ainm} >`;
+    return `< obj ${v.ainm} >`;
 }
