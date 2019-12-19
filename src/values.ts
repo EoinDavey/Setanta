@@ -141,7 +141,7 @@ export class Gníomh implements Callable {
 
 export function goLitreacha(v : Value) : string {
     if(Checks.isLitreacha(v))
-        return `'${v}'`;
+        return v;
     if(Checks.isNumber(v))
         return v.toString();
     if(Checks.isBool(v))
