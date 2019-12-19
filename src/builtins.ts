@@ -1,4 +1,4 @@
-import { goLitreacha, callFunc, Value, Asserts, Checks } from './values';
+import { ObjWrap, goLitreacha, callFunc, Value, Asserts, Checks } from './values';
 import { RuntimeError } from './error';
 import { athchuir } from './litreacha';
 
@@ -85,5 +85,21 @@ export const Builtins : [string, Value][] = [
                 return Promise.resolve(goLitreacha(args[0]));
             }
         }
-    ]
+    ],
+    [
+        "mata", new ObjWrap("mata", [
+            ["pi",Math.PI],
+            ["e",Math.E],
+            [
+                "cearn", {
+                    ainm : "cearn",
+                    arity: () => 1,
+                    call: (args : Value[]) : Promise<number> => {
+                        const x = Asserts.assertNumber(args[0]);
+                        return Promise.resolve(x * x);
+                    }
+                },
+            ],
+        ])
+    ],
 ];

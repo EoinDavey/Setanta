@@ -64,7 +64,7 @@
 * Neamhni     := _ 'neamhn[ií]'
 * Int         := _ int='-?[0-9]+'
 * Litreacha   := _ '\'' val='([^\'\\]|(\\.))*' '\''
-* ObjLookups  := _ head=ID tail={_ '@' id=ID}*
+* ObjLookups  := _ head=ID tail={'@' !gap id=ID}*
 * _           := '(?:\s|>--(?:(?!--<).)*(--<|\n))*'
 * gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'
 */
@@ -1400,8 +1400,8 @@ export class Parser {
                 let id : Nullable<ID>;
                 let res : Nullable<ObjLookups_$0> = null;
                 if(true
-                    && this.match_($$dpth + 1, cr) != null
                     && this.regexAccept(String.raw`@`, $$dpth+1, cr) != null
+                    && this.negate(() => this.matchgap($$dpth + 1, cr)) != null
                     && (id = this.matchID($$dpth + 1, cr)) != null
                 )
                     res = {kind: ASTKinds.ObjLookups_$0, id : id};

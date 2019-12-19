@@ -97,3 +97,21 @@ test('test go_lit', async () => {
         expect(got).toEqual(c.exp);
     }
 });
+
+test('test mata', async () => {
+    interface tc { inp: string, exp: Value}
+    const cases : tc[] = [
+        { inp : "cearn@mata(5)", exp : 25 },
+        { inp : "pi@mata", exp : Math.PI },
+        { inp : "e@mata", exp : Math.E },
+        { inp : "cearn@mata(pi@mata)", exp : Math.PI*Math.PI }
+    ];
+    for(let c of cases){
+        const i = new Interpreter();
+        const p = new Parser(c.inp);
+        const res = p.matchExpr(0);
+        expect(res).not.toBeNull();
+        const got = await i.evalExpr(res!, i.global);
+        expect(got).toEqual(c.exp);
+    }
+});

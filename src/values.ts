@@ -139,6 +139,18 @@ export class Gníomh implements Callable {
     }
 }
 
+export class ObjWrap implements Obj {
+    ainm : string;
+    attrs : Map<string, Value>;
+    constructor(ainm : string, attrs : [string, Value][]) {
+        this.ainm = ainm;
+        this.attrs = new Map(attrs);
+    }
+    getAttr(id : string) : Value {
+        return this.attrs.get(id) || null;
+    }
+}
+
 export function goLitreacha(v : Value) : string {
     if(Checks.isLitreacha(v))
         return v;

@@ -62,6 +62,6 @@ Bool        := _ bool='f[ií]or|breag'
 Neamhni     := _ 'neamhn[ií]'
 Int         := _ int='-?[0-9]+'
 Litreacha   := _ '\'' val='([^\'\\]|(\\.))*' '\''
-ObjLookups  := _ head=ID tail={_ '@' id=ID}*
+ObjLookups  := _ head=ID tail={'@' !gap id=ID}*
 _           := '(?:\s|>--(?:(?!--<).)*(--<|\n))*'
 gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'
