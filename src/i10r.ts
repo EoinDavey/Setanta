@@ -391,7 +391,7 @@ export class Interpreter {
         return env.get(id.id);
     }
     evalBool(b : P.Bool) : boolean {
-        return b.bool === 'fíor' || b.bool == 'fior';
+        return b.bool === 'fíor' || b.bool === 'fior';
     }
     evalInt(i : P.Int) : number {
         return parseInt(i.int);
