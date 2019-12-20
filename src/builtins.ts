@@ -100,6 +100,26 @@ export const Builtins : [string, Value][] = [
                     }
                 },
             ],
+            [
+                "fréamh", {
+                    ainm : "fréamh",
+                    arity: () => 1,
+                    call: (args : Value[]) : Promise<number> => {
+                        const x = Asserts.assertNumber(args[0]);
+                        return Promise.resolve(Math.sqrt(x * x));
+                    }
+                },
+            ],
+            [
+                "freamh", {
+                    ainm : "fréamh",
+                    arity: () => 1,
+                    call: (args : Value[]) : Promise<number> => {
+                        const x = Asserts.assertNumber(args[0]);
+                        return Promise.resolve(Math.sqrt(x * x));
+                    }
+                },
+            ],
         ])
     ],
 ];
