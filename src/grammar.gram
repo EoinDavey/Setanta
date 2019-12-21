@@ -44,12 +44,12 @@ Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
 Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
 Prefix      := _ op='-|!'? pf=Postfix
-Postfix     := at=Atom ops=PostOp*
+Postfix     := at=ObjLookups ops=PostOp*
 PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 Atom        :=  _ '\(' trm=Expr '\)'
+             | ID
              | Litreacha
              | Int
-             | ObjLookups
              | Bool
              | Neamhni
              | ListLit
@@ -67,6 +67,7 @@ Bool        := _ bool='f[ií]or|breag'
 Neamhni     := _ 'neamhn[ií]'
 Int         := _ int='-?[0-9]+'
 Litreacha   := _ '\'' val='([^\'\\]|(\\.))*' '\''
-ObjLookups  := _ head=ID tail={'@' !gap id=ID}*
-_           := '(?:\s|>--(?:(?!--<).)*(--<|\n))*'
-gap         := '(^|\s|$|[^a-zA-Z0-9áéíóúÁÉÍÓÚ])+'
+ObjLookups  := _ attrs={id=ID '@' !wspace}* root=Atom
+_           := wspace*
+wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n))'
+gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'

@@ -63,8 +63,13 @@ test("test expressions", async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await i.evalExpr(res!, i.global);
-        expect(got).toEqual(c.exp);
+        try {
+            const got = await i.evalExpr(res!, i.global);
+            expect(got).toEqual(c.exp);
+        } catch (e) {
+            console.log(c.inp);
+            throw e;
+        }
     }
 });
 
@@ -631,7 +636,9 @@ test("test obj lookups", async () => {
 test("test creatlach stmt", async () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
-        { inp: `
+        {
+        exp: 25,
+        inp: `
         creatlach A {
             gníomh B(x) {
                 toradh x*x
@@ -639,9 +646,10 @@ test("test creatlach stmt", async () => {
         }
         a := A()
         res := B@a(5)`,
-            exp: 25,
         },
-        { inp: `
+        {
+        exp: "ceart",
+        inp: `
         creatlach A {
             gníomh B() {
                 creatlach C {
@@ -652,11 +660,8 @@ test("test creatlach stmt", async () => {
                 toradh C()
             }
         }
-        a := A()
-        c := B@a()
-        res := D@c()
+        res := D@(B@(A())())()
         `,
-            exp: "ceart",
         },
     ];
     for (const c of cases) {

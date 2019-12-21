@@ -345,7 +345,7 @@ export class Interpreter {
                 return this.idxList(val, y.expr, env);
             });
         };
-        return p.ops.reduce(v, this.evalAtom(p.at, env));
+        return p.ops.reduce(v, this.evalObjLookups(p.at, env));
     }
     public evalPrefix(p: P.Prefix, env: Environment): Promise<Value> {
         return this.evalPostfix(p.pf, env).then((pf) => {
@@ -370,12 +370,12 @@ export class Interpreter {
     }
     public evalAtom(at: P.Atom, env: Environment): Promise<Value> {
         switch (at.kind) {
+            case ASTKinds.ID:
+                return Promise.resolve(this.evalID(at, env));
             case ASTKinds.Int:
                 return Promise.resolve(this.evalInt(at));
             case ASTKinds.Bool:
                 return Promise.resolve(this.evalBool(at));
-            case ASTKinds.ObjLookups:
-                return Promise.resolve(this.evalObjLookups(at, env));
             case ASTKinds.ListLit:
                 return Promise.resolve(this.evalListLit(at, env));
             case ASTKinds.Litreacha:
@@ -385,19 +385,14 @@ export class Interpreter {
         }
         return this.evalExpr(at.trm, env);
     }
-    public evalObjLookups(o: P.ObjLookups, env: Environment): Value {
-        if (o.tail.length === 0) {
-            return this.evalID(o.head, env);
-        }
-        const tail = o.tail.map((x) => x.id);
-        const h = tail[tail.length - 1];
-        tail.pop();
-        const rev = tail.reverse();
-        rev.push(o.head);
-        return rev.reduce((x: Value, y: P.ID) => {
-                const obj = Asserts.assertObj(x);
-                return obj.getAttr(y.id);
-        }, this.evalID(h, env));
+    public evalObjLookups(o: P.ObjLookups, env: Environment): Promise<Value> {
+        return this.evalAtom(o.root, env).then((rt) => {
+            const arr = o.attrs.slice().reverse();
+            return arr.reduce((x: Value, y: P.ObjLookups_$0): Value => {
+                    const obj = Asserts.assertObj(x);
+                    return obj.getAttr(y.id.id);
+            }, rt);
+        });
     }
     public evalLitreacha(ls: P.Litreacha): Value {
         return unescapeChars(ls.val);
