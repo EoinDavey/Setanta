@@ -627,3 +627,48 @@ test("test obj lookups", async () => {
         expect(i.global.get("res")).toEqual(c.exp);
     }
 });
+
+test("test creatlach stmt", async () => {
+    interface TC { inp: string; exp: Value; env?: Environment; }
+    const cases: TC[] = [
+        { inp: `
+        creatlach A {
+            gníomh B(x) {
+                toradh x*x
+            }
+        }
+        a := A()
+        res := B@a(5)`,
+            exp: 25,
+        },
+        { inp: `
+        creatlach A {
+            gníomh B() {
+                creatlach C {
+                    gníomh D() {
+                        toradh 'ceart'
+                    }
+                }
+                toradh C()
+            }
+        }
+        a := A()
+        c := B@a()
+        res := D@c()
+        `,
+            exp: "ceart",
+        },
+    ];
+    for (const c of cases) {
+        const i = new Interpreter();
+        if (c.env) {
+            i.global = c.env;
+        }
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        await i.interpret(res.ast!);
+        expect(i.global.get("res")).toEqual(c.exp);
+    }
+});

@@ -5,6 +5,7 @@ AsgnStmt    := IfStmt
              | LeStmt
              | CCStmt
              | BrisStmt
+             | CtlchStmt
              | GniomhStmt
              | ToradhStmt
              | AssgnStmt
@@ -15,6 +16,7 @@ NonAsgnStmt := IfStmt
              | LeStmt
              | CCStmt
              | BrisStmt
+             | CtlchStmt
              | ToradhStmt
              | BlockStmt
              | AssgnStmt
@@ -27,6 +29,9 @@ DefnStmt    := _ id=ID _ ':=' _ expr=Expr
 AssgnStmt   := _ id=LSpec _ '=' _ expr=Expr
 GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
     stmts=AsgnStmt*
+_ '}'
+CtlchStmt   := _ 'creatlach' &gap id=ID _ '{'
+    gniomhs=GniomhStmt*
 _ '}'
 BrisStmt    := _ 'bris'
 CCStmt      := _ 'chun\s+cinn'
@@ -56,7 +61,7 @@ PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '(<=)|(>=)|<|>'
 Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
-    | 'gn[ií]omh' | 'chun\s+cinn' | 'neamhn[ií]' | 'toradh'
+    | 'gn[ií]omh' | 'chun\s+cinn' | 'neamhn[ií]' | 'toradh' | 'creatlach'
 ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 Bool        := _ bool='f[ií]or|breag'
 Neamhni     := _ 'neamhn[ií]'

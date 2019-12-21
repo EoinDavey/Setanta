@@ -1,6 +1,7 @@
 import * as Asserts from "./asserts";
 import { Builtins } from "./builtins";
 import * as Checks from "./checks";
+import { Creatlach } from "./creatlach";
 import { Environment } from "./env";
 import { RuntimeError, undefinedError } from "./error";
 import * as P from "./gen_parser";
@@ -137,6 +138,8 @@ export class Interpreter {
                 return this.execCCStmt(st);
             case ASTKinds.BrisStmt:
                 return this.execBrisStmt(st);
+            case ASTKinds.CtlchStmt:
+                return this.execCtlchStmt(st, env);
             default:
                 return this.evalExpr(st, env).then();
         }
@@ -147,6 +150,16 @@ export class Interpreter {
     public execBrisStmt(b: P.BrisStmt): Promise<void> {
         throw BrisException;
     }
+    public async execCtlchStmt(b: P.CtlchStmt, env: Environment): Promise<void> {
+        const wrapEnv = new Environment(env);
+        const gníomhs = new Map<string, Gníomh>();
+        for (const gníomh of b.gniomhs) {
+            const g = this.makeGníomh(gníomh, env);
+            gníomhs.set(g.ainm, g);
+        }
+        const ctlch = new Creatlach(b.id.id, gníomhs);
+        env.define(b.id.id, ctlch);
+    }
     public execToradhStmt(b: P.ToradhStmt, env: Environment): Promise<void> {
         if (b.exp) {
             return this.evalExpr(b.exp, env).then((v) => { throw new Toradh(v); });
@@ -155,19 +168,7 @@ export class Interpreter {
     }
     public execGniomhStmt(fn: P.GniomhStmt, env: Environment): Promise<void> {
         return new Promise((r) => {
-            const execFn = (body: Stmt[], innerEnv: Environment): Promise<Value> => {
-                return this.execStmts(body, innerEnv).then((e) => null).catch((e) => {
-                    if (e instanceof Toradh) {
-                        return e.luach;
-                    }
-                    if (e !== BrisException) {
-                        throw e;
-                    }
-                    return null;
-                });
-            };
-            const args = fn.args ? this.evalCSIDs(fn.args) : [];
-            const gníomh = new Gníomh(fn.id.id, fn.stmts, args, env, execFn);
+            const gníomh = this.makeGníomh(fn, env);
             env.define(fn.id.id, gníomh);
             r();
         });
@@ -424,5 +425,20 @@ export class Interpreter {
     }
     public evalInt(i: P.Int): number {
         return parseInt(i.int, 10);
+    }
+    private makeGníomh(fn: P.GniomhStmt, env: Environment): Gníomh {
+            const execFn = (body: Stmt[], innerEnv: Environment): Promise<Value> => {
+                return this.execStmts(body, innerEnv).then((e) => null).catch((e) => {
+                    if (e instanceof Toradh) {
+                        return e.luach;
+                    }
+                    if (e !== BrisException) {
+                        throw e;
+                    }
+                    return null;
+                });
+            };
+            const args = fn.args ? this.evalCSIDs(fn.args) : [];
+            return new Gníomh(fn.id.id, fn.stmts, args, env, execFn);
     }
 }
