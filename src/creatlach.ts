@@ -1,5 +1,6 @@
+import { Gníomh } from "./gniomh";
 import { Rud } from "./rud";
-import { Callable, Gníomh, Value } from "./values";
+import { Callable, Value } from "./values";
 
 export class Creatlach implements Callable {
     public ainm: string;

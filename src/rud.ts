@@ -1,5 +1,6 @@
 import { Creatlach } from "./creatlach";
-import { Obj, Value } from "./values";
+import { RuntimeError } from "./error";
+import { goLitreacha, Obj, Value } from "./values";
 
 export class Rud implements Obj {
     public ainm: string;
@@ -16,8 +17,8 @@ export class Rud implements Obj {
         }
         const gníomh = this.creatlach.aimsighGníomh(s);
         if (gníomh) {
-            return gníomh;
+            return gníomh.bind(this);
         }
-        return null;
+        throw new RuntimeError(`Níl aon ball de ${goLitreacha(this)} le ainm ${s}`);
     }
 }

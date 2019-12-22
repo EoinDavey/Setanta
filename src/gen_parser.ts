@@ -1524,7 +1524,7 @@ export class Parser {
         const res: T[] = [];
         for (;;) {
             const t = func();
-            if (t === null) {
+            if (!t) {
                 break;
             }
             res.push(t);

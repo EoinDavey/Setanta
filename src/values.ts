@@ -34,32 +34,6 @@ export function callFunc(x: Value, args: Value[]): Promise<Value> {
     return x.call(args);
 }
 
-export class Gníomh implements Callable {
-    public ainm: string;
-    public defn: Stmt[];
-    public args: string[];
-    public env: Environment;
-    public execFn: (body: Stmt[], env: Environment) => Promise<Value>;
-    constructor(ainm: string, defn: Stmt[], args: string[], env: Environment,
-                execFn: (body: Stmt[], env: Environment) => Promise<Value>) {
-        this.ainm = ainm;
-        this.defn = defn;
-        this.args = args;
-        this.env = env;
-        this.execFn = execFn;
-    }
-    public arity() {
-        return this.args.length;
-    }
-    public call(args: Value[]): Promise<Value> {
-        const env: Environment = new Environment(this.env);
-        for (let i = 0; i < args.length; ++i) {
-            env.define(this.args[i], args[i]);
-        }
-        return this.execFn(this.defn, env);
-    }
-}
-
 export class ObjWrap implements Obj {
     public ainm: string;
     public attrs: Map<string, Value>;

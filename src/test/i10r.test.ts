@@ -637,31 +637,46 @@ test("test creatlach stmt", async () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
-        exp: 25,
-        inp: `
-        creatlach A {
-            gníomh B(x) {
-                toradh x*x
+            exp: 25,
+            inp: `
+            creatlach A {
+                gníomh B(x) {
+                    toradh x*x
+                }
             }
-        }
-        a := A()
-        res := B@a(5)`,
+            a := A()
+            res := B@a(5)`,
         },
         {
-        exp: "ceart",
-        inp: `
-        creatlach A {
-            gníomh B() {
-                creatlach C {
-                    gníomh D() {
-                        toradh 'ceart'
+            exp: "ceart",
+            inp: `
+            creatlach A {
+                gníomh B() {
+                    creatlach C {
+                        gníomh D() {
+                            toradh 'ceart'
+                        }
                     }
+                    toradh C()
                 }
-                toradh C()
             }
-        }
-        res := D@(B@(A())())()
-        `,
+            res := D@(B@(A())())()
+            `,
+        },
+        {
+            exp: 25,
+            inp: `
+            creatlach A {
+                gníomh a(x) {
+                    toradh x * x
+                }
+                gníomh b(a, b) {
+                    toradh a@seo(a) + a@seo(b)
+                }
+            }
+            a := A()
+            res := b@a(3, 4)
+            `,
         },
     ];
     for (const c of cases) {

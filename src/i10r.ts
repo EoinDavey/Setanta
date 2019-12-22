@@ -6,10 +6,11 @@ import { Environment } from "./env";
 import { RuntimeError, undefinedError } from "./error";
 import * as P from "./gen_parser";
 import { ASTKinds } from "./gen_parser";
+import { Gníomh } from "./gniomh";
 import { cat, repeat } from "./liosta";
 import { strcat, strrep, unescapeChars } from "./litreacha";
 import { Callable, callFunc, Comparable,
-    Gníomh, goLitreacha, TypeCheck, Value } from "./values";
+    goLitreacha, TypeCheck, Value } from "./values";
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
