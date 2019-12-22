@@ -1,0 +1,52 @@
+mvs := []
+
+nuair a fíor {
+    líne := léigh_líne()
+    má !líne 
+        bris
+    mvs = mvs + [roinn(líne, ' ')]
+}
+
+gníomh iol(x, y, N) {
+    a := x[0][0] b := x[0][1]
+    c := x[1][0] d := x[1][1]
+    e := y[0][0] f := y[0][1]
+    g := y[1][0] h := y[1][1]
+    toradh [
+        [(a * e + b * g) % N, (a * f + b * h) % N],
+        [(c * e + d * g) % N, (c * f + d * h) % N]
+    ]
+}
+
+gníomh modPow(x, id, iolfn, n, N) {
+    ans := [[1, 0], [0, 1]]
+    nuair a n {
+        má n % 2 == 1
+            ans = iol(ans, x, N)
+        x = iol(x, x, N)
+        n = (n - (n % 2))/2
+    }
+    toradh ans
+}
+
+gníomh ab(N) {
+    a := 1
+    b := 0
+    le i idir (0, fad(mvs)) {
+        mv := mvs[i]
+        má mv[0] == 'cut' {
+            b = (b - go_uimh(mv[1])) % N
+        } nó má mv[1] == 'with' {
+            n := go_uimh(mv[3])
+            a = (n*a) % N
+            b = (n*b) % N
+        } nó {
+            a = -a % N
+            b = (- b - 1) % N
+        }
+    }
+    toradh [a, b]
+}
+
+p := ab(10007)
+scríobh('Cuid 1', (p[0]*2019 + p[1])%10007)

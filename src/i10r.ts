@@ -79,7 +79,13 @@ const binOpTable: Map<string, BinOpEntry[]> = new Map([
             rcheck : Checks.isNumber,
         },
     ]],
-    ["%", [numBinOpEntry((a, b) => a % b)]],
+    ["%", [numBinOpEntry((a, b) => {
+        let val = a % b;
+        if (val < 0) {
+            val += b;
+        }
+        return val;
+    })]],
     ["/", [numBinOpEntry((a, b) => {
                 if (b === 0) {
                     throw new RuntimeError(`Division by zero`);
