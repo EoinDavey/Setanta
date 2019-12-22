@@ -32,7 +32,7 @@
 * GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
 *     stmts=AsgnStmt*
 * _ '}'
-* CtlchStmt   := _ 'creatlach' &gap id=ID _ '{'
+* CtlchStmt   := _ 'creatlach' &gap id=ID tuis={_ 'ó' id=ID}? _ '{'
 *     gniomhs=GniomhStmt*
 * _ '}'
 * BrisStmt    := _ 'bris'
@@ -115,6 +115,7 @@ export enum ASTKinds {
     AssgnStmt,
     GniomhStmt,
     CtlchStmt,
+    CtlchStmt_$0,
     BrisStmt,
     CCStmt,
     ToradhStmt,
@@ -248,7 +249,12 @@ export interface GniomhStmt {
 export interface CtlchStmt {
     kind: ASTKinds.CtlchStmt;
     id: ID;
+    tuis: Nullable<CtlchStmt_$0>;
     gniomhs: GniomhStmt[];
+}
+export interface CtlchStmt_$0 {
+    kind: ASTKinds.CtlchStmt_$0;
+    id: ID;
 }
 export interface BrisStmt {
     kind: ASTKinds.BrisStmt;
@@ -756,6 +762,7 @@ export class Parser {
                     log("CtlchStmt");
                 }
                 let id: Nullable<ID>;
+                let tuis: Nullable<Nullable<CtlchStmt_$0>>;
                 let gniomhs: Nullable<GniomhStmt[]>;
                 let res: Nullable<CtlchStmt> = null;
                 if (true
@@ -763,13 +770,32 @@ export class Parser {
                     && this.regexAccept(String.raw`creatlach`, $$dpth + 1, cr) !== null
                     && this.noConsume<gap>(() => this.matchgap($$dpth + 1, cr)) !== null
                     && (id = this.matchID($$dpth + 1, cr)) !== null
+                    && ((tuis = this.matchCtlchStmt_$0($$dpth + 1, cr)) || true)
                     && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`{`, $$dpth + 1, cr) !== null
                     && (gniomhs = this.loop<GniomhStmt>(() => this.matchGniomhStmt($$dpth + 1, cr), true)) !== null
                     && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`}`, $$dpth + 1, cr) !== null
                 ) {
-                    res = {kind: ASTKinds.CtlchStmt, id, gniomhs};
+                    res = {kind: ASTKinds.CtlchStmt, id, tuis, gniomhs};
+                }
+                return res;
+            }, cr)();
+    }
+    public matchCtlchStmt_$0($$dpth: number, cr?: ContextRecorder): Nullable<CtlchStmt_$0> {
+        return this.runner<CtlchStmt_$0>($$dpth,
+            (log) => {
+                if (log) {
+                    log("CtlchStmt_$0");
+                }
+                let id: Nullable<ID>;
+                let res: Nullable<CtlchStmt_$0> = null;
+                if (true
+                    && this.match_($$dpth + 1, cr) !== null
+                    && this.regexAccept(String.raw`ó`, $$dpth + 1, cr) !== null
+                    && (id = this.matchID($$dpth + 1, cr)) !== null
+                ) {
+                    res = {kind: ASTKinds.CtlchStmt_$0, id};
                 }
                 return res;
             }, cr)();

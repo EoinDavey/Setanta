@@ -678,6 +678,57 @@ test("test creatlach stmt", async () => {
             res := b@a(3, 4)
             `,
         },
+        {
+            exp: 25,
+            inp: `
+            creatlach a {
+                gníomh cearn(x) {
+                    toradh x * x
+                }
+            }
+            creatlach b ó a {
+                gníomh bearna (a, b) {
+                    toradh cearn@seo(a) + cearn@seo(b)
+                }
+            }
+            res := bearna@(b())(3, 4)
+            `,
+        },
+        {
+            exp: 2,
+            inp: `
+            creatlach a {
+                gníomh tst(x) {
+                    toradh x + 1
+                }
+            }
+            creatlach b ó a {
+                gníomh tst (x) {
+                    toradh x - 1
+                }
+            }
+            res := tst@(b())(3)
+            `,
+        },
+        {
+            exp: 3,
+            inp: `
+            creatlach a {
+                gníomh tst(x) {
+                    toradh x + 1
+                }
+            }
+            creatlach b ó a {
+                gníomh tst (x) {
+                    toradh x - 1
+                }
+                gníomh b() {
+                    toradh tst@seo(4)
+                }
+            }
+            res := b@(b())()
+            `,
+        },
     ];
     for (const c of cases) {
         const i = new Interpreter();

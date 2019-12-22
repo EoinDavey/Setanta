@@ -158,6 +158,15 @@ export class Interpreter {
             const g = this.makeGníomh(gníomh, env);
             gníomhs.set(g.ainm, g);
         }
+        if (b.tuis) {
+            const tuis = env.get(b.tuis.id.id);
+            if (!tuis || !(tuis instanceof Creatlach)) {
+                throw new RuntimeError(`Nil aon creatlach leis an ainm ${b.tuis.id.id}`);
+            }
+            const ctlch = new Creatlach(b.id.id, gníomhs, tuis);
+            env.define(b.id.id, ctlch);
+            return;
+        }
         const ctlch = new Creatlach(b.id.id, gníomhs);
         env.define(b.id.id, ctlch);
     }
