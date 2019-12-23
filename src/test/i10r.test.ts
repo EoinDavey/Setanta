@@ -36,7 +36,10 @@ test("test expressions", async () => {
         {inp : "x*x + y*y - z*z", exp : 0, env: Environment.from([["x", 3], ["y", 4], ["z", 5]])},
         {inp : "fíor == fíor", exp: true},
         {inp : "fíor == breag", exp: false},
-        {inp : "fíor & fíor != breag", exp: true},
+        {inp : "(fíor & fíor) != breag", exp: true},
+        {inp : "(fíor & breag) == breag", exp: true},
+        {inp : "(breag & breag) == breag", exp: true},
+        {inp : "(breag & fíor) == breag", exp: true},
         {inp : "fíor | breag == 5 >= 5", exp: true},
         {inp : "neamhní == neamhní", exp: true},
         {inp : "neamhní == fíor", exp: false},
@@ -64,7 +67,7 @@ test("test expressions", async () => {
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
         try {
-            const got = await i.evalExpr(res!, i.global);
+            const got = await res!.evalfn(i.global);
             expect(got).toEqual(c.exp);
         } catch (e) {
             console.log(c.inp);

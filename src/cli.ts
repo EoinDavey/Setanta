@@ -69,7 +69,7 @@ async function repl() {
         const ast = p.ast!;
         try {
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
-                    console.log(goLitreacha(await i.evalExpr(ast.stmts[0], i.global)));
+                    console.log(goLitreacha(await ast.stmts[0].evalfn(i.global)));
                     continue;
             }
             await i.interpret(ast);

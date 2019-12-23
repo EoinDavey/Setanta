@@ -10,7 +10,8 @@
     "lint-all": "tslint -c tslint.json --force \"src/**/*.ts\"",
     "gen": "tspeg src/grammar.gram src/gen_parser.ts",
     "build": "tspeg src/grammar.gram src/gen_parser.ts && tsc",
-    "clean": "rm -rf node_build"
+    "clean": "rm -rf node_build",
+    "diff": "git diff -- . ':(exclude)src/gen_parser.ts'"
   },
   "bin": {
     "setanta": "node_build/cli.js"
@@ -27,7 +28,7 @@
     "jest": "^24.9.0",
     "ts-jest": "^24.2.0",
     "tslint": "^5.20.1",
-    "tspeg": "^1.1.7",
+    "tspeg": "^1.2.1",
     "typescript": "^3.7.3"
   },
   "jest": {

@@ -34,6 +34,17 @@ export function callFunc(x: Value, args: Value[]): Promise<Value> {
     return x.call(args);
 }
 
+export function idxList(x: Value, idx: Promise<Value>): Promise<Value> {
+    const ls = Asserts.assertIndexable(x);
+    return idx.then((v) => {
+        v = Asserts.assertNumber(v);
+        if (v < 0 || v >= ls.length) {
+            throw new RuntimeError(`Index ${goLitreacha(v)} out of bounds`);
+        }
+        return ls[v];
+    });
+}
+
 export class ObjWrap implements Obj {
     public ainm: string;
     public attrs: Map<string, Value>;

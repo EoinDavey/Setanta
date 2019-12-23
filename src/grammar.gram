@@ -1,3 +1,12 @@
+---
+import { Environment } from "./env";
+import { callFunc, idxList, Value } from "./values";
+import { unescapeChars } from "./litreacha";
+import * as Asserts from "./asserts";
+import * as Checks from "./checks";
+import { orBinOp, andBinOp, binOpEvalFn } from "./binops";
+import { objLookupsEval, postfixArgsEval, csArgsEval, prefEval, EvalFn } from "./evals";
+---
 Program     := stmts=AsgnStmt* _
 AsgnStmt    := IfStmt
              | BlockStmt
@@ -16,7 +25,6 @@ NonAsgnStmt := IfStmt
              | LeStmt
              | CCStmt
              | BrisStmt
-             | CtlchStmt
              | ToradhStmt
              | BlockStmt
              | AssgnStmt
@@ -38,15 +46,26 @@ CCStmt      := _ 'chun\s+cinn'
 ToradhStmt  := _ 'toradh' &gap exp=Expr?
 Expr        := And
 And         := head=Or tail={_ '\&' trm=Or}*
+               .evalfn = EvalFn { return andBinOp(this); }
 Or          := head=Eq tail={_ '\|' trm=Eq}*
+               .evalfn = EvalFn { return orBinOp(this) }
 Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
+               .evalfn = EvalFn { return binOpEvalFn(this) }
 Comp        := head=Sum tail={_ op=Compare trm=Sum}*
+               .evalfn = EvalFn { return binOpEvalFn(this) }
 Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
+               .evalfn = EvalFn { return binOpEvalFn(this) }
 Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
+               .evalfn = EvalFn { return binOpEvalFn(this) }
 Prefix      := _ op='-|!'? pf=Postfix
+               .evalfn = EvalFn { return prefEval(this) }
 Postfix     := at=ObjLookups ops=PostOp*
+               .evalfn = EvalFn { return postfixArgsEval(this); }
+ObjLookups  := _ attrs={id=ID '@' !wspace}* root=Atom
+               .evalfn = EvalFn { return objLookupsEval(this); }
 PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 Atom        :=  _ '\(' trm=Expr '\)'
+               .evalfn = EvalFn { return (env: Environment) => this.trm.evalfn(env); }
              | ID
              | Litreacha
              | Int
@@ -54,20 +73,39 @@ Atom        :=  _ '\(' trm=Expr '\)'
              | Neamhni
              | ListLit
 LSpec       := id=ID ops=PostOp*
-CSArgs      := head=Expr tail={_ ',' exp=Expr}*
-CSIDs       := head=ID tail={_ ',' id=ID}*
 ListLit     := _ '\[' els=CSArgs? _ '\]'
-PlusMinus   := '\+|-'
-MulDiv      := '\*|\/|%'
-Compare     := '(<=)|(>=)|<|>'
-Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
-    | 'gn[ií]omh' | 'chun\s+cinn' | 'neamhn[ií]' | 'toradh' | 'creatlach'
+               .evalfn = EvalFn {
+                   return (env: Environment) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
+               }
+CSArgs      := head=Expr tail={_ ',' exp=Expr}*
+               .evalfn = (env:Environment)=>Promise<Value[]> { return csArgsEval(this); }
+CSIDs       := head=ID tail={_ ',' id=ID}*
 ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
+               .evalfn = EvalFn {
+                   return (env: Environment) => Promise.resolve(env.get(this.id));
+               }
 Bool        := _ bool='f[ií]or|breag'
+               .evalfn = EvalFn {
+                   const x = this.bool === 'fior' || this.bool === 'fíor';
+                   return () => Promise.resolve(x);
+               }
 Neamhni     := _ 'neamhn[ií]'
+               .evalfn = EvalFn { return () => Promise.resolve(null); }
 Int         := _ int='-?[0-9]+'
-Litreacha   := _ '\'' val='([^\'\\]|(\\.))*' '\''
-ObjLookups  := _ attrs={id=ID '@' !wspace}* root=Atom
+               .evalfn = EvalFn { 
+                   const v = parseInt(this.int, 10);
+                   return () => Promise.resolve(v);
+               }
+Litreacha   := _ '\'' val='([^\'\\]|\\.)*' '\''
+               .evalfn = EvalFn {
+                    const x = unescapeChars(this.val);
+                    return () => Promise.resolve(x);
+               }
 _           := wspace*
 wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n))'
 gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
+PlusMinus   := '\+|-'
+MulDiv      := '\*|\/|%'
+Compare     := '<=|>=|<|>'
+Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
+    | 'gn[ií]omh' | 'chun\s+cinn' | 'neamhn[ií]' | 'toradh' | 'creatlach'
