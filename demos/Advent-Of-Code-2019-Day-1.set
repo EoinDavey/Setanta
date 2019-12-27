@@ -1,0 +1,32 @@
+masses := []
+nuair a fíor {
+    l := léigh_líne()
+    má !l
+        bris
+    masses = masses + [go_uimh(l)]
+}
+
+gníomh cuida() {
+    sm := 0
+    le i idir (0, fad(masses)) {
+        mass := masses[i]
+        sm = sm + (mass - mass%3)/3 - 2
+    }
+    toradh sm
+}
+
+gníomh cuidb() {
+    sm := 0
+    le i idir (0, fad(masses)) {
+        mass := masses[i]
+        mass = (mass - mass%3)/3 - 2
+        nuair a mass > 0 {
+            sm = sm + mass
+            mass = (mass - mass%3)/3 - 2
+        }
+    }
+    toradh sm
+}
+
+scríobh('Cuid A', cuida())
+scríobh('Cuid B', cuidb())
