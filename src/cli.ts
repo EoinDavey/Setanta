@@ -58,7 +58,7 @@ async function repl() {
     while (true) {
         const res = await getLine();
         if (!res) {
-            break;
+            continue;
         }
         const parser = new Parser(res as string);
         const p = parser.parse();
@@ -81,6 +81,7 @@ async function repl() {
             }
         }
     }
+    rl.close();
 }
 
 async function runFile() {
