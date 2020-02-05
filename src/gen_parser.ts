@@ -36,7 +36,7 @@
 * NuairStmt   := _ 'nuair-a' expr=Expr &gap stmt=NonAsgnStmt
 * LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr _ '\)' stmt=NonAsgnStmt
 * DefnStmt    := _ id=ID _ ':=' _ expr=Expr
-* AssgnStmt   := _ id=LSpec _ '=' _ expr=Expr
+* AssgnStmt   := _ lhs=Postfix _ '=' _ expr=Expr
 * GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
 *     stmts=AsgnStmt*
 * _ '}'
@@ -282,7 +282,7 @@ export interface DefnStmt {
 }
 export interface AssgnStmt {
     kind: ASTKinds.AssgnStmt;
-    id: LSpec;
+    lhs: Postfix;
     expr: Expr;
 }
 export interface GniomhStmt {
@@ -878,18 +878,18 @@ export class Parser {
                 if (log) {
                     log("AssgnStmt");
                 }
-                let id: Nullable<LSpec>;
+                let lhs: Nullable<Postfix>;
                 let expr: Nullable<Expr>;
                 let res: Nullable<AssgnStmt> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
-                    && (id = this.matchLSpec($$dpth + 1, cr)) !== null
+                    && (lhs = this.matchPostfix($$dpth + 1, cr)) !== null
                     && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`=`, $$dpth + 1, cr) !== null
                     && this.match_($$dpth + 1, cr) !== null
                     && (expr = this.matchExpr($$dpth + 1, cr)) !== null
                 ) {
-                    res = {kind: ASTKinds.AssgnStmt, id, expr};
+                    res = {kind: ASTKinds.AssgnStmt, lhs, expr};
                 }
                 return res;
             }, cr)();

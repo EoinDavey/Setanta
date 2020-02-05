@@ -39,7 +39,7 @@ export function idxList(x: Value, idx: Promise<Value>): Promise<Value> {
     return idx.then((v) => {
         v = Asserts.assertNumber(v);
         if (v < 0 || v >= ls.length) {
-            throw new RuntimeError(`Index ${goLitreacha(v)} out of bounds`);
+            throw new RuntimeError(`Tá ${goLitreacha(v)} thar teorainn an liosta`);
         }
         return ls[v];
     });
