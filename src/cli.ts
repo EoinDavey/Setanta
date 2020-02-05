@@ -51,7 +51,7 @@ async function repl() {
     });
     const getLine = (): Promise<string|null> => {
         return new Promise((r) => {
-            rl.question("λ: ", (resp) => r(resp));
+            rl.question("᚛ ", (resp) => r(resp));
         });
     };
     const i = new Interpreter(getExternals(getLine));
@@ -123,7 +123,7 @@ async function runFile() {
     }
 }
 
-async function main() {
+function main() {
     if (pargs.length > 0) {
         runFile();
     } else {
