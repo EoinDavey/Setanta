@@ -33,7 +33,7 @@
 *              | Expr
 * IfStmt      := _ 'm[áa]' &gap expr=Expr &gap stmt=NonAsgnStmt elsebranch={_ 'n[oó]' &gap stmt=NonAsgnStmt}?
 * BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
-* NuairStmt   := _ 'nuair' gap 'a' expr=Expr &gap stmt=NonAsgnStmt
+* NuairStmt   := _ 'nuair-a' expr=Expr &gap stmt=NonAsgnStmt
 * LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr _ '\)' stmt=NonAsgnStmt
 * DefnStmt    := _ id=ID _ ':=' _ expr=Expr
 * AssgnStmt   := _ id=LSpec _ '=' _ expr=Expr
@@ -44,7 +44,7 @@
 *     gniomhs=GniomhStmt*
 * _ '}'
 * BrisStmt    := _ 'bris'
-* CCStmt      := _ 'chun\s+cinn'
+* CCStmt      := _ 'chun-cinn'
 * ToradhStmt  := _ 'toradh' &gap exp=Expr?
 * Expr        := And
 * And         := head=Or tail={_ '\&' trm=Or}*
@@ -109,8 +109,8 @@
 * PlusMinus   := '\+|-'
 * MulDiv      := '\*|\/|%'
 * Compare     := '<=|>=|<|>'
-* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
-*     | 'gn[ií]omh' | 'chun\s+cinn' | 'neamhn[ií]' | 'toradh' | 'creatlach'
+* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair-a' | 'f[ií]or|breag'
+*     | 'gn[ií]omh' | 'chun-cinn' | 'neamhn[ií]' | 'toradh' | 'creatlach'
 */
 
 import { Environment } from "./env";
@@ -807,9 +807,7 @@ export class Parser {
                 let res: Nullable<NuairStmt> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
-                    && this.regexAccept(String.raw`nuair`, $$dpth + 1, cr) !== null
-                    && this.matchgap($$dpth + 1, cr) !== null
-                    && this.regexAccept(String.raw`a`, $$dpth + 1, cr) !== null
+                    && this.regexAccept(String.raw`nuair-a`, $$dpth + 1, cr) !== null
                     && (expr = this.matchExpr($$dpth + 1, cr)) !== null
                     && this.noConsume<gap>(() => this.matchgap($$dpth + 1, cr)) !== null
                     && (stmt = this.matchNonAsgnStmt($$dpth + 1, cr)) !== null
@@ -997,7 +995,7 @@ export class Parser {
                 let res: Nullable<CCStmt> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
-                    && this.regexAccept(String.raw`chun\s+cinn`, $$dpth + 1, cr) !== null
+                    && this.regexAccept(String.raw`chun-cinn`, $$dpth + 1, cr) !== null
                 ) {
                     res = {kind: ASTKinds.CCStmt, };
                 }
@@ -1683,7 +1681,7 @@ export class Parser {
         return this.regexAccept(String.raw`n[oó]`, $$dpth + 1, cr);
     }
     public matchKeyword_3($$dpth: number, cr?: ContextRecorder): Nullable<Keyword_3> {
-        return this.regexAccept(String.raw`nuair\s+a`, $$dpth + 1, cr);
+        return this.regexAccept(String.raw`nuair-a`, $$dpth + 1, cr);
     }
     public matchKeyword_4($$dpth: number, cr?: ContextRecorder): Nullable<Keyword_4> {
         return this.regexAccept(String.raw`f[ií]or|breag`, $$dpth + 1, cr);
@@ -1692,7 +1690,7 @@ export class Parser {
         return this.regexAccept(String.raw`gn[ií]omh`, $$dpth + 1, cr);
     }
     public matchKeyword_6($$dpth: number, cr?: ContextRecorder): Nullable<Keyword_6> {
-        return this.regexAccept(String.raw`chun\s+cinn`, $$dpth + 1, cr);
+        return this.regexAccept(String.raw`chun-cinn`, $$dpth + 1, cr);
     }
     public matchKeyword_7($$dpth: number, cr?: ContextRecorder): Nullable<Keyword_7> {
         return this.regexAccept(String.raw`neamhn[ií]`, $$dpth + 1, cr);

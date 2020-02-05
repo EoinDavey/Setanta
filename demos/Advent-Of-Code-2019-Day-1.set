@@ -1,5 +1,5 @@
 masses := []
-nuair a fíor {
+nuair-a fíor {
     l := léigh_líne()
     má !l
         bris
@@ -20,7 +20,7 @@ gníomh cuidb() {
     le i idir (0, fad(masses)) {
         mass := masses[i]
         mass = (mass - mass%3)/3 - 2
-        nuair a mass > 0 {
+        nuair-a mass > 0 {
             sm = sm + mass
             mass = (mass - mass%3)/3 - 2
         }

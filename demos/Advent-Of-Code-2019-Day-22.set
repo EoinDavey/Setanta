@@ -1,6 +1,6 @@
 mvs := []
 
-nuair a fíor {
+nuair-a fíor {
     líne := léigh_líne()
     má !líne 
         bris
@@ -20,7 +20,7 @@ gníomh iol(x, y, N) {
 
 gníomh modPow(x, id, iolfn, n, N) {
     ans := [[1, 0], [0, 1]]
-    nuair a n {
+    nuair-a n {
         má n % 2 == 1
             ans = iol(ans, x, N)
         x = iol(x, x, N)

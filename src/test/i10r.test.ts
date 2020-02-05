@@ -175,14 +175,14 @@ test("test if stmt", async () => {
     }
 });
 
-test("test nuair a loops", async () => {
+test("test nuair-a loops", async () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
             exp : 10,
             inp : `
             res := 0
-            nuair a res < 10
+            nuair-a res < 10
                 res = res + 1`,
         },
         {
@@ -190,9 +190,9 @@ test("test nuair a loops", async () => {
             inp : `
             cnt := 0
             i := 0
-            nuair a i < 10 {
+            nuair-a i < 10 {
                 j := 0
-                nuair a j < 10 {
+                nuair-a j < 10 {
                     j = j + 1
                     cnt = cnt + 1
                 }
@@ -204,7 +204,7 @@ test("test nuair a loops", async () => {
             exp : 10,
             inp: `
             res := 0
-            nuair a fíor {
+            nuair-a fíor {
                 res = res + 1
                 má res == 10
                     bris
@@ -215,10 +215,10 @@ test("test nuair a loops", async () => {
             inp: `
             res := 0
             i := 0
-            nuair a i < 10 {
+            nuair-a i < 10 {
                 i = i + 1
                 má i % 2 == 0 {
-                    chun cinn
+                    chun-cinn
                 }
                 res = res + i
             }`,
@@ -282,7 +282,7 @@ test("test le idir loops", async () => {
             le x idir (0, 20) {
                 le i idir (0, x) {
                     má i % 3 == 0
-                        chun cinn >-- Lean ar aghaidh
+                        chun-cinn >-- Lean ar aghaidh
                     res = res + i
                 }
             }`,

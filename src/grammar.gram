@@ -31,7 +31,7 @@ NonAsgnStmt := IfStmt
              | Expr
 IfStmt      := _ 'm[áa]' &gap expr=Expr &gap stmt=NonAsgnStmt elsebranch={_ 'n[oó]' &gap stmt=NonAsgnStmt}?
 BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
-NuairStmt   := _ 'nuair' gap 'a' expr=Expr &gap stmt=NonAsgnStmt
+NuairStmt   := _ 'nuair-a' expr=Expr &gap stmt=NonAsgnStmt
 LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr _ '\)' stmt=NonAsgnStmt
 DefnStmt    := _ id=ID _ ':=' _ expr=Expr
 AssgnStmt   := _ id=LSpec _ '=' _ expr=Expr
@@ -42,7 +42,7 @@ CtlchStmt   := _ 'creatlach' &gap id=ID tuis={_ 'ó' id=ID}? _ '{'
     gniomhs=GniomhStmt*
 _ '}'
 BrisStmt    := _ 'bris'
-CCStmt      := _ 'chun\s+cinn'
+CCStmt      := _ 'chun-cinn'
 ToradhStmt  := _ 'toradh' &gap exp=Expr?
 Expr        := And
 And         := head=Or tail={_ '\&' trm=Or}*
@@ -107,5 +107,5 @@ gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
 PlusMinus   := '\+|-'
 MulDiv      := '\*|\/|%'
 Compare     := '<=|>=|<|>'
-Keyword     := 'm[áa]' | 'n[oó]' | 'nuair\s+a' | 'f[ií]or|breag'
-    | 'gn[ií]omh' | 'chun\s+cinn' | 'neamhn[ií]' | 'toradh' | 'creatlach'
+Keyword     := 'm[áa]' | 'n[oó]' | 'nuair-a' | 'f[ií]or|breag'
+    | 'gn[ií]omh' | 'chun-cinn' | 'neamhn[ií]' | 'toradh' | 'creatlach'

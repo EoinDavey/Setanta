@@ -34,7 +34,7 @@ gníomh abs(x) {
 }
 
 gníomh gcd(a, b) {
-    nuair a b != 0 {
+    nuair-a b != 0 {
         t := a % b
         a = b
         b = t

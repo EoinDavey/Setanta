@@ -1,5 +1,5 @@
 línte := []
-nuair a fíor {
+nuair-a fíor {
     líne := léigh_líne()
     má !líne
         bris
@@ -88,7 +88,7 @@ TR := 1000000000000
 L := 0
 R := TR
 
-nuair a L < R {
+nuair-a L < R {
     md := idiv(L+R+1,2)
     v := reitigh(md)
     má v > TR
