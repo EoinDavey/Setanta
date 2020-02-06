@@ -1,7 +1,7 @@
 export class RuntimeError extends Error {
     public msg: string;
     constructor(message: string) {
-        const msg = `Runtime Error: ${message}`;
+        const msg = `Eisceacht: ${message}`;
         super(msg);
         this.msg = msg;
     }

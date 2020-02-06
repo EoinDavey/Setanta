@@ -50,7 +50,7 @@ export class Interpreter {
         env = new Environment(env);
         return this.execStmts(blk.blk, env);
     }
-    public execStmt(st: P.AsgnStmt | P.NonAsgnStmt, env: Environment): Promise<void> {
+    public execStmt(st: Stmt, env: Environment): Promise<void> {
         switch (st.kind) {
             case ASTKinds.IfStmt:
                 return this.execMá(st, env);
@@ -85,7 +85,7 @@ export class Interpreter {
             const subPost: P.Postfix = new P.Postfix(p.at, ops);
             return subPost.evalfn(env).then((val: Value) => {
                 if ("args" in op) {
-                    throw new RuntimeError("Ní feidir leat luach a thabhairt do gníomh");
+                    return Promise.reject(new RuntimeError("Ní feidir leat luach a thabhairt do gníomh"));
                 }
                 const arr: Value[] = Asserts.assertLiosta(val);
                 return op.expr.evalfn(env).then((idxV: Value) => {
@@ -118,7 +118,7 @@ export class Interpreter {
     public refAtom(a: P.Atom, env: Environment): Promise<Ref> {
         if (a.kind !== ASTKinds.ID) {
             return a.evalfn(env).then((v: Value) => {
-                throw new RuntimeError("Ní feidir leat luach a thabhairt do " + goLitreacha(v));
+                return Promise.reject(new RuntimeError("Ní feidir leat luach a thabhairt do " + goLitreacha(v)));
             });
         }
         return Promise.resolve((v: Value) => {
@@ -126,10 +126,10 @@ export class Interpreter {
         });
     }
     public execCCStmt(b: P.CCStmt): Promise<void> {
-        throw CCException;
+        return Promise.reject(CCException);
     }
     public execBrisStmt(b: P.BrisStmt): Promise<void> {
-        throw BrisException;
+        return Promise.reject(BrisException);
     }
     public execCtlchStmt(b: P.CtlchStmt, env: Environment) {
         const wrapEnv = new Environment(env);
@@ -152,9 +152,9 @@ export class Interpreter {
     }
     public execToradhStmt(b: P.ToradhStmt, env: Environment): Promise<void> {
         if (b.exp) {
-            return b.exp.evalfn(env).then((v) => { throw new Toradh(v); });
+            return b.exp.evalfn(env).then((v: Value) => Promise.reject(new Toradh(v)));
         }
-        return new Promise((r) => { throw new Toradh(null); });
+        return Promise.reject(new Toradh(null));
     }
     public execGniomhStmt(fn: P.GniomhStmt, env: Environment): Promise<void> {
         return new Promise((r) => {
