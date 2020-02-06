@@ -21,4 +21,7 @@ export class Rud implements Obj {
         }
         throw new RuntimeError(`Níl aon ball de ${goLitreacha(this)} le ainm ${s}`);
     }
+    public setAttr(id: string, v: Value) {
+        this.baill.set(id, v);
+    }
 }

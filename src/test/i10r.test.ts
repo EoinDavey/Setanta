@@ -589,14 +589,22 @@ test("test obj lookups", async () => {
     const cases: TC[] = [
         {
             env : Environment.from([
-                ["b", { ainm: "b", getAttr: (s: string) => s === "a" ? true : null }],
+                ["b", {
+                    ainm: "b",
+                    getAttr: (s: string) => s === "a" ? true : null,
+                    setAttr: (id: string, v: Value) => undefined,
+                }],
             ]),
             exp : true,
             inp : "res := a@b",
         },
         {
             env : Environment.from([
-                ["b", { ainm: "b", getAttr: (s: string) => s === "a" ? true : null }],
+                ["b", {
+                    ainm: "b",
+                    getAttr: (s: string) => s === "a" ? true : null,
+                    setAttr: (id: string, v: Value) => undefined,
+                }],
             ]),
             exp : null,
             inp : "res := b@b",
@@ -604,7 +612,8 @@ test("test obj lookups", async () => {
         {
             env : Environment.from([
                 ["c", {
-                    ainm: "c", getAttr: (s: string) => s === "b" ?
+                    ainm: "c",
+                    getAttr: (s: string) => s === "b" ?
                         {
                             ainm: "",
                             getAttr: (at: string) => at === "a" ? {
@@ -614,8 +623,10 @@ test("test obj lookups", async () => {
                                     return Promise.resolve("0");
                                 },
                             } : null,
+                            setAttr: (id: string, v: Value) => undefined,
                         }
                     : null,
+                    setAttr: (id: string, v: Value) => undefined,
                 }],
             ]),
             exp : "0",
@@ -730,6 +741,73 @@ test("test creatlach stmt", async () => {
                 }
             }
             res := b@(b())()
+            `,
+        },
+    ];
+    for (const c of cases) {
+        const i = new Interpreter();
+        if (c.env) {
+            i.global = c.env;
+        }
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        await i.interpret(res.ast!);
+        expect(i.global.get("res")).toEqual(c.exp);
+    }
+});
+
+test("test object assignment", async () => {
+    interface TC { inp: string; exp: Value; env?: Environment; }
+    const cases: TC[] = [
+        {
+            exp : 1,
+            inp : `
+            creatlach A {}
+            a := A()
+            test@a = 1
+            res := test@a
+            `,
+        },
+        {
+            exp : "dia duit",
+            inp : `
+            creatlach A {
+                gníomh f(x) {
+                    test@seo = x
+                }
+            }
+            a := A()
+            f@a('dia duit')
+            res := test@a
+            `,
+        },
+        {
+            exp : "dia duit",
+            inp : `
+            creatlach A {
+                gníomh f(x) {
+                    test@seo = x
+                }
+            }
+            a := A()
+            f@a('dia duit')
+            res := test@a
+            `,
+        },
+        {
+            exp : "Eoin is ainm dom",
+            inp : `
+            creatlach B {
+                gníomh caint() {
+                    toradh ainm@seo + ' is ainm dom'
+                }
+            }
+            creatlach A ó B {}
+            a := A()
+            ainm@a = 'Eoin'
+            res := caint@a()
             `,
         },
     ];

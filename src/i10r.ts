@@ -9,7 +9,7 @@ import { ASTKinds } from "./gen_parser";
 import { Gníomh } from "./gniomh";
 import { strcat, strrep, unescapeChars } from "./litreacha";
 import { Callable, callFunc, Comparable,
-    goLitreacha, idxList, TypeCheck, Value } from "./values";
+    goLitreacha, idxList, Obj, TypeCheck, Value } from "./values";
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
@@ -78,47 +78,52 @@ export class Interpreter {
                 return st.evalfn(env).then();
         }
     }
-    public async refPostfix(p: P.Postfix, env: Environment): Promise<Ref> {
+    public refPostfix(p: P.Postfix, env: Environment): Promise<Ref> {
         if (p.ops.length > 0) {
             const ops: P.PostOp[] = p.ops.slice(0, p.ops.length - 1);
             const op: P.PostOp = p.ops[p.ops.length - 1];
             const subPost: P.Postfix = new P.Postfix(p.at, ops);
-            const val: Value = await subPost.evalfn(env);
-            if ("args" in op) {
-                throw new RuntimeError("Ní feidir leat luach a thabhairt do gníomh");
-            }
-            const arr: Value[] = Asserts.assertLiosta(val);
-            const idx: number = Asserts.assertNumber(await op.expr.evalfn(env));
-            return (v: Value) => {
-                if (idx < 0 || idx >= arr.length) {
-                    throw new RuntimeError(`Tá ${idx} thar teorainn an liosta`);
+            return subPost.evalfn(env).then((val: Value) => {
+                if ("args" in op) {
+                    throw new RuntimeError("Ní feidir leat luach a thabhairt do gníomh");
                 }
-                arr[idx] = v;
-            };
+                const arr: Value[] = Asserts.assertLiosta(val);
+                return op.expr.evalfn(env).then((idxV: Value) => {
+                    const idx: number = Asserts.assertNumber(idxV);
+                    return (v: Value) => {
+                        if (idx < 0 || idx >= arr.length) {
+                            throw new RuntimeError(`Tá ${idx} thar teorainn an liosta`);
+                        }
+                        arr[idx] = v;
+                    };
+                });
+            });
         }
         return this.refObjLookups(p.at, env);
     }
-    public async refObjLookups(o: P.ObjLookups, env: Environment): Promise<Ref> {
+    public refObjLookups(o: P.ObjLookups, env: Environment): Promise<Ref> {
         if (o.attrs.length > 0) {
             const attrs: P.ObjLookups_$0[] = o.attrs.slice(1, o.attrs.length);
             const field: string = o.attrs[0].id.id;
             const subObj: P.ObjLookups = new P.ObjLookups(attrs, o.root);
-            const val: Value = await subObj.evalfn(env);
-            return (v: Value) => {
-                console.log("field", field);
-                console.log("obj", val);
-            };
+            return subObj.evalfn(env).then((obj: Value) => {
+                const val: Obj = Asserts.assertObj(obj);
+                return (v: Value) => {
+                    val.setAttr(field, v);
+                };
+            });
         }
         return this.refAtom(o.root, env);
     }
-    public async refAtom(a: P.Atom, env: Environment): Promise<Ref> {
+    public refAtom(a: P.Atom, env: Environment): Promise<Ref> {
         if (a.kind !== ASTKinds.ID) {
-            const val: Value = await a.evalfn(env);
-            throw new RuntimeError("Ní feidir leat luach a thabhairt do " + goLitreacha(val));
+            return a.evalfn(env).then((v: Value) => {
+                throw new RuntimeError("Ní feidir leat luach a thabhairt do " + goLitreacha(v));
+            });
         }
-        return (v: Value) => {
+        return Promise.resolve((v: Value) => {
             env.assign(a.id, v);
-        };
+        });
     }
     public execCCStmt(b: P.CCStmt): Promise<void> {
         throw CCException;
@@ -224,10 +229,10 @@ export class Interpreter {
     public execDefn(a: P.DefnStmt, env: Environment): Promise<void> {
         return a.expr.evalfn(env).then((val) => env.define(a.id.id, val));
     }
-    public async execAssgn(t: P.AssgnStmt, env: Environment): Promise<void> {
-        const val: Value = await t.expr.evalfn(env);
-        const ref: Ref = await this.refPostfix(t.lhs, env);
-        ref(val);
+    public execAssgn(t: P.AssgnStmt, env: Environment): Promise<void> {
+        return t.expr.evalfn(env).then((val: Value) => {
+            return this.refPostfix(t.lhs, env).then((ref: Ref) => { ref(val); });
+        });
     }
     public evalCSIDs(ids: P.CSIDs): string[] {
         return [ids.head.id].concat(ids.tail.map((x) => x.id.id));

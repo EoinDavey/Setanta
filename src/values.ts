@@ -23,6 +23,7 @@ export interface Callable {
 export interface Obj {
     ainm: string;
     getAttr: (id: string) => Value;
+    setAttr: (id: string, v: Value) => void;
 }
 
 export function callFunc(x: Value, args: Value[]): Promise<Value> {
@@ -54,6 +55,8 @@ export class ObjWrap implements Obj {
     }
     public getAttr(id: string): Value {
         return this.attrs.get(id) || null;
+    }
+    public setAttr(id: string, v: Value) {
     }
 }
 
