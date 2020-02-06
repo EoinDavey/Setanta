@@ -824,3 +824,49 @@ test("test object assignment", async () => {
         expect(i.global.get("res")).toEqual(c.exp);
     }
 });
+
+test("test constructor", async () => {
+    interface TC { inp: string; exp: Value; env?: Environment; }
+    const cases: TC[] = [
+        {
+            exp : "Eoin",
+            inp : `
+            creatlach Duine {
+                gníomh nua(ainm) {
+                    ainm@seo = ainm
+                }
+            }
+            mise := Duine('Eoin')
+            res := ainm@mise
+            `,
+        },
+        {
+            exp : "Is mise Eoin agus táim 21 bliana d'aois",
+            inp : `
+            creatlach Duine {
+                gníomh nua(ainm, aois) {
+                    ainm@seo = ainm
+                    aois@seo = aois
+                }
+                gníomh caint() {
+                    toradh 'Is mise ' + ainm@seo + ' agus táim ' + go_lit(aois@seo) + ' bliana d\\'aois'
+                }
+            }
+            mise := Duine('Eoin', 21)
+            res := caint@mise()
+            `,
+        },
+    ];
+    for (const c of cases) {
+        const i = new Interpreter();
+        if (c.env) {
+            i.global = c.env;
+        }
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        await i.interpret(res.ast!);
+        expect(i.global.get("res")).toEqual(c.exp);
+    }
+});
