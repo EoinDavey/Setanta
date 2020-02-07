@@ -57,6 +57,7 @@ export class ObjWrap implements Obj {
         return this.attrs.get(id) || null;
     }
     public setAttr(id: string, v: Value) {
+        throw new RuntimeError(`Ní feidir leat ${goLitreacha(this)} a athrú`);
     }
 }
 

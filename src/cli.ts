@@ -113,7 +113,7 @@ async function runFile() {
         await i.interpret(res.ast!);
     } catch (err) {
         if (err instanceof RuntimeError) {
-            console.error(err);
+            console.error(err.msg);
             process.exitCode = 1;
         } else {
             throw err;
@@ -123,12 +123,13 @@ async function runFile() {
     }
 }
 
-function main() {
+function main(): Promise<void> {
     if (pargs.length > 0) {
-        runFile();
-    } else {
-        repl();
+        return runFile();
     }
+    return repl();
 }
 
-main();
+main().catch((err) => {
+    console.error(err);
+});

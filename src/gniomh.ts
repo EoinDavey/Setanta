@@ -1,4 +1,5 @@
 import { Environment } from "./env";
+import { Rud } from "./rud";
 import { Callable, Stmt, Value } from "./values";
 
 export class Gníomh implements Callable {
@@ -15,9 +16,12 @@ export class Gníomh implements Callable {
         this.env = env;
         this.execFn = execFn;
     }
-    public bind(seo: Value): Gníomh {
+    public bind(seo: Rud): Gníomh {
         const env = new Environment(this.env);
         env.define("seo", seo);
+        if (seo.tuis) {
+            env.define("tuis", seo.tuis);
+        }
         return new Gníomh(this.ainm, this.defn, this.args, env, this.execFn);
     }
     public arity() {

@@ -743,6 +743,47 @@ test("test creatlach stmt", async () => {
             res := b@(b())()
             `,
         },
+        {
+            exp: 4,
+            inp: `
+            creatlach Dronuilleoige {
+                gníomh nua(fad, leithead) {
+                    fad@seo = fad
+                    leithead@seo = leithead
+                }
+                gníomh achar() {
+                    toradh fad@seo * leithead@seo
+                }
+            }
+            creatlach Cearnóg ó Dronuilleoige {
+                gníomh nua(fad) {
+                    nua@tuis(fad, fad)
+                }
+            }
+            cr := Cearnóg(2)
+            res := achar@cr()
+            `,
+        },
+        {
+            exp: 20,
+            inp: `
+            creatlach A {
+                gníomh f(x) {
+                    toradh 2*x
+                }
+            }
+            creatlach B ó A {
+                gníomh f(x) {
+                    toradh 2 + x
+                }
+                gníomh g(x) {
+                    toradh f@seo(x) + f@tuis(x)
+                }
+            }
+            b := B()
+            res := g@b(6)
+            `,
+        },
     ];
     for (const c of cases) {
         const i = new Interpreter();
