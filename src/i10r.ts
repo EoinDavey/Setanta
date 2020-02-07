@@ -13,7 +13,7 @@ import { Callable, callFunc, Comparable,
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
-const BrisException = "BREAK";
+const BrisException = "BRIS";
 const CCException = "CC";
 
 class Toradh {
@@ -238,18 +238,18 @@ export class Interpreter {
         return [ids.head.id].concat(ids.tail.map((x) => x.id.id));
     }
     private makeGníomh(fn: P.GniomhStmt, env: Environment): Gníomh {
-            const execFn = (body: Stmt[], innerEnv: Environment): Promise<Value> => {
-                return this.execStmts(body, innerEnv).then((e) => null).catch((e) => {
-                    if (e instanceof Toradh) {
-                        return e.luach;
-                    }
-                    if (e !== BrisException) {
-                        throw e;
-                    }
-                    return null;
-                });
-            };
-            const args = fn.args ? this.evalCSIDs(fn.args) : [];
-            return new Gníomh(fn.id.id, fn.stmts, args, env, execFn);
+        const execFn = (body: Stmt[], innerEnv: Environment): Promise<Value> => {
+            return this.execStmts(body, innerEnv).then((e) => null).catch((e) => {
+                if (e instanceof Toradh) {
+                    return e.luach;
+                }
+                if (e !== BrisException) {
+                    throw e;
+                }
+                return null;
+            });
+        };
+        const args = fn.args ? this.evalCSIDs(fn.args) : [];
+        return new Gníomh(fn.id.id, fn.stmts, args, env, execFn);
     }
 }

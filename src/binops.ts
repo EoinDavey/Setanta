@@ -116,7 +116,7 @@ const binOpTable: Map<string, BinOpEntry[]> = new Map([
     })]],
     ["/", [numBinOpEntry((a, b) => {
         if (b === 0) {
-            throw new RuntimeError(`Division by zero`);
+            throw new RuntimeError(`Roinn le 0`);
         }
         return a / b;
     })]],
@@ -149,5 +149,5 @@ function evalBinOp(a: Value, b: Value, op: string): Value {
             }
         }
     }
-    throw new RuntimeError(`Can't apply ${goLitreacha(op)} to ${goLitreacha(a)} and ${goLitreacha(b)}`);
+    throw new RuntimeError(`Ní feider leat úsaid ${goLitreacha(op)} le ${goLitreacha(a)} agus ${goLitreacha(b)}`);
 }

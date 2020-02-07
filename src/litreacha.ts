@@ -29,7 +29,7 @@ export function unescapeChars(s: string): string {
         }
         const g = rep.get(s[i + 1]);
         if (!g) {
-            throw new RuntimeError(`Unknown escape code \\${s[i + 1]}`);
+            throw new RuntimeError(`Ní thuigtear an cód \\${s[i + 1]}`);
         }
         out += g;
         ++i;

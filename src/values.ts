@@ -30,7 +30,7 @@ export function callFunc(x: Value, args: Value[]): Promise<Value> {
     x = Asserts.assertCallable(x);
     const ar = x.arity();
     if (ar !== -1 && args.length !== x.arity()) {
-        throw new RuntimeError(`Function ${x} expected ${ar}, but got ${args.length}`);
+        throw new RuntimeError(`Teastaíonn ${ar} argóint ag ${x}, ach fuair sé ${args.length}`);
     }
     return x.call(args);
 }
@@ -79,5 +79,5 @@ export function goLitreacha(v: Value): string {
     if (Checks.isCallable(v)) {
         return `< gníomh ${v.ainm} >`;
     }
-    return `< obj ${v.ainm} >`;
+    return `< obj ${v.ainm} >`; // TODO athraigh go Gaeilge
 }

@@ -8,5 +8,5 @@ export class RuntimeError extends Error {
 }
 
 export function undefinedError(id: string): RuntimeError {
-    return new RuntimeError(`Undefined identifier: ${id}`);
+    return new RuntimeError(`Níl aon athróg le ainm: ${id}`);
 }
