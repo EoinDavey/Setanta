@@ -163,57 +163,43 @@ export class Interpreter {
             r();
         });
     }
-    public execNuair(n: P.NuairStmt, env: Environment): Promise<void> {
-        const step = (): Promise<void> => this.execStmt(n.stmt, env);
-        const run: () => Promise<void> = () => n.expr.evalfn(env).then((x) => {
-            if (!x) {
-                return Promise.resolve();
+    public async execNuair(n: P.NuairStmt, env: Environment): Promise<void> {
+        while (true) {
+            const x = await n.expr.evalfn(env);
+            if (!Checks.isTrue(x)) {
+                break;
             }
-            return step().then(
-                () => run(),
-            ).catch((e) => {
-                if (e === BrisException) {
-                    return Promise.resolve();
+            try {
+                await this.execStmt(n.stmt, env);
+            } catch (err) {
+                if (err === BrisException) {
+                    break;
                 }
-                if (e === CCException) {
-                    return run();
+                if (err === CCException) {
+                    continue;
                 }
-                throw e;
-            });
-        });
-        return run();
+                throw err;
+            }
+        }
     }
-    public execLeStmt(n: P.LeStmt, env: Environment): Promise<void> {
+    public async execLeStmt(n: P.LeStmt, env: Environment): Promise<void> {
         env = new Environment(env);
-
-        return n.strt.evalfn(env).then(
-            (st) => n.end.evalfn(env).then(
-                (end) => {
-                    const s = Asserts.assertNumber(st);
-                    const e = Asserts.assertNumber(end);
-
-                    const step = (): Promise<void> => this.execStmt(n.stmt, env);
-                    const run: (i: number) => Promise<void> = (i: number) => {
-                        if (i >= e) {
-                            return Promise.resolve();
-                        }
-                        env.define(n.id.id, i);
-                        return step().then(
-                            () => run(i + 1),
-                        ).catch((err) => {
-                            if (err === BrisException) {
-                                return Promise.resolve();
-                            }
-                            if (err === CCException) {
-                                return run(i + 1);
-                            }
-                            throw err;
-                        });
-                    };
-                    return run(s);
-                },
-            ),
-        );
+        const s = Asserts.assertNumber(await n.strt.evalfn(env));
+        const e = Asserts.assertNumber(await n.end.evalfn(env));
+        for (let i = s; i < e; ++i) {
+            env.define(n.id.id, i);
+            try {
+                await this.execStmt(n.stmt, env);
+            } catch (err) {
+                if (err === BrisException) {
+                    break;
+                }
+                if (err === CCException) {
+                    continue;
+                }
+                throw err;
+            }
+        }
     }
     public execMá(f: P.IfStmt, env: Environment): Promise<void> {
         return f.expr.evalfn(env).then((v) => {
