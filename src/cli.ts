@@ -3,7 +3,7 @@ import * as readline from "readline";
 import * as Asserts from "./asserts";
 import { RuntimeError } from "./error";
 import { ASTKinds, Parser } from "./gen_parser";
-import { Interpreter } from "./i10r";
+import { Interpreter, STOP } from "./i10r";
 import { goLitreacha, Value } from "./values";
 
 import * as fs from "fs";
@@ -76,7 +76,7 @@ async function repl() {
         } catch (err) {
             if (err instanceof RuntimeError) {
                 console.log(err.msg);
-            } else {
+            } else if (err !== STOP) {
                 console.log(err);
             }
         }

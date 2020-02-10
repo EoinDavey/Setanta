@@ -15,6 +15,7 @@ type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
 const BrisException = "BRIS";
 const CCException = "CC";
+export const STOP = "STOP";
 const SKIP_COUNT_LIM = 5000;
 
 class Toradh {
@@ -29,6 +30,7 @@ type Ref = (v: Value) => void;
 export class Interpreter {
     public global: Environment = new Environment();
     private skipCnt: number = 0;
+    private stopped: boolean = false;
     constructor(externals?: Array<[string[], Value]>) {
         this.global = Environment.from(Builtins);
         if (externals) {
@@ -39,8 +41,16 @@ export class Interpreter {
             }
         }
     }
+    public stop() {
+        this.stopped = true;
+    }
     public interpret(p: P.Program): Promise<void> {
-        return this.execStmts(p.stmts, this.global);
+        return this.execStmts(p.stmts, this.global).catch((err) => {
+            if (err === STOP) {
+                return;
+            }
+            throw err;
+        });
     }
     public execStmts(stmts: Stmt[], env: Environment): Promise<void> {
         const f = (x: Promise<void>, y: Stmt): Promise<void> => {
@@ -53,6 +63,9 @@ export class Interpreter {
         return this.execStmts(blk.blk, env);
     }
     public execStmt(st: Stmt, env: Environment): Promise<void> {
+        if (this.stopped) {
+            return Promise.reject(STOP);
+        }
         if (this.skipCnt >= SKIP_COUNT_LIM) { // Every SKIP_COUNT_LIM statements put the next execution on the macrotask queue.
             this.skipCnt = 0;
             return new Promise((resolve) => setTimeout(resolve)).then(() => this.execStmt(st, env));

@@ -911,3 +911,20 @@ test("test constructor", async () => {
         expect(i.global.get("res")).toEqual(c.exp);
     }
 });
+
+test("stop test", async () => {
+    const prog = `
+        x := 0
+        nuair-a fíor {
+            x = x + 1
+        }
+    `;
+    const p = new Parser(prog);
+    const res = p.parse();
+    const i = new Interpreter();
+    expect(res.err).toBeNull();
+    expect(res.ast).not.toBeNull();
+    i.interpret(res.ast!);
+    const stop = new Promise((resolve) => setTimeout(() => resolve(i.stop())));
+    await stop;
+});
