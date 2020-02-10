@@ -15,6 +15,7 @@ type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
 const BrisException = "BRIS";
 const CCException = "CC";
+const SKIP_COUNT_LIM = 5000;
 
 class Toradh {
     public luach: Value;
@@ -27,6 +28,7 @@ type Ref = (v: Value) => void;
 
 export class Interpreter {
     public global: Environment = new Environment();
+    private skipCnt: number = 0;
     constructor(externals?: Array<[string[], Value]>) {
         this.global = Environment.from(Builtins);
         if (externals) {
@@ -51,6 +53,11 @@ export class Interpreter {
         return this.execStmts(blk.blk, env);
     }
     public execStmt(st: Stmt, env: Environment): Promise<void> {
+        if (this.skipCnt >= SKIP_COUNT_LIM) { // Every SKIP_COUNT_LIM statements put the next execution on the macrotask queue.
+            this.skipCnt = 0;
+            return new Promise((resolve) => setTimeout(resolve)).then(() => this.execStmt(st, env));
+        }
+        ++this.skipCnt;
         switch (st.kind) {
             case ASTKinds.IfStmt:
                 return this.execMá(st, env);
