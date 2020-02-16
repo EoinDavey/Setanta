@@ -66,7 +66,8 @@ export class Interpreter {
         if (this.stopped) {
             return Promise.reject(STOP);
         }
-        if (this.skipCnt >= SKIP_COUNT_LIM) { // Every SKIP_COUNT_LIM statements put the next execution on the macrotask queue.
+        // Every SKIP_COUNT_LIM statements put the next execution on the macrotask queue.
+        if (this.skipCnt >= SKIP_COUNT_LIM) {
             this.skipCnt = 0;
             return new Promise((resolve) => setTimeout(resolve)).then(() => this.execStmt(st, env));
         }

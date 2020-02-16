@@ -7,7 +7,7 @@ export interface Creatlach extends Callable {
     aimsighGníomh(s: string): Gníomh | null;
 }
 
-export class CreatlachImpl implements Callable {
+export class CreatlachImpl implements Creatlach {
     public ainm: string;
     public tuismitheoir: Creatlach | null;
     protected gníomhaiochtaí: Map<string, Gníomh>;

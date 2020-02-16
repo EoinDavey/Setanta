@@ -1,8 +1,11 @@
+import * as Asserts from "../../src/asserts";
 import * as Checks from "../../src/checks";
-import { Creatlach } from "../../src/creatlach";
+import { CreatlachImpl } from "../../src/creatlach";
 import { Environment } from "../../src/env";
 import { Parser } from "../../src/gen_parser";
+import { GníomhWrap } from "../../src/gniomh";
 import { Interpreter } from "../../src/i10r";
+import { Rud } from "../../src/rud";
 import { Callable, ObjWrap, Value } from "../../src/values";
 
 test("test isEqual", () => {
@@ -896,6 +899,42 @@ test("test constructor", async () => {
             }
             mise := Duine('Eoin', 21)
             res := caint@mise()
+            `,
+        },
+        {
+            env: Environment.from([
+                ["dronuilleog", new CreatlachImpl("dronuilleog", new Map(
+                    [
+                        ["nua", new GníomhWrap(
+                            "nua",
+                            2,
+                            (seo: Rud, args: Value[]) => {
+                                seo.setAttr("ard", args[0]);
+                                seo.setAttr("lthd", args[1]);
+                                return Promise.resolve(null);
+                            },
+                        )],
+                        ["achar", new GníomhWrap(
+                            "achar",
+                            0,
+                            (seo: Rud, args: Value[]) => {
+                                const h = Asserts.assertNumber(seo.getAttr("ard"));
+                                const w = Asserts.assertNumber(seo.getAttr("lthd"));
+                                return Promise.resolve(h * w);
+                            },
+                        )],
+                    ],
+                ))],
+            ]),
+            exp: 16,
+            inp: `
+            creatlach cearnóg ó dronuilleog {
+                gníomh nua(l) {
+                    nua@tuis(l, l)
+                }
+            }
+            c := cearnóg(4)
+            res := achar@c()
             `,
         },
     ];

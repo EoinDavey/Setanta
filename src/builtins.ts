@@ -1,7 +1,10 @@
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
+import { CreatlachImpl } from "./creatlach";
 import { RuntimeError } from "./error";
+import { GníomhWrap } from "./gniomh";
 import { athchuir } from "./litreacha";
+import { Rud } from "./rud";
 import { callFunc, goLitreacha, ObjWrap, Value } from "./values";
 
 export const Builtins: Array<[string, Value]> = [
