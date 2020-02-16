@@ -2,12 +2,16 @@ import { Environment } from "./env";
 import { Rud } from "./rud";
 import { Callable, Stmt, Value } from "./values";
 
-export class Gníomh implements Callable {
+export interface Gníomh extends Callable {
+    bind(seo: Rud): Gníomh;
+}
+
+export class GníomhImpl implements Callable {
     public ainm: string;
-    public defn: Stmt[];
-    public args: string[];
-    public env: Environment;
-    public execFn: (body: Stmt[], env: Environment) => Promise<Value>;
+    private defn: Stmt[];
+    private args: string[];
+    private env: Environment;
+    private execFn: (body: Stmt[], env: Environment) => Promise<Value>;
     constructor(ainm: string, defn: Stmt[], args: string[], env: Environment,
                 execFn: (body: Stmt[], env: Environment) => Promise<Value>) {
         this.ainm = ainm;
@@ -22,7 +26,7 @@ export class Gníomh implements Callable {
         if (seo.tuis) {
             env.define("tuis", seo.tuis);
         }
-        return new Gníomh(this.ainm, this.defn, this.args, env, this.execFn);
+        return new GníomhImpl(this.ainm, this.defn, this.args, env, this.execFn);
     }
     public arity() {
         return this.args.length;

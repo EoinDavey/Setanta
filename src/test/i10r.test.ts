@@ -1,8 +1,9 @@
 import * as Checks from "../../src/checks";
+import { Creatlach } from "../../src/creatlach";
 import { Environment } from "../../src/env";
 import { Parser } from "../../src/gen_parser";
 import { Interpreter } from "../../src/i10r";
-import { Value } from "../../src/values";
+import { Callable, ObjWrap, Value } from "../../src/values";
 
 test("test isEqual", () => {
     interface TC { a: Value; b: Value; eq: boolean; }

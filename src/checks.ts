@@ -1,3 +1,4 @@
+import { Creatlach } from "./creatlach";
 import { Callable, Comparable, Obj, Value } from "./values";
 
 export function isTrue(v: Value) {
@@ -37,4 +38,8 @@ export function isComparable(v: Value): v is Comparable {
 
 export function isLiosta(v: Value): v is Value[] {
     return Array.isArray(v);
+}
+
+export function isCreatlach(v: Value): v is Creatlach {
+    return v !== null && !(isBool(v) || isNumber(v) || isLitreacha(v) || isLiosta(v)) && "aimsighGníomh" in v;
 }

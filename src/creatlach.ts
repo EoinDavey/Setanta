@@ -2,7 +2,12 @@ import { Gníomh } from "./gniomh";
 import { Rud } from "./rud";
 import { Callable, callFunc, Value } from "./values";
 
-export class Creatlach implements Callable {
+export interface Creatlach extends Callable {
+    tuismitheoir: Creatlach | null;
+    aimsighGníomh(s: string): Gníomh | null;
+}
+
+export class CreatlachImpl implements Callable {
     public ainm: string;
     public tuismitheoir: Creatlach | null;
     protected gníomhaiochtaí: Map<string, Gníomh>;

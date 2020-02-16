@@ -1,12 +1,12 @@
 import * as Asserts from "./asserts";
 import { Builtins } from "./builtins";
 import * as Checks from "./checks";
-import { Creatlach } from "./creatlach";
+import { Creatlach, CreatlachImpl } from "./creatlach";
 import { Environment } from "./env";
 import { RuntimeError, undefinedError } from "./error";
 import * as P from "./gen_parser";
 import { ASTKinds } from "./gen_parser";
-import { Gníomh } from "./gniomh";
+import { Gníomh, GníomhImpl } from "./gniomh";
 import { strcat, strrep, unescapeChars } from "./litreacha";
 import { Callable, callFunc, Comparable,
     goLitreacha, idxList, Obj, TypeCheck, Value } from "./values";
@@ -160,13 +160,13 @@ export class Interpreter {
         }
         if (b.tuis) {
             const tuis = env.get(b.tuis.id.id);
-            if (!tuis || !(tuis instanceof Creatlach)) {
+            if (!tuis || !(Checks.isCreatlach(tuis))) {
                 throw new RuntimeError(`Nil aon creatlach leis an ainm ${b.tuis.id.id}`);
             }
-            const ctlch = new Creatlach(b.id.id, gníomhs, tuis);
+            const ctlch = new CreatlachImpl(b.id.id, gníomhs, tuis);
             env.define(b.id.id, ctlch);
         } else {
-            const ctlch = new Creatlach(b.id.id, gníomhs);
+            const ctlch = new CreatlachImpl(b.id.id, gníomhs);
             env.define(b.id.id, ctlch);
         }
     }
@@ -256,6 +256,6 @@ export class Interpreter {
             });
         };
         const args = fn.args ? this.evalCSIDs(fn.args) : [];
-        return new Gníomh(fn.id.id, fn.stmts, args, env, execFn);
+        return new GníomhImpl(fn.id.id, fn.stmts, args, env, execFn);
     }
 }

@@ -21,9 +21,6 @@ export class Rud implements Obj {
         }
         const gníomh = this.creatlach.aimsighGníomh(s);
         if (gníomh) {
-            if (this.tuis) {
-                return gníomh.bind(this);
-            }
             return gníomh.bind(this);
         }
         throw new RuntimeError(`Níl aon ball de ${goLitreacha(this)} le ainm ${s}`);
