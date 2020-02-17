@@ -32,7 +32,7 @@ NonAsgnStmt := IfStmt
 IfStmt      := _ 'm[áa]' &gap expr=Expr &gap stmt=NonAsgnStmt elsebranch={_ 'n[oó]' &gap stmt=NonAsgnStmt}?
 BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
 NuairStmt   := _ 'nuair-a' expr=Expr &gap stmt=NonAsgnStmt
-LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr _ '\)' stmt=NonAsgnStmt
+LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr step={_ ',' step=Expr}? _ '\)' stmt=NonAsgnStmt
 DefnStmt    := _ id=ID _ ':=' _ expr=Expr
 AssgnStmt   := _ lhs=Postfix _ '=' _ expr=Expr
 GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'

@@ -291,6 +291,42 @@ test("test le idir loops", async () => {
                 }
             }`,
         },
+        {
+            exp : 762,
+            inp : `
+            res := 0
+            le x idir (0, 20) {
+                le i idir (0, x) {
+                    má i % 3 == 0
+                        chun-cinn >-- Lean ar aghaidh
+                    res = res + i
+                }
+            }`,
+        },
+        {
+            exp : "10987654321",
+            inp : `
+            res := ''
+            le i idir (10, 0)
+                res = res + go_lit(i)
+            `,
+        },
+        {
+            exp : 2500,
+            inp : `
+            res := 0
+            le i idir (1, 100, 2)
+                res = res + i
+            `,
+        },
+        {
+            exp : "10741",
+            inp : `
+            res := ''
+            le i idir (10, 0, -3)
+                res = res + go_lit(i)
+            `,
+        },
     ];
     for (const c of cases) {
         const i = new Interpreter();

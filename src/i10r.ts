@@ -207,7 +207,12 @@ export class Interpreter {
         env = new Environment(env);
         const s = Asserts.assertNumber(await n.strt.evalfn(env));
         const e = Asserts.assertNumber(await n.end.evalfn(env));
-        for (let i = s; i < e; ++i) {
+        let stp = e >= s ? 1 : -1;
+        if (n.step !== null) {
+            stp = Asserts.assertNumber(await n.step.step.evalfn(env));
+        }
+        const dircheck = e >= s ? (a: number, b: number) => a < b : (a: number, b: number) => a > b;
+        for (let i = s; dircheck(i, e); i += stp) {
             env.define(n.id.id, i);
             try {
                 await this.execStmt(n.stmt, env);

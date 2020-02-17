@@ -34,7 +34,7 @@
 * IfStmt      := _ 'm[áa]' &gap expr=Expr &gap stmt=NonAsgnStmt elsebranch={_ 'n[oó]' &gap stmt=NonAsgnStmt}?
 * BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
 * NuairStmt   := _ 'nuair-a' expr=Expr &gap stmt=NonAsgnStmt
-* LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr _ '\)' stmt=NonAsgnStmt
+* LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr step={_ ',' step=Expr}? _ '\)' stmt=NonAsgnStmt
 * DefnStmt    := _ id=ID _ ':=' _ expr=Expr
 * AssgnStmt   := _ lhs=Postfix _ '=' _ expr=Expr
 * GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
@@ -157,6 +157,7 @@ export enum ASTKinds {
     BlockStmt,
     NuairStmt,
     LeStmt,
+    LeStmt_$0,
     DefnStmt,
     AssgnStmt,
     GniomhStmt,
@@ -273,7 +274,12 @@ export interface LeStmt {
     id: ID;
     strt: Expr;
     end: Expr;
+    step: Nullable<LeStmt_$0>;
     stmt: NonAsgnStmt;
+}
+export interface LeStmt_$0 {
+    kind: ASTKinds.LeStmt_$0;
+    step: Expr;
 }
 export interface DefnStmt {
     kind: ASTKinds.DefnStmt;
@@ -826,6 +832,7 @@ export class Parser {
                 let id: Nullable<ID>;
                 let strt: Nullable<Expr>;
                 let end: Nullable<Expr>;
+                let step: Nullable<Nullable<LeStmt_$0>>;
                 let stmt: Nullable<NonAsgnStmt>;
                 let res: Nullable<LeStmt> = null;
                 if (true
@@ -841,11 +848,30 @@ export class Parser {
                     && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`,`, $$dpth + 1, cr) !== null
                     && (end = this.matchExpr($$dpth + 1, cr)) !== null
+                    && ((step = this.matchLeStmt_$0($$dpth + 1, cr)) || true)
                     && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`\)`, $$dpth + 1, cr) !== null
                     && (stmt = this.matchNonAsgnStmt($$dpth + 1, cr)) !== null
                 ) {
-                    res = {kind: ASTKinds.LeStmt, id, strt, end, stmt};
+                    res = {kind: ASTKinds.LeStmt, id, strt, end, step, stmt};
+                }
+                return res;
+            }, cr)();
+    }
+    public matchLeStmt_$0($$dpth: number, cr?: ContextRecorder): Nullable<LeStmt_$0> {
+        return this.runner<LeStmt_$0>($$dpth,
+            (log) => {
+                if (log) {
+                    log("LeStmt_$0");
+                }
+                let step: Nullable<Expr>;
+                let res: Nullable<LeStmt_$0> = null;
+                if (true
+                    && this.match_($$dpth + 1, cr) !== null
+                    && this.regexAccept(String.raw`,`, $$dpth + 1, cr) !== null
+                    && (step = this.matchExpr($$dpth + 1, cr)) !== null
+                ) {
+                    res = {kind: ASTKinds.LeStmt_$0, step};
                 }
                 return res;
             }, cr)();
