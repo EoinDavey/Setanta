@@ -1,3 +1,4 @@
 /node_build/
 /node_modules/
 *.swp
+/docs/_site/

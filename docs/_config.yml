@@ -1,0 +1,15 @@
+repository: EoinDavey/Setanta
+remote_theme: mmistakes/minimal-mistakes@4.18.1
+plugins:
+    - jekyll-include-cache
+title: "Setanta"
+name: "Eoin Davey"
+site.description: "Doiciméadacht do Setanta"
+url: "https://vey.ie/Setanta"
+logo: "/assets/images/logo50x50.png"
+masthead_title: "Setanta Doiciméadacht"
+timezone: "Europe/Dublin"
+collections:
+    docs:
+        output: true
+        permalink: /:collection/:path
