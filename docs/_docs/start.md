@@ -83,7 +83,7 @@ nó
     scríobh('I'm sorry, I don't know you')
 ```
 
-Use `{` and `}` to creat a group of instructions.
+Use `{` and `}` to create a group of instructions.
 
 ```
 má x == 6 {
