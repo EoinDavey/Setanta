@@ -5,3 +5,13 @@ node_js:
 script:
     - npm run build
     - npm run full-test
+
+deploy:
+  cleanup: false
+  provider: npm
+  email: eoind@vey.ie
+  on:
+    tags: true
+    repo: EoinDavey/tsPEG
+  api_key: "$NPM_TOKEN"
+  edge: true
