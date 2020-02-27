@@ -108,6 +108,19 @@ test("test assign", async () => {
             10*10-40/3
             res = res*res + res + 3`,
         },
+        {
+            exp : 9,
+            inp : `
+            res := 10
+            res += 2
+            res *= 3
+            res %= 5
+            res /= 2
+            res *= 4
+            res += 12
+            res -= 5
+            `,
+        },
     ];
     for (const c of cases) {
         const i = new Interpreter();

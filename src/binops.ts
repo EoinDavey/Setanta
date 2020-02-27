@@ -6,7 +6,7 @@ import { EvalFn } from "./evals";
 import { And, Or } from "./gen_parser";
 import { cat, repeat } from "./liosta";
 import { strcat, strrep } from "./litreacha";
-import { Comparable, goLitreacha, TypeCheck, Value } from "./values";
+import { Comparable, goLitreacha, Ref, TypeCheck, Value } from "./values";
 
 interface IEvalable {evalfn: EvalFn; }
 
@@ -58,10 +58,10 @@ export function binOpEvalFn(obj: {head: IEvalable, tail: Array<{trm: IEvalable, 
 
 function makeBinOp<L extends Value, R extends Value>(lassert: (v: Value) => L,
                                                      rassert: (v: Value) => R, op: (a: L, b: R) => Value): BinOp {
-        return (a: Value, b: Value) =>  {
-            return op(lassert(a), rassert(b));
-        };
-    }
+    return (a: Value, b: Value) =>  {
+        return op(lassert(a), rassert(b));
+    };
+}
 
 function numBinOpEntry(f: (a: number, b: number) => Value): BinOpEntry {
     return {
@@ -149,5 +149,78 @@ function evalBinOp(a: Value, b: Value, op: string): Value {
             }
         }
     }
-    throw new RuntimeError(`Ní feider leat úsaid ${goLitreacha(op)} le ${goLitreacha(a)} agus ${goLitreacha(b)}`);
+    throw new RuntimeError(`Ní feider leat ${goLitreacha(op)} a úsaid le ${goLitreacha(a)} agus ${goLitreacha(b)}`);
+}
+
+type AsgnOp = (ref: Ref, cur: Value, dv: Value) => void;
+
+interface AsgnOpEntry { lcheck: TypeCheck; rcheck: TypeCheck; op: AsgnOp; }
+
+function makeAsgnOp<L extends Value, R extends Value>(lassert: (v: Value) => L,
+                                                      rassert: (v: Value) => R, op: (a: L, b: R) => Value): AsgnOp {
+    return (ref: Ref, a: Value, b: Value) =>  {
+        return ref(op(lassert(a), rassert(b)));
+    };
+}
+
+function numAsgnOpEntry(f: (a: number, b: number) => Value): AsgnOpEntry {
+    return {
+        lcheck : Checks.isNumber,
+        op : makeAsgnOp(Asserts.assertNumber, Asserts.assertNumber, f),
+        rcheck: Checks.isNumber,
+    };
+}
+
+const asgnOpTable: Map<string, AsgnOpEntry[]> = new Map([
+    ["+=", [
+        numAsgnOpEntry((a, b) => a + b),
+        {
+            // Using += on a list is more efficient than x = x + y, due to use of in place `push`
+            lcheck: Checks.isLiosta,
+            op: (ref: Ref, cur: Value, d: Value) => {
+                const cv = Asserts.assertLiosta(cur);
+                cv.push(d);
+            },
+            rcheck: (v) => true,
+        },
+        {
+            lcheck: Checks.isLitreacha,
+            op: makeAsgnOp(Asserts.assertLitreacha, Asserts.assertLitreacha, strcat),
+            rcheck: Checks.isLitreacha,
+        },
+    ]],
+    ["-=", [numAsgnOpEntry((a, b) => a - b)]],
+    ["/=", [numAsgnOpEntry((a, b) => a / b)]],
+    ["%=", [numAsgnOpEntry((a, b) => {
+        let val = a % b;
+        if (val < 0) {
+            val += b;
+        }
+        return val;
+    })]],
+    ["*=", [
+        numAsgnOpEntry((a, b) => a * b),
+        {
+            lcheck: Checks.isLiosta,
+            op: makeAsgnOp(Asserts.assertLiosta, Asserts.assertNumber, repeat),
+            rcheck: Checks.isNumber,
+        },
+        {
+            lcheck: Checks.isLitreacha,
+            op: makeAsgnOp(Asserts.assertLitreacha, Asserts.assertNumber, strrep),
+            rcheck: Checks.isNumber,
+        },
+    ]],
+]);
+
+export function evalAsgnOp(ref: Ref, cur: Value, dv: Value, op: string) {
+    const g = asgnOpTable.get(op);
+    if (g) {
+        for (const x of g) {
+            if (x.lcheck(cur) && x.rcheck(dv)) {
+                return x.op(ref, cur, dv);
+            }
+        }
+    }
+    throw new RuntimeError(`Ní feider leat ${goLitreacha(op)} a úsaid le ${goLitreacha(cur)} agus ${goLitreacha(dv)}`);
 }

@@ -1,4 +1,5 @@
 import * as Asserts from "./asserts";
+import { evalAsgnOp } from "./binops";
 import { Builtins } from "./builtins";
 import * as Checks from "./checks";
 import { Creatlach, CreatlachImpl } from "./creatlach";
@@ -9,7 +10,7 @@ import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
 import { strcat, strrep, unescapeChars } from "./litreacha";
 import { Callable, callFunc, Comparable,
-    goLitreacha, idxList, Obj, TypeCheck, Value } from "./values";
+    goLitreacha, idxList, Obj, Ref, TypeCheck, Value } from "./values";
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
@@ -24,8 +25,6 @@ class Toradh {
         this.luach = v;
     }
 }
-
-type Ref = (v: Value) => void;
 
 export class Interpreter {
     public global: Environment = new Environment();
@@ -242,9 +241,14 @@ export class Interpreter {
         return a.expr.evalfn(env).then((val) => env.define(a.id.id, val));
     }
     public execAssgn(t: P.AssgnStmt, env: Environment): Promise<void> {
-        return t.expr.evalfn(env).then((val: Value) => {
-            return this.refPostfix(t.lhs, env).then((ref: Ref) => { ref(val); });
-        });
+        if (t.op === "=") {
+            return t.expr.evalfn(env).then((val: Value) => {
+                return this.refPostfix(t.lhs, env).then((ref: Ref) => ref(val));
+            });
+        }
+        return t.expr.evalfn(env).then((dv: Value) =>
+            this.refPostfix(t.lhs, env).then((ref: Ref) =>
+                t.lhs.evalfn(env).then((cur: Value) => evalAsgnOp(ref, cur, dv, t.op))));
     }
     public evalCSIDs(ids: P.CSIDs): string[] {
         return [ids.head.id].concat(ids.tail.map((x) => x.id.id));

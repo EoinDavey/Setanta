@@ -14,6 +14,8 @@ export type Stmt = AsgnStmt | NonAsgnStmt;
 
 export type Comparable = number | boolean;
 
+export type Ref = (v: Value) => void;
+
 export interface Callable {
     ainm: string;
     arity: () => number;

@@ -36,7 +36,7 @@
 * NuairStmt   := _ 'nuair-a' expr=Expr &gap stmt=NonAsgnStmt
 * LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr step={_ ',' step=Expr}? _ '\)' stmt=NonAsgnStmt
 * DefnStmt    := _ id=ID _ ':=' _ expr=Expr
-* AssgnStmt   := _ lhs=Postfix _ '=' _ expr=Expr
+* AssgnStmt   := _ lhs=Postfix _ op=AsgnOp _ expr=Expr
 * GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
 *     stmts=AsgnStmt*
 * _ '}'
@@ -107,6 +107,7 @@
 * wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n))'
 * gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
 * PlusMinus   := '\+|-'
+* AsgnOp      := '=|\+=|\*=|-=|%=|\/='
 * MulDiv      := '\*|\/|%'
 * Compare     := '<=|>=|<|>'
 * Keyword     := 'm[áa]' | 'n[oó]' | 'nuair-a' | 'f[ií]or|breag'
@@ -211,6 +212,7 @@ export enum ASTKinds {
     gap_$0_1,
     gap_$0_2,
     PlusMinus,
+    AsgnOp,
     MulDiv,
     Compare,
     Keyword_1,
@@ -289,6 +291,7 @@ export interface DefnStmt {
 export interface AssgnStmt {
     kind: ASTKinds.AssgnStmt;
     lhs: Postfix;
+    op: AsgnOp;
     expr: Expr;
 }
 export interface GniomhStmt {
@@ -604,6 +607,7 @@ export type gap_$0 = gap_$0_1 | gap_$0_2;
 export type gap_$0_1 = wspace;
 export type gap_$0_2 = string;
 export type PlusMinus = string;
+export type AsgnOp = string;
 export type MulDiv = string;
 export type Compare = string;
 export type Keyword = Keyword_1 | Keyword_2 | Keyword_3 | Keyword_4 | Keyword_5 | Keyword_6 | Keyword_7 | Keyword_8 | Keyword_9;
@@ -905,17 +909,18 @@ export class Parser {
                     log("AssgnStmt");
                 }
                 let lhs: Nullable<Postfix>;
+                let op: Nullable<AsgnOp>;
                 let expr: Nullable<Expr>;
                 let res: Nullable<AssgnStmt> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
                     && (lhs = this.matchPostfix($$dpth + 1, cr)) !== null
                     && this.match_($$dpth + 1, cr) !== null
-                    && this.regexAccept(String.raw`=`, $$dpth + 1, cr) !== null
+                    && (op = this.matchAsgnOp($$dpth + 1, cr)) !== null
                     && this.match_($$dpth + 1, cr) !== null
                     && (expr = this.matchExpr($$dpth + 1, cr)) !== null
                 ) {
-                    res = {kind: ASTKinds.AssgnStmt, lhs, expr};
+                    res = {kind: ASTKinds.AssgnStmt, lhs, op, expr};
                 }
                 return res;
             }, cr)();
@@ -1680,6 +1685,9 @@ export class Parser {
     }
     public matchPlusMinus($$dpth: number, cr?: ContextRecorder): Nullable<PlusMinus> {
         return this.regexAccept(String.raw`\+|-`, $$dpth + 1, cr);
+    }
+    public matchAsgnOp($$dpth: number, cr?: ContextRecorder): Nullable<AsgnOp> {
+        return this.regexAccept(String.raw`=|\+=|\*=|-=|%=|\/=`, $$dpth + 1, cr);
     }
     public matchMulDiv($$dpth: number, cr?: ContextRecorder): Nullable<MulDiv> {
         return this.regexAccept(String.raw`\*|\/|%`, $$dpth + 1, cr);
