@@ -866,6 +866,14 @@ test("test creatlach stmt", async () => {
             res := g@b(6)
             `,
         },
+        {
+            exp: null,
+            inp: `
+            creatlach A {}
+            a := A()
+            x@a = neamhní
+            res := x@a`,
+        },
     ];
     for (const c of cases) {
         const i = new Interpreter();

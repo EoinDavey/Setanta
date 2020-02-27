@@ -16,7 +16,7 @@ export class Rud implements Obj {
     }
     public getAttr(s: string): Value {
         const ball = this.baill.get(s);
-        if (ball) {
+        if (ball !== undefined) {
             return ball;
         }
         const gníomh = this.creatlach.aimsighGníomh(s);
