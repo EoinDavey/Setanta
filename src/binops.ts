@@ -179,9 +179,10 @@ const asgnOpTable: Map<string, AsgnOpEntry[]> = new Map([
             lcheck: Checks.isLiosta,
             op: (ref: Ref, cur: Value, d: Value) => {
                 const cv = Asserts.assertLiosta(cur);
-                cv.push(d);
+                const dv = Asserts.assertLiosta(d);
+                cv.push(...dv);
             },
-            rcheck: (v) => true,
+            rcheck: Checks.isLiosta,
         },
         {
             lcheck: Checks.isLitreacha,

@@ -121,6 +121,35 @@ test("test assign", async () => {
             res -= 5
             `,
         },
+        {
+            exp : [0, 1, 2, 3],
+            inp : `
+            res := [0]
+            res += [1,2,3]
+            `,
+        },
+        {
+            exp : [0, 0, 0, 0],
+            inp : `
+            res := [0]
+            res *= 4
+            `,
+        },
+        {
+            exp : "heyho",
+            inp : `
+            res := 'hey'
+            res += 'ho'
+            `,
+        },
+        {
+            exp : "hey, hey, hey, listen",
+            inp : `
+            res := 'hey, '
+            res *= 3
+            res += 'listen'
+            `,
+        },
     ];
     for (const c of cases) {
         const i = new Interpreter();
