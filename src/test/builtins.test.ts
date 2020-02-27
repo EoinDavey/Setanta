@@ -105,6 +105,7 @@ test("test mata", async () => {
         { inp : "pi@mata", exp : Math.PI },
         { inp : "e@mata", exp : Math.E },
         { inp : "cearn@mata(pi@mata)", exp : Math.PI * Math.PI },
+        { inp : "fréamh@mata(4)", exp : 2 },
     ];
     for (const c of cases) {
         const i = new Interpreter();

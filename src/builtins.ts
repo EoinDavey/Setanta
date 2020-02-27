@@ -113,7 +113,7 @@ export const Builtins: Array<[string, Value]> = [
                     arity: () => 1,
                     call: (args: Value[]): Promise<number> => {
                         const x = Asserts.assertNumber(args[0]);
-                        return Promise.resolve(Math.sqrt(x * x));
+                        return Promise.resolve(Math.sqrt(x));
                     },
                 },
             ],
@@ -123,7 +123,7 @@ export const Builtins: Array<[string, Value]> = [
                     arity: () => 1,
                     call: (args: Value[]): Promise<number> => {
                         const x = Asserts.assertNumber(args[0]);
-                        return Promise.resolve(Math.sqrt(x * x));
+                        return Promise.resolve(Math.sqrt(x));
                     },
                 },
             ],
