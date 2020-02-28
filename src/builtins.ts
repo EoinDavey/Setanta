@@ -9,6 +9,7 @@ import { callFunc, goLitreacha, ObjWrap, Value } from "./values";
 
 export const Builtins: Array<[string, Value]> = [
     [
+        // Fad returns length of liosta / litreacha
         "fad", {
             ainm: "fad",
             arity : () => 1,
@@ -18,6 +19,7 @@ export const Builtins: Array<[string, Value]> = [
         },
     ],
     [
+        // Thar takes a function f and returns the map of f over the liosta
         "thar", {
             ainm: "thar",
             arity : () => 2,
@@ -29,6 +31,8 @@ export const Builtins: Array<[string, Value]> = [
         },
     ],
     [
+        // args[0]: (liosta | litreacha); args[1]: number; args[2]: number
+        // Cuid returns a sublist of args[0] from args[1] to args[2]
         "cuid", {
             ainm: "cuid",
             arity : () => 3,
@@ -47,6 +51,8 @@ export const Builtins: Array<[string, Value]> = [
         },
     ],
     [
+        // args[0]: litreacha, args[1]: litreacha
+        // roinn calls split on args[0] with args[1] as divider
         "roinn", {
             ainm: "roinn",
             arity : () => 2,
@@ -58,6 +64,8 @@ export const Builtins: Array<[string, Value]> = [
         },
     ],
     [
+        // args[0]: litreacha, args[1]: litreacha, args[2]: litreacha
+        // replace all occurrences of args[1] in args[0] with args[2]
         "athchuir", {
             ainm: "athchuir",
             arity : () => 3,
@@ -70,6 +78,8 @@ export const Builtins: Array<[string, Value]> = [
         },
     ],
     [
+        // args[0]: (litreacha | bool | uimhir)
+        // go_uimh casts args[0] to a number
         "go_uimh", {
             ainm : "go_uimh",
             arity : () => 1,
@@ -82,6 +92,8 @@ export const Builtins: Array<[string, Value]> = [
         },
     ],
     [
+        // args[0]: any
+        // go_uimh casts args[0] to a number
         "go_lit", {
             ainm : "go_lit",
             arity : () => 1,
@@ -94,10 +106,13 @@ export const Builtins: Array<[string, Value]> = [
         },
     ],
     [
+        // Built in maths object
         "mata", new ObjWrap("mata", [
+            // constants
             [["pi"], Math.PI],
             [["e"], Math.E],
             [
+                // Square function
                 ["cearn"], {
                     ainm : "cearn",
                     arity: () => 1,
@@ -108,6 +123,7 @@ export const Builtins: Array<[string, Value]> = [
                 },
             ],
             [
+                // Sqrt function
                 ["fréamh", "freamh"], {
                     ainm : "fréamh",
                     arity: () => 1,
