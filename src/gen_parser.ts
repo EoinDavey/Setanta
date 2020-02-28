@@ -86,7 +86,7 @@
 *                .evalfn = EvalFn {
 *                    return (env: Environment) => Promise.resolve(env.get(this.id));
 *                }
-* Bool        := _ bool='f[ií]or|breag'
+* Bool        := _ bool='f[ií]or|br[eé]ag'
 *                .evalfn = EvalFn {
 *                    const x = this.bool === 'fior' || this.bool === 'fíor';
 *                    return () => Promise.resolve(x);
@@ -110,7 +110,7 @@
 * AsgnOp      := '=|\+=|\*=|-=|%=|\/='
 * MulDiv      := '\*|\/\/|%|\/'
 * Compare     := '<=|>=|<|>'
-* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair-a' | 'f[ií]or|breag'
+* Keyword     := 'm[áa]' | 'n[oó]' | 'nuair-a' | 'f[ií]or|br[eé]ag'
 *     | 'gn[ií]omh' | 'chun-cinn' | 'neamhn[ií]' | 'toradh' | 'creatlach'
 */
 
@@ -1594,7 +1594,7 @@ export class Parser {
                 let res: Nullable<Bool> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
-                    && (bool = this.regexAccept(String.raw`f[ií]or|breag`, $$dpth + 1, cr)) !== null
+                    && (bool = this.regexAccept(String.raw`f[ií]or|br[eé]ag`, $$dpth + 1, cr)) !== null
                 ) {
                     res = new Bool(bool);
                 }
@@ -1718,7 +1718,7 @@ export class Parser {
         return this.regexAccept(String.raw`nuair-a`, $$dpth + 1, cr);
     }
     public matchKeyword_4($$dpth: number, cr?: ContextRecorder): Nullable<Keyword_4> {
-        return this.regexAccept(String.raw`f[ií]or|breag`, $$dpth + 1, cr);
+        return this.regexAccept(String.raw`f[ií]or|br[eé]ag`, $$dpth + 1, cr);
     }
     public matchKeyword_5($$dpth: number, cr?: ContextRecorder): Nullable<Keyword_5> {
         return this.regexAccept(String.raw`gn[ií]omh`, $$dpth + 1, cr);
