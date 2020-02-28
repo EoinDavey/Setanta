@@ -13,3 +13,4 @@ collections:
     docs:
         output: true
         permalink: /:collection/:path
+include: ["_pages"]
