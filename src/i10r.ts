@@ -238,7 +238,12 @@ export class Interpreter {
         });
     }
     public execDefn(a: P.DefnStmt, env: Environment): Promise<void> {
-        return a.expr.evalfn(env).then((val) => env.define(a.id.id, val));
+        return a.expr.evalfn(env).then((val) => {
+            if (env.has(a.id.id)) {
+                return Promise.reject(new RuntimeError(`Tá ${a.id.id} sa scóip seo cheana féin`));
+            }
+            return env.define(a.id.id, val);
+        });
     }
     public execAssgn(t: P.AssgnStmt, env: Environment): Promise<void> {
         if (t.op === "=") {

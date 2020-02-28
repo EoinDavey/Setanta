@@ -17,6 +17,10 @@ export class Environment {
         this.enclosing = enc || null;
     }
 
+    public has(id: string): boolean {
+        return this.values.has(id);
+    }
+
     public get(id: string): Value {
         if (this.values.has(id)) {
             return this.values.get(id)!;
