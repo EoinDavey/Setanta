@@ -93,9 +93,9 @@
 *                }
 * Neamhni     := _ 'neamhn[ií]'
 *                .evalfn = EvalFn { return () => Promise.resolve(null); }
-* Int         := _ int='-?[0-9]+'
+* Int         := _ int='-?[0-9]+(?:\.[0-9]+)?'
 *                .evalfn = EvalFn { 
-*                    const v = parseInt(this.int, 10);
+*                    const v = parseFloat(this.int);
 *                    return () => Promise.resolve(v);
 *                }
 * Litreacha   := _ '\'' val='([^\'\\]|\\.)*' '\''
@@ -581,7 +581,7 @@ export class Int {
     constructor(int : string){
         this.int = int;
         this.evalfn = (() => {
-        const v = parseInt(this.int, 10);
+        const v = parseFloat(this.int);
                    return () => Promise.resolve(v);
         })()
     }
@@ -1627,7 +1627,7 @@ export class Parser {
                 let res: Nullable<Int> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
-                    && (int = this.regexAccept(String.raw`-?[0-9]+`, $$dpth + 1, cr)) !== null
+                    && (int = this.regexAccept(String.raw`-?[0-9]+(?:\.[0-9]+)?`, $$dpth + 1, cr)) !== null
                 ) {
                     res = new Int(int);
                 }

@@ -30,6 +30,11 @@ test("test isEqual", () => {
 test("test expressions", async () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
+        {inp : "42", exp: 42},
+        {inp : "12345678910", exp: 12345678910},
+        {inp : "56.0", exp: 56},
+        {inp : "42.5", exp: 42.5},
+        {inp : "12345.54321", exp: 12345.54321},
         {inp : "12 + 3*5", exp : 27},
         {inp : "12 + 3*5 == 27", exp : true},
         {inp : "12-12-12", exp : -12},

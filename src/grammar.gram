@@ -91,9 +91,9 @@ Bool        := _ bool='f[ií]or|breag'
                }
 Neamhni     := _ 'neamhn[ií]'
                .evalfn = EvalFn { return () => Promise.resolve(null); }
-Int         := _ int='-?[0-9]+'
+Int         := _ int='-?[0-9]+(?:\.[0-9]+)?'
                .evalfn = EvalFn { 
-                   const v = parseInt(this.int, 10);
+                   const v = parseFloat(this.int);
                    return () => Promise.resolve(v);
                }
 Litreacha   := _ '\'' val='([^\'\\]|\\.)*' '\''
