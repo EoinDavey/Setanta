@@ -117,6 +117,27 @@ export const Builtins: Array<[string, Value]> = [
                     },
                 },
             ],
+            [
+                // Random floating point number between 0 and 1
+                ["rand"], {
+                    ainm: "rand",
+                    arity: () => 0,
+                    call: (args: Value[]): Promise<number> => Promise.resolve(Math.random()),
+                },
+            ],
+            [
+                // arity: 2; args[0]: number, args[1]: number;
+                // Returns random integer in the range [args[0], args[1])
+                ["randUimh"], {
+                    ainm: "rand",
+                    arity: () => 2,
+                    call: (args: Value[]): Promise<number> => {
+                        const l = Asserts.assertNumber(args[0]);
+                        const r = Asserts.assertNumber(args[1]);
+                        return Promise.resolve(Math.floor(Math.random() * (r - l) + l));
+                    },
+                },
+            ],
         ]),
     ],
 ];

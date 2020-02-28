@@ -106,6 +106,10 @@ test("test mata", async () => {
         { inp : "e@mata", exp : Math.E },
         { inp : "cearn@mata(pi@mata)", exp : Math.PI * Math.PI },
         { inp : "fréamh@mata(4)", exp : 2 },
+        { inp : "rand@mata() < 1", exp: true},
+        { inp : "rand@mata() > 0", exp: true},
+        { inp : "randUimh@mata(100, 200) >= 100", exp: true},
+        { inp : "randUimh@mata(100, 200) < 200", exp: true},
     ];
     for (const c of cases) {
         const i = new Interpreter();
