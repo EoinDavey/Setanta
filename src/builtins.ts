@@ -95,10 +95,10 @@ export const Builtins: Array<[string, Value]> = [
     ],
     [
         "mata", new ObjWrap("mata", [
-            ["pi", Math.PI],
-            ["e", Math.E],
+            [["pi"], Math.PI],
+            [["e"], Math.E],
             [
-                "cearn", {
+                ["cearn"], {
                     ainm : "cearn",
                     arity: () => 1,
                     call: (args: Value[]): Promise<number> => {
@@ -108,17 +108,7 @@ export const Builtins: Array<[string, Value]> = [
                 },
             ],
             [
-                "fréamh", {
-                    ainm : "fréamh",
-                    arity: () => 1,
-                    call: (args: Value[]): Promise<number> => {
-                        const x = Asserts.assertNumber(args[0]);
-                        return Promise.resolve(Math.sqrt(x));
-                    },
-                },
-            ],
-            [
-                "freamh", {
+                ["fréamh", "freamh"], {
                     ainm : "fréamh",
                     arity: () => 1,
                     call: (args: Value[]): Promise<number> => {

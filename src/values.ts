@@ -51,9 +51,14 @@ export function idxList(x: Value, idx: Promise<Value>): Promise<Value> {
 export class ObjWrap implements Obj {
     public ainm: string;
     public attrs: Map<string, Value>;
-    constructor(ainm: string, attrs: Array<[string, Value]>) {
+    constructor(ainm: string, attrs: Array<[string[], Value]>) {
         this.ainm = ainm;
-        this.attrs = new Map(attrs);
+        this.attrs = new Map();
+        for (const attr of attrs) {
+            for (const k of attr[0]) {
+                this.attrs.set(k, attr[1]);
+            }
+        }
     }
     public getAttr(id: string): Value {
         return this.attrs.get(id) || null;
