@@ -120,6 +120,12 @@ const binOpTable: Map<string, BinOpEntry[]> = new Map([
         }
         return a / b;
     })]],
+    ["//", [numBinOpEntry((a, b) => {
+        if (b === 0) {
+            throw new RuntimeError(`Roinn le 0`);
+        }
+        return Math.floor(a / b);
+    })]],
     ["<", [compBinOpEntry((a, b) => a < b)]],
     [">", [compBinOpEntry((a, b) => a > b)]],
     ["<=", [compBinOpEntry((a, b) => a <= b)]],

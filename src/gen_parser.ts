@@ -108,7 +108,7 @@
 * gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
 * PlusMinus   := '\+|-'
 * AsgnOp      := '=|\+=|\*=|-=|%=|\/='
-* MulDiv      := '\*|\/|%'
+* MulDiv      := '\*|\/\/|%|\/'
 * Compare     := '<=|>=|<|>'
 * Keyword     := 'm[áa]' | 'n[oó]' | 'nuair-a' | 'f[ií]or|breag'
 *     | 'gn[ií]omh' | 'chun-cinn' | 'neamhn[ií]' | 'toradh' | 'creatlach'
@@ -1690,7 +1690,7 @@ export class Parser {
         return this.regexAccept(String.raw`=|\+=|\*=|-=|%=|\/=`, $$dpth + 1, cr);
     }
     public matchMulDiv($$dpth: number, cr?: ContextRecorder): Nullable<MulDiv> {
-        return this.regexAccept(String.raw`\*|\/|%`, $$dpth + 1, cr);
+        return this.regexAccept(String.raw`\*|\/\/|%|\/`, $$dpth + 1, cr);
     }
     public matchCompare($$dpth: number, cr?: ContextRecorder): Nullable<Compare> {
         return this.regexAccept(String.raw`<=|>=|<|>`, $$dpth + 1, cr);
