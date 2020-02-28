@@ -76,7 +76,7 @@ export function goLitreacha(v: Value): string {
         return v.toString();
     }
     if (Checks.isBool(v)) {
-        return v ? "fíor" : "breag";
+        return v ? "fíor" : "bréag";
     }
     if (v === null) {
         return "neamhní";

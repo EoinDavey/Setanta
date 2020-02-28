@@ -84,7 +84,7 @@ test("test go_lit", async () => {
     const cases: TC[] = [
         { inp : "go_lit(123)", exp : "123" },
         { inp : "go_lit(fíor)", exp : "fíor" },
-        { inp : "go_lit(breag)", exp : "breag" },
+        { inp : "go_lit(breag)", exp : "bréag" },
         { inp : "go_lit('1234')", exp : "1234" },
         { inp : "go_lit(go_lit)", exp : "< gníomh go_lit >" },
     ];

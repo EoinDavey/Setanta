@@ -10,10 +10,10 @@ test("test goLitreacha", () => {
         { v : "", exp : "" },
         { v : "gníomhaíochtaí", exp : "gníomhaíochtaí" },
         { v : true, exp : "fíor" },
-        { v : false, exp : "breag" },
+        { v : false, exp : "bréag" },
         { v : [1, 2, 3], exp : "[1,2,3]" },
         { v : [], exp : "[]" },
-        { v : [[1, true], ["breag", []]], exp : "[[1,fíor],[breag,[]]]" },
+        { v : [[1, true], ["bréag", []]], exp : "[[1,fíor],[bréag,[]]]" },
         {
             exp : "< gníomh id >",
             v : { ainm: "id", arity: () => 0, call: (a: Value[]) => Promise.resolve(null) },
