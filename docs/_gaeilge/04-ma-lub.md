@@ -1,77 +1,21 @@
 ---
 layout: single
-title: Tosaigh Anseo - Gaeilge
+title: Má agus lúba
 toc: true
 ---
-
-# Conas a úsáidim Setanta?
-
-Chun trial a bhaint as Setanta, tá dhá roghanna agat.
-
-- Is féidir leat Setanta a úsáid ar [try-setanta.ie](https://try-setanta.ie).
-- Is féidir leat é a íoslodáil ó NPM le `npm i -g setanta`.
-
-Anois lean an teagaisc simplí seo.
-
-# Teagaisc
-
-## Struchtúr riomhcláir Setanta
-
-Is seicheamh treoracha é ríomhclár Setanta. Már shampla
-
-```
-scríobh('Dia duit')
-scríobh('Dia is Muire duit')
-```
-
-Scríobhann an ríomhchlár sin 'Dia duit', agus ansin scríobhann sé 'Dia is Muire duit'. Ban triail as é seo i Setanta anois! Tosaíonn Setanta ag barr an ríomhchlár agus leanann sé na treoracha ar na línte, síos go dtí bun an ríomhchlár.
-
-**Mura bhfuil fhios agat conas 'í' a chlóscríobh, is feidir leat `scriobh` a úsáid.**
-
-## Matamaitic
-
-Is féidir le Setanta matamaitic a dhéanamh. Clóscríobh `scríobh(2 * 3)` isteach agus faigheann tú ar áis `6`. Tá `+`, `*`, `-`, `/` ag Setanta freisin. Is féidir linn a fheiceáil go bhfuil dhá rud cothrom le `==` agus `!=`, mar shampla is fíor é `2 * 3 == 6`, agus is fíor é `2 * 4 != 6`. Usáid `(` agus `)` chun tearmaí cosúil le `2 * 3 + (4 - 5) == 7` a scríobh.
-
-## Athróga
-
-Is féidir le Setanta luachanna a chuimhnigh. Mar shampla
-
-```
-x := 10
-scríobh(x * 2) >-- scríobhann sé seo 20
-```
-
-Sá ríomhchlár seo is **athróg** é `x`. Cruthaimid athróg nua le `:=`
-
-Táimid in ann an luach san athróg `x` a athrú le `=`.
-
-```
-x := 10
-x = x + 10
-```
-
-Anois tá `x` cothrom le 20. Cad a scríobhann an ríomhchlár seo?
-
-```
-x := 10
-y := 2 * x
-x = y + x
-scríobh(x)
-```
-
 ## Má ... nó ...
 
-Chonaiceamar conas a deanann tú treoir agus treoir eile, ach is féidir linn rogha a dheanámh! Úsáidimid an focal `má` chun seiceáil a dheanamh, agus ansin rogha a dheanámh leis an toradh.
+Is féidir leat rogha a dheanámh i do ríomchláir! Úsáidimid an focal `má` chun seiceáil a dheanamh, agus ansin rogha a dheanámh leis toradh an seiceáil. Féach ar an ríomhchlár seo.
 
 ```
 aois := 14
 má aois >= 13 & aois <= 19
-    scríobh('Is déagóir tú')
+    scríobh('Is déagóir thú')
 nó
-    scríobh('Ní déagóir tú')
+    scríobh('Ní déagóir thú')
 ```
 
-Seiceálann an ríomhchlár seo go bhfuil `aois` idir 13 agus 14. Má bhfuil sé fíor, scríobhann sé 'Is déagóir tú', mura bhfuil sé fíor scríobhann sé 'Ni déagóir tú'.
+Seiceálann an ríomhchlár seo go bhfuil `aois` idir 13 agus 14. Má tá sé fíor, scríobhann sé 'Is déagóir thú', mura bhfuil sé fíor scríobhann sé 'Ni déagóir thú'.
 
 Is féidir linn an struchtúr seo a úsáid arís is arís, mar seo
 
@@ -96,7 +40,7 @@ má x == 6 {
 }
 ```
 
-**Is feidir leat `ma` a úsaid mura feidir leat 'á' a chlóscríobh.**
+**Is feidir leat `ma` agus `no` a úsaid mura feidir leat 'á' nó 'ó' a chlóscríobh.**
 
 ## Lúba
 
@@ -159,7 +103,7 @@ nuair-a x < 100 {
 ```
 Scríobhann an lúb seo `0 1 2 3 4 5 6 7 8 9`, agus ansin tá `x == 10` agus brisimid as an lúb.
 
-Deanann `chun-cinn` rud difriúil. Leanann `chun-cinn` díreach go dtí barr an lúb, agus tosaíonn sé leis an gcéad ceann eile. Mar shampla
+Deanann `chun-cinn` rud difriúil. Téann `chun-cinn` díreach go dtí barr an lúb, agus tosaíonn sé leis an gcéad ceann eile. Mar shampla
 
 ```
 le i idir (-10, 10) {

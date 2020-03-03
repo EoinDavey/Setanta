@@ -1,3 +1,27 @@
 main:
     - title: "Samplaí - Demos"
       url: /samplaí/
+
+gaeilge:
+    - title: "Teagaisc"
+      children:
+          - title: "Tosaigh Anseo"
+            url: /gaeilge/01-tosaigh
+          - title: "Ag úsaid try-setanta.ie"
+            url: /gaeilge/02-try-setanta
+          - title: "Setanta 101"
+            url: /gaeilge/03-teagaisc
+          - title: "Má agus lúba"
+            url: /gaeilge/04-ma-lub
+
+english:
+    - title: "Tutorial"
+      children:
+          - title: "Start here"
+            url: /english/01-start
+          - title: "Using try-setanta.ie"
+            url: /english/02-try-setanta
+          - title: "Setanta 101"
+            url: /english/03-tutorial
+          - title: "Má and loops"
+            url: /english/04-ma-loops

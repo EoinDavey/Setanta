@@ -10,7 +10,27 @@ logo: "/assets/images/logo50x50.png"
 masthead_title: "Setanta Doiciméadacht"
 timezone: "Europe/Dublin"
 collections:
-    docs:
+    english:
         output: true
         permalink: /:collection/:path
+    gaeilge:
+        output: true
+        permalink: /:collection/:path
+defaults:
+    # _gaeilge
+    - scope:
+        path: ""
+        type: "gaeilge"
+      values:
+        sidebar:
+            nav: "gaeilge"
+    # _english
+    - scope:
+        path: ""
+        type: "english"
+      values:
+        sidebar:
+            nav: "english"
+
+
 include: ["_pages"]

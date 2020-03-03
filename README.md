@@ -2,7 +2,7 @@
 
 # Setanta - Teanga Ríomhchlárúchain as Gaeilge
 
-Seo é *Setanta*, an teanga ríomhchlárúchain nua-aimseartha, simplí agus cairdiúil atá 100% as Gaeilge.
+Seo é *Setanta*, an teanga ríomhchlárúcháin nua-aimseartha, simplí agus cairdiúil atá 100% as Gaeilge.
 
 # *Setanta - Irish Programming Language*
 
