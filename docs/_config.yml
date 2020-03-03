@@ -5,6 +5,7 @@ plugins:
 title: "Setanta"
 name: "Eoin Davey"
 site.description: "Doiciméadacht do Setanta"
+locale: "ga"
 url: "https://vey.ie/Setanta"
 logo: "/assets/images/logo50x50.png"
 masthead_title: "Setanta Doiciméadacht"

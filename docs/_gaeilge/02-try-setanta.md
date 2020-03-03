@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Ag tosnú le try-setanta.ie
+title: Ag tosú le try-setanta.ie
 toc: true
 ---
 

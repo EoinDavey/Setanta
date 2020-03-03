@@ -12,7 +12,7 @@ When you go to [try-setanta.ie](https://try-setanta.ie), you will see something 
 
 There are three pieces on the site. They are the "stáitse" (stage), the editor and the console.
 
-![The parts](/assets/images/teagaisc/teagaisc02.png)
+![The parts](/assets/images/teagaisc/tutorial01.png)
 
 You can write Setanta programs in the editor. Then when you click the "Tosaigh" (start) button, the program starts running. Then the program can draw shapes on the stage, or write phrases out on the console.
 
