@@ -13,6 +13,8 @@ gaeilge:
             url: /gaeilge/03-teagaisc
           - title: "Má agus lúba"
             url: /gaeilge/04-ma-lub
+          - title: "Gníomhartha"
+            url: /gaeilge/05-gniomh
 
 english:
     - title: "Tutorial"

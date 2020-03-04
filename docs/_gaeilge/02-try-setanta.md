@@ -14,13 +14,13 @@ Tá trí phíosa ar an suíomh. Is iad an stáitse, an eagarthóir, agus an cons
 
 ![Na píosaí](/assets/images/teagaisc/teagaisc02.png)
 
-Is feidir leat ríomhchláir Setanta a chlóscríobh san eagarthóir. Ansin nuair a chliceálann tú an cnaipe "Tosaigh", tosaíonn an ríomhchláir ag rith. Ansin is feidir leis an ríomhchláir cruthanna a tharraingt ar an stáitse, nó frasaí a scríobh amach ar an gconsól.
+Is féidir leat ríomhchláir Setanta a chlóscríobh san eagarthóir. Ansin nuair a chliceálann tú an cnaipe "Tosaigh", tosaíonn an ríomhchláir ag rith. Ansin is féidir leis an ríomhchláir cruthanna a tharraingt ar an stáitse, nó frasaí a scríobh amach ar an gconsól.
 
 ## Sampla
 
-Clóscríobh `scríobh('Dia duit')` isteach san eagrathóir mar seo.
+Clóscríobh `scríobh('Dia duit')` isteach san eagarthóir mar seo.
 
-**Muna bhfuil fhios agat conas "í" a chlóscríobh, is feidir leat `scriobh` a úsáid**
+**Muna bhfuil fhios agat conas "í" a chlóscríobh, is féidir leat `scriobh` a úsáid**
 
 ![Dia duit](/assets/images/teagaisc/teagaisc03.png)
 

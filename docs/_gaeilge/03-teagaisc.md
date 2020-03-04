@@ -7,7 +7,7 @@ toc: true
 ## Matamaitic
 
 Is féidir le Setanta matamaitic a dhéanamh.
-Clóscríobh `scríobh(2 * 3)` isteach san eagrathóir, cliceáil ar "Tosaigh" agus féach ar an gconsól. Beidh `6` scríofa ansin.
+Clóscríobh `scríobh(2 * 3)` isteach san eagarthóir, cliceáil ar "Tosaigh" agus féach ar an gconsól. Beidh `6` scríofa ansin.
 ![6](/assets/images/teagaisc/teagaisc06.png)
 
 Féach cad a scríobhann an ríomhchlár seo
@@ -56,7 +56,7 @@ Scríobhann sé seo `Dia duit, Eoin is ainm dom`.
 
 ## Athróga
 
-Is féidir le Setanta luachanna a chuimhnigh. Mar shampla, cuir an ríomhchlár seo san eagrathóir.
+Is féidir le Setanta luachanna a chuimhnigh. Mar shampla, cuir an ríomhchlár seo san eagarthóir.
 
 ```
 x := 10
@@ -65,7 +65,7 @@ scríobh(x * 2)
 
 Scríobhann sé `20` amach sa chonsól.
 
-Sá ríomhchlár seo is **athróg** é `x`. Is feidir linn athróga a úsaid i ngach áit a úsaidimid uimhreacha nó litreacha. Cruthaimid athróg nua le `:=`
+Sá ríomhchlár seo is **athróg** é `x`. Is féidir linn athróga a úsaid i ngach áit a úsaidimid uimhreacha nó litreacha. Cruthaimid athróg nua le `:=`
 
 Táimid in ann an luach san athróg `x` a athrú le `=`.
 

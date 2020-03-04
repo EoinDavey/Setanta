@@ -5,7 +5,7 @@ toc: true
 ---
 ## Má ... nó ...
 
-Is féidir leat rogha a dheanámh i do ríomchláir! Úsáidimid an focal `má` chun seiceáil a dheanamh, agus ansin rogha a dheanámh leis toradh an seiceáil. Féach ar an ríomhchlár seo.
+Is féidir leat rogha a dheanámh i do ríomchláir! Úsáidimid an focal `má` chun seiceáil a dheanamh, agus ansin rogha a dheanámh le toradh an seiceáil. Féach ar an ríomhchlár seo.
 
 ```
 aois := 14
@@ -40,7 +40,7 @@ má x == 6 {
 }
 ```
 
-**Is feidir leat `ma` agus `no` a úsaid mura feidir leat 'á' nó 'ó' a chlóscríobh.**
+**Is féidir leat `ma` agus `no` a úsaid mura féidir leat 'á' nó 'ó' a chlóscríobh.**
 
 ## Lúba
 
@@ -91,7 +91,7 @@ Faighimid `0, 1, 2, 3, 4`. Ar dtús seicealann an lúb an tearma tar éis `nuair
 
 ### bris & chun-cinn
 
-Sa dá lúb sin, `le idir` agus `nuair-a`, is feidir leat na treoracha `bris` agus `chun-cinn` a úsaid. Deanann `bris` díreach an rud a deireann sé, briseann sé amach as an lúb. Má leanann Setanta an treoir sin, stop sé an lúb agus leanann sé ar aghaidh tar éis an lúb.
+Sa dá lúb sin, `le idir` agus `nuair-a`, is féidir leat na treoracha `bris` agus `chun-cinn` a úsaid. Deanann `bris` díreach an rud a deireann sé, briseann sé amach as an lúb. Má leanann Setanta an treoir sin, stop sé an lúb agus leanann sé ar aghaidh tar éis an lúb.
 
 ```
 x := 0
