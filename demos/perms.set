@@ -1,0 +1,22 @@
+s := 'abcdefg'
+
+gníomh copy(arr) {
+    nua := [fíor]*fad(arr)
+    le i idir (0, fad(arr))
+        nua[i] = arr[i]
+    toradh nua
+}
+
+gníomh gen(ind, used, st) {
+    má ind == fad(s)
+        scríobh(st)
+    le i idir (0, fad(s)) {
+        má used[i]
+            chun-cinn
+        nused := copy(used)
+        nused[i] = fíor
+        gen(ind + 1, nused, st + s[i])
+    }
+}
+
+gen(0, [breag]*fad(s), '')
