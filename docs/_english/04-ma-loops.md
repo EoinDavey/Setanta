@@ -114,3 +114,45 @@ le i idir (-10, 10) {
 ```
 
 This loop writes `0 1 2 3 4 5 6 7 9 8 9`, because for each `i < 0`, the `chunn-cinn` instruction is followed, and we start with the next number.
+
+## Big example
+
+We have an example now that uses every we saw, loops, `má`, variables, the stage ....
+
+Run this code and look at the stage:
+```
+dath@stáitse('gorm')
+
+>-- Na súile
+ciorcalLán@stáitse(200, 200, 50)
+ciorcalLán@stáitse(400, 200, 50)
+
+dath@stáitse('dearg')
+
+x := 100
+y := 400
+
+>-- Béal
+le i idir (0, 40) {
+    dron@stáitse(x, y, 20, 20)
+    x += 10
+    má i < 10
+    	y += 3
+    nó má i < 20
+    	y += 1
+    nó má i < 30
+    	y -= 1
+    nó
+    	y -= 3
+}
+
+>-- srón
+
+dath@stáitse('oráiste')
+
+cruthLán@stáitse([[300, 270], [270, 350], [330, 350]])
+```
+
+![An aghaidh](/assets/images/teagaisc/aghaidh.gif)
+
+Now go to the [next tutorial: Gníomhs (actions)](/english/05-gniomh)

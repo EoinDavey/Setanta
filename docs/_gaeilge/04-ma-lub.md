@@ -114,3 +114,45 @@ le i idir (-10, 10) {
 ```
 
 Scríobhann an lúb seo `0 1 2 3 4 5 6 7 8 9` mar le gach `i < 0`, leantar an treoir `chun-cinn` agus tosaímid leis an gcéad uimhir eile.
+
+## Sampla mór
+
+Tá sampla againn anois a úsáideann gach rud a chonaiceamar, lúba, `má`, athróga, an stáitse ...
+
+Rith an cód seo agus féach ar an stáitse:
+```
+dath@stáitse('gorm')
+
+>-- Na súile
+ciorcalLán@stáitse(200, 200, 50)
+ciorcalLán@stáitse(400, 200, 50)
+
+dath@stáitse('dearg')
+
+x := 100
+y := 400
+
+>-- Béal
+le i idir (0, 40) {
+    dron@stáitse(x, y, 20, 20)
+    x += 10
+    má i < 10
+    	y += 3
+    nó má i < 20
+    	y += 1
+    nó má i < 30
+    	y -= 1
+    nó
+    	y -= 3
+}
+
+>-- srón
+
+dath@stáitse('oráiste')
+
+cruthLán@stáitse([[300, 270], [270, 350], [330, 350]])
+```
+
+![An aghaidh](/assets/images/teagaisc/aghaidh.gif)
+
+Anois téigh go dtí an [chéad teagaisc eile: gníomhartha](/gaeilge/05-gniomh)
