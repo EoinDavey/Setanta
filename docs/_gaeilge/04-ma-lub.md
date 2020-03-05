@@ -5,7 +5,7 @@ toc: true
 ---
 ## Má ... nó ...
 
-Is féidir leat rogha a dheanámh i do ríomchláir! Úsáidimid an focal `má` chun seiceáil a dheanamh, agus ansin rogha a dheanámh le toradh an seiceáil. Féach ar an ríomhchlár seo.
+Is féidir leat rogha a dhéanamh i do ríomhchlár! Úsáidimid an focal `má` chun seiceáil a dhéanamh, agus ansin rogha a dhéanamh le toradh an seiceáil. Féach ar an ríomhchlár seo.
 
 ```
 aois := 14
@@ -15,7 +15,7 @@ nó
     scríobh('Ní déagóir thú')
 ```
 
-Seiceálann an ríomhchlár seo go bhfuil `aois` idir 13 agus 14. Má tá sé fíor, scríobhann sé 'Is déagóir thú', mura bhfuil sé fíor scríobhann sé 'Ni déagóir thú'.
+Seiceálann an ríomhchlár seo go bhfuil `aois` idir 13 agus 14. Má tá sé fíor, scríobhann sé 'Is déagóir thú', mura bhfuil sé fíor scríobhann sé 'Ní déagóir thú'.
 
 Is féidir linn an struchtúr seo a úsáid arís is arís, mar seo
 
@@ -28,7 +28,7 @@ nó
     scríobh('Tá brón orm, Níl aithne agam ort')
 ```
 
-Úsaid `{` agus `}` chun grúpa treoracha a cruthú.
+Úsáid `{` agus `}` chun grúpa treoracha a cruthú.
 
 ```
 má x == 6 {
@@ -66,7 +66,7 @@ le i idir (10, 0)
 
 Scríobhann an ríomhchlár seo 10, 9, ... 1.
 
-Is féidir leat uimhir eile a chur idir na luibíní chun an céim a athrú. Mar shampla
+Is féidir leat uimhir eile a chur idir na lúibíní chun an céim a athrú. Mar shampla
 
 ```
 le i idir (0, 10, 3)
@@ -87,11 +87,11 @@ nuair-a x < 5 {
 }
 ```
 
-Faighimid `0, 1, 2, 3, 4`. Ar dtús seicealann an lúb an tearma tar éis `nuair-a`, má bhfuil sé fíor, leanann sé na treoracha sa lúb, agus téann sé ar ais go dtí an tús. Nuair a nach bhfuil sé fíor, briseann sé amach as an lúb. Sa sampla sin, téann sé tríd an lúb 5 uair, agus ansin tá `x == 6`, go háirithe níl `x < 5`, agus mar sin, tá an lúb críochnaithe.
+Faighimid `0, 1, 2, 3, 4`. Ar dtús seiceálann an lúb an téarma tar éis `nuair-a`, má bhfuil sé fíor, leanann sé na treoracha sa lúb, agus téann sé ar ais go dtí an tús. Nuair a nach bhfuil sé fíor, briseann sé amach as an lúb. Sa sampla sin, téann sé tríd an lúb 5 uair, agus ansin tá `x == 6`, go háirithe níl `x < 5`, agus mar sin, tá an lúb críochnaithe.
 
 ### bris & chun-cinn
 
-Sa dá lúb sin, `le idir` agus `nuair-a`, is féidir leat na treoracha `bris` agus `chun-cinn` a úsaid. Deanann `bris` díreach an rud a deireann sé, briseann sé amach as an lúb. Má leanann Setanta an treoir sin, stop sé an lúb agus leanann sé ar aghaidh tar éis an lúb.
+Sa dá lúb sin, `le idir` agus `nuair-a`, is féidir leat na treoracha `bris` agus `chun-cinn` a úsáid. Déanann `bris` díreach an rud a deir sé, briseann sé amach as an lúb. Má leanann Setanta an treoir sin, stop sé an lúb agus leanann sé ar aghaidh tar éis an lúb.
 
 ```
 x := 0
@@ -103,7 +103,7 @@ nuair-a x < 100 {
 ```
 Scríobhann an lúb seo `0 1 2 3 4 5 6 7 8 9`, agus ansin tá `x == 10` agus brisimid as an lúb.
 
-Deanann `chun-cinn` rud difriúil. Téann `chun-cinn` díreach go dtí barr an lúb, agus tosaíonn sé leis an gcéad ceann eile. Mar shampla
+Déanann `chun-cinn` rud difriúil. Téann `chun-cinn` díreach go dtí barr an lúb, agus tosaíonn sé leis an gcéad ceann eile. Mar shampla
 
 ```
 le i idir (-10, 10) {

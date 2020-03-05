@@ -20,7 +20,7 @@ scríobh(5 == 6)
 scríobh(5 != 6)
 ```
 
-Tá se seo sa chonsól.
+Tá sé seo sa chonsól.
 
 
 ```
@@ -31,11 +31,11 @@ bréag
 fíor
 ```
 
-Go háirithe, tug faoi deara gur déanann `==` agus `!=` comparáid idir uimhreacha (agus rudaí eile).
+Go háirithe, tabhair faoi deara gur déanann `==` agus `!=` comparáid idir uimhreacha (agus rudaí eile).
 
 ## Litreacha
 
-Is féidir leat frasaí a scríobh freisin, chonaiceamar é seo roimhe seo leis an ríomchlár simplí
+Is féidir leat frasaí a scríobh freisin, chonaiceamar é seo roimhe seo leis an ríomhchlár simplí
 ```
 scríobh('Dia duit')
 ```
@@ -46,7 +46,7 @@ Tugaimid "litreacha" ar na frasaí sin. Cruthaíonn tú litreacha le dhá `'`. M
 'Is mise Eoin'
 ```
 
-Is féidir leat `+` a úsaid chun litreacha a cheangail le chéile
+Is féidir leat `+` a úsáid chun litreacha a cheangail le chéile
 
 ```
 scríobh('Dia duit' + ', ' + 'Eoin is ainm dom')
@@ -65,7 +65,7 @@ scríobh(x * 2)
 
 Scríobhann sé `20` amach sa chonsól.
 
-Sá ríomhchlár seo is **athróg** é `x`. Is féidir linn athróga a úsaid i ngach áit a úsaidimid uimhreacha nó litreacha. Cruthaimid athróg nua le `:=`
+Sá ríomhchlár seo is **athróg** é `x`. Is féidir linn athróga a úsáid i ngach áit a úsáidimid uimhreacha nó litreacha. Cruthaímid athróg nua le `:=`
 
 Táimid in ann an luach san athróg `x` a athrú le `=`.
 
@@ -83,7 +83,7 @@ x = y + x
 scríobh(x)
 ```
 
-Tóg an ríomchlár a leanas agus cur d'ainm féin isteach san athróg `ainm`
+Tóg an ríomhchlár a leanas agus cur d'ainm féin isteach san athróg `ainm`
 
 ```
 ainm := 'd'ainm anseo'
