@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Teagaisc
+title: Setanta 101
 toc: true
 ---
 
@@ -53,9 +53,20 @@ scríobh('Hello' + ', ' + 'my name is Eoin')
 
 This writes `Hello, My name is Eoin`.
 
+## Comments
+
+If you write the symbol `>--` in your program, Anything you write after it on the same line is a comment, and is not part of the program. For example
+
+```
+scríobh('Hello') >-- I can write anything here!
+>-- Or here as well
+```
+
+Comments are very useful because they allow us to write notes in our programs.
+
 ## Variables
 
-Setanta can remember values. For example, put this in the editor:
+Setanta can remember values. For example, put this code in the editor and run it:
 
 ```
 x := 10
@@ -64,30 +75,48 @@ scríobh(x * 2)
 
 It writes out `20` in the console.
 
-In this program `x` is a **variable**. We can use variables everywhere that we use numbers and litreacha. We create new variables with `:=`.
+In this program `x` is a **variable**. We can use variables everywhere that we use numbers and litreacha.
+
+We create new variables with `:=`.
 
 We can change the value in the variable `x` with `=`.
 
 ```
-x := 10
-x = x + 10
+x := 10 >-- New variable with value 10
+x = x + 10 >-- Now x == 20
 ```
 
 Now `x` is equal to 20. What does this program write?
 
 ```
 x := 10
-y := 2 * x
-x = y + x
+y := 2 * x >-- Create a new variable 'y' with value 20
+x = y + x >-- Change the variable 'x' to 'x + y' = 10 + 20 = 30
 scríobh(x)
 ```
 
-Take the following program and put your name in the variable `ainm`
+We can use variables to draw things on the stage too. Put the following code in the editor:
 
 ```
-ainm := 'd'ainm anseo'
-scríobh('Dia duit ' + ainm)
+mo_dhath := 'dearg' >-- Change this variable to change the colour of the circles.
+
+dath@stáitse(mo_dhath)
+
+>-- Create the variables 'x', 'y' and 'ga'
+x := 100
+y := 100
+ga := 40
+
+ciorcal@stáitse(x, y, ga) >-- Draw the first circle
+
+x = x + 100 >-- Change 'x' to 200
+y = y + 100 >-- Change 'y' to 200
+ga = ga * 2 >-- Change 'ga' to 80
+
+ciorcal@stáitse(x, y, ga) >-- Draw the second circle
 ```
+
+![Two circles](/assets/images/teagaisc/dhaciorcal.gif)
 
 ## Next
 You learned a lot of new things, go to [the next page](/english/04-ma-loops) to learn about `má` and loops.
