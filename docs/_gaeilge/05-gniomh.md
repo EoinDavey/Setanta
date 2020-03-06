@@ -27,88 +27,105 @@ Is sampla eile de gníomhartha é `ceist`, is féidir leat `ceist` a úsáid chu
 
 Is féidir linn ár ngníomhartha féin a cruthú, déanaimid é sin nuair ba mhaith linn rud éigin a dhéanamh i roinnt áiteanna sa ríomhchlár.
 
-Mar shampla. Abair gur mhaith leat gach uimhir idir 1 agus 100 a suimiú. Scríobhfá ríomhchlár cosúil le seo:
+Cruthaímid gníomhartha leis an bhfocal `gníomh`.
 
-```
-suim := 0
-le i idir (1, 101)
-	suim = suim + i
-scríobh(suim)
-```
-
-Ach cad a scríobhfá dá ba mhaith leat é sin a dhéanamh le gach uimhir idir 1 & 200, 1 & 300, agus 1 & 400. Beidh ríomhchlár an fhada agat mar seo:
-
-```
-suim := 0
-le i idir (1, 101)
-	suim = suim + i
-scríobh(suim)
-
-suim = 0
-le i idir (1, 201)
-	suim = suim + i
-scríobh(suim)
-
-suim = 0
-le i idir (1, 301)
-	suim = suim + i
-scríobh(suim)
-
-suim = 0
-le i idir (1, 401)
-	suim = suim + i
-scríobh(suim)
-```
-
-Bheadh tú ag scríobh an rud cheanna arís 's arís. Áfach, is féidir linn gníomh a cruthú leis an focal `gníomh`. Féach ar an sampla seo:
+Mar shampla, déanfaimid gníomh chun 'Dia duit' a scríobh ar an gconsól mar seo:
 
 ```
 gníomh diaDuit() {
     scríobh('Dia duit')
 }
-
-diaDuit()
 ```
 
-Is gníomh é `diaDuit`, nuair a úsáideann tú `diaDuit` le `diaDuit()`, scríobhann sé "Dia duit" amach ar an gconsól. Bain triail as é sin anois!
+Chun an gníomh `diaDuit` a úsáid, scríobhaimid `diaDuit()`. Bain triail as é sin anois!
 
-Ag dul ar ais go dtí an sampla a bhí a phlé againn níos luaithe, bhíomar ag caint faoi ag suimiú na uimhreacha idir 1 agus 100, 200, 300 agus 400. Anois is féidir linn baint a úsáid as gníomhartha.
+![Dia duit](/assets/images/teagaisc/diaduit.gif)
+
+Tugaimid '**corp** an gnímh' ar an cód idir `{` agus `}`, sa gníomh `diaDuit` is é `scríobh('Dia duit')` an corp.
+
+## Sampla
+
+Mar shampla. Abair gur mhaith leat an pictiúr seo a tharraingt:
+
+![Ceithre ciorcal](/assets/images/teagaisc/ceithreciorcal.png)
+
+Ba chóir dúinn ceithre phéire ciorcail a tharraingt.
+
+Chun péire ciorcail amháin a tharraingt, scríobhfaimis cód mar seo
 
 ```
-gníomh suimighGoN(n) {
-    suim := 0
-    le i idir (1, n + 1)
-        suim = suim + i
-    scríobh(suim)
+dath@stáitse('dearg')
+ciorcalLán@stáitse(100, 100, 100)
+dath@stáitse('glas')
+ciorcalLán@stáitse(100, 100, 50)
+```
+
+Ach cad a scríobhfaimis dá theastódh uainn ceithre phéire a tharraingt? D'fhéadfaimis ríomhchlár an fhada a scríobh mar seo:
+
+```
+dath@stáitse('dearg')
+ciorcalLán@stáitse(100, 100, 100)
+dath@stáitse('glas')
+ciorcalLán@stáitse(100, 100, 50)
+
+dath@stáitse('dearg')
+ciorcalLán@stáitse(100, 300, 100)
+dath@stáitse('glas')
+ciorcalLán@stáitse(100, 300, 50)
+
+dath@stáitse('dearg')
+ciorcalLán@stáitse(300, 100, 100)
+dath@stáitse('glas')
+ciorcalLán@stáitse(300, 100, 50)
+
+dath@stáitse('dearg')
+ciorcalLán@stáitse(300, 300, 100)
+dath@stáitse('glas')
+ciorcalLán@stáitse(300, 300, 50)
+
+```
+
+Bheadh tú ag scríobh an rud cheanna arís 's arís. Áfach, is féidir linn gníomh a cruthú chun péire amháin a tharraingt, agus ansin úsáidfimid é ceithre huaire:
+
+```
+gníomh dháChiorcal(x, y) {
+    dath@stáitse('dearg')
+    ciorcalLán@stáitse(x, y, 100)
+    dath@stáitse('glas')
+    ciorcalLán@stáitse(x, y, 50)
 }
-suimighGoN(100)
-suimighGoN(200)
-suimighGoN(300)
-suimighGoN(400)
+dháChiorcal(100, 100)
+dháChiorcal(100, 300)
+dháChiorcal(300, 100)
+dháChiorcal(300, 300)
 ```
 
-Sin i bhfad níos lú cód! Ach cad atá ag tarlú sa ghníomh? Caithfimid labhairt faoi argóintí.
+![Ceithre ciorcal gif](/assets/images/teagaisc/ceithreciorcal.gif)
+
+Sin i bhfad níos lú cód! Ach cad atá ag tarlú sa ghníomh? Ar dtús caithfimid labhairt faoi argóintí.
 
 ## Argóintí
 
-Féach arís ar an ríomhchlár `scríobh('Dia duit')`. Tugaimid an luach "Dia duit" do `scríobh`, agus scríobhann sé é amach ar an gconsól. Sa chás seo, is **argóint** é 'Dia duit'. Is luachanna iad argóintí a thógann gníomhartha chun an gníomh a dhéanamh.
+Féach arís ar an ríomhchlár `scríobh('Dia duit')`. Tugaimid an luach "Dia duit" do `scríobh`, agus scríobhann sé amach é ar an gconsól. Sa chás seo, is **argóint** é 'Dia duit'. Is luachanna iad argóintí a thógann gníomhartha chun corp an gnímh a dhéanamh.
 
-Anois féach ar ais ar an gníomh `suimighGoN` a chruthaíomar níos luaithe. Tá **argóint** amháin ag an gníomh `suimighGoN`, go háirithe an uimhir `n`.
-Tógann an gníomh an argóint agus cuireann sé an luach san athróg `n` istigh den ghníomh. Ansin ritheann an cód isteach sa gníomh.
-
-Is féidir leat níos mó na argóint amháin a úsáid. Féach ar an cód seo:
+Is féidir linn argóintí a úsáid lenár gcuid gníomhartha féin freisin. Abair gur mhaith linn gníomh a dhéanamh chun scríobh rudaí trí huaire. Is féidir linn rud mar seo a scríobh:
 
 ```
-gníomh scríobhIsMó(a, b) {
-    má b > a
-        scríobh(b)
-    nó
-        scríobh(a)
+gníomh tríhuaire(x) {
+    scríobh(x)
+    scríobh(x)
+    scríobh(x)
 }
+tríhuaire('Is aoibhinn liom Setanta')
 ```
 
-Tógann an gníomh `scríobhIsMó` dhá argóint, `a` agus `b`, agus scríobhann sé amach an ceann is mó. Mar shampla scríobhann `scríobhIsMo(3, 5)` 5 amach ar an gconsól. 
+Féach ar an toradh!
 
-Déan iarracht gníomh a cruthú chun an uimhir is lú a scríobh amach.
+![Trí huaire](/assets/images/teagaisc/trihuaire.gif)
+
+Anois féach ar ais ar an gníomh `dháChiorcal` a chruthaíomar níos luaithe.
+Tógann sé dhá **argóint** aige, go háirithe `x` agus `y`.
+Tógann an gníomh na argóintí agus cuireann sé an luach sna athróga `x` agus `y` istigh de corp an gnímh.
+Ansin ritheann an cód isteach sa gníomh, ag úsáid na athróga. Tarraingíonn sé an péire ciorcail timpeall an pointe (x, y).
 
 [Ansin téigh go dtí an céad teagaisc eile: Torthaí](/gaeilge/06-torthai)
