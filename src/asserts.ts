@@ -9,6 +9,13 @@ export function assertNumber(x: Value): number {
     throw new RuntimeError(`Ní uimhir é ${goLitreacha(x)}`);
 }
 
+export function assertBool(x: Value): boolean {
+    if (Checks.isBool(x)) {
+        return x;
+    }
+    throw new RuntimeError(`Ní uimhir é ${goLitreacha(x)}`);
+}
+
 export function assertLiosta(x: Value): Value[] {
     if (Checks.isLiosta(x)) {
         return x;
