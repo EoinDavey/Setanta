@@ -13,4 +13,4 @@ To try Setanta, you have two choices.
 
 # How to learn Setanta
 
-There is a programming tutorial [available here](/english/02-try-setanta). To follow the tutorial use the site [try-setanta.ie](https://try-setanta.ie).
+There is a programming tutorial [available here](/english/02-try-setanta).
