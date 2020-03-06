@@ -34,4 +34,29 @@ Now look at the console!
 
 Congratulations!, you wrote your first Setanta program!
 
-[Now learn more about Setanta here.](/gaeilge/03-teagaisc)
+## Drawing shapes
+
+You can use Setanta to draw shapes on the stage
+
+```
+dath@stáitse('dearg')
+ciorcal@stáitse(200, 200, 100)
+```
+
+The first line changes the colour of the pen to dearg (red). Then the second line draws a circle around the point (200, 200) with radius 100. Press the "Tosaigh" (Start) button and look at the stage.
+
+![Circle](/assets/images/teagaisc/ciorcal.gif)
+
+You can draw rectangles, squares or any other shape! Try out this code:
+
+```
+dath@stáitse('buí')
+dron@stáitse(300, 300, 400, 200)
+dath@stáitse('oráiste')
+ciorcalLán@stáitse(300, 300, 50)
+ciorcalLán@stáitse(700, 300, 50)
+ciorcal@stáitse(300, 500, 50)
+ciorcal@stáitse(700, 500, 50)
+```
+
+[The next tutorial: Setanta 101](/english/03-tutorial)
