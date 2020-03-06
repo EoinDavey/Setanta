@@ -173,6 +173,60 @@ export const Builtins: Array<[string, Value]> = [
                 },
             ],
             [
+                // cos function
+                ["cos"], {
+                    ainm : "cos",
+                    arity: () => 1,
+                    call: (args: Value[]): Promise<number> => {
+                        const x = Asserts.assertNumber(args[0]);
+                        return Promise.resolve(Math.cos(x));
+                    },
+                },
+            ],
+            [
+                // cos function
+                ["sin"], {
+                    ainm : "sin",
+                    arity: () => 1,
+                    call: (args: Value[]): Promise<number> => {
+                        const x = Asserts.assertNumber(args[0]);
+                        return Promise.resolve(Math.sin(x));
+                    },
+                },
+            ],
+            [
+                // log function
+                ["log"], {
+                    ainm : "log",
+                    arity: () => 1,
+                    call: (args: Value[]): Promise<number> => {
+                        const x = Asserts.assertNumber(args[0]);
+                        if (x <= 0) {
+                            return Promise.reject(new RuntimeError(`Níl log(0) sainmhínithe`));
+                        }
+                        return Promise.resolve(Math.log(x));
+                    },
+                },
+            ],
+            [
+                // logB function
+                ["logb"], {
+                    ainm : "logb",
+                    arity: () => 2,
+                    call: (args: Value[]): Promise<number> => {
+                        const x = Asserts.assertNumber(args[0]);
+                        const b = Asserts.assertNumber(args[1]);
+                        if (x <= 0) {
+                            return Promise.reject(new RuntimeError(`Níl log(${x}) sainmhínithe`));
+                        }
+                        if (b <= 0 || b === 1) {
+                            return Promise.reject(new RuntimeError(`Níl log i mbun ${b} sainmhínithe`));
+                        }
+                        return Promise.resolve(Math.log(x) / Math.log(b));
+                    },
+                },
+            ],
+            [
                 // Random floating point number between 0 and 1
                 ["rand"], {
                     ainm: "rand",

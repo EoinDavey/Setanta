@@ -1,3 +1,4 @@
+import { isNumber } from "../../src/checks";
 import { Environment } from "../../src/env";
 import { Parser } from "../../src/gen_parser";
 import { Interpreter } from "../../src/i10r";
@@ -125,10 +126,21 @@ test("test mata", async () => {
         { inp : "e@mata", exp : Math.E },
         { inp : "cearn@mata(pi@mata)", exp : Math.PI * Math.PI },
         { inp : "fréamh@mata(4)", exp : 2 },
-        { inp : "rand@mata() < 1", exp: true},
-        { inp : "rand@mata() > 0", exp: true},
-        { inp : "randUimh@mata(100, 200) >= 100", exp: true},
-        { inp : "randUimh@mata(100, 200) < 200", exp: true},
+        { inp : "rand@mata() < 1", exp: true },
+        { inp : "rand@mata() > 0", exp: true },
+        { inp : "randUimh@mata(100, 200) >= 100", exp: true },
+        { inp : "randUimh@mata(100, 200) < 200", exp: true },
+        { inp : "cos@mata(0)", exp: 1 },
+        { inp : "cos@mata(pi@mata)", exp: -1 },
+        { inp : "cos@mata(2*pi@mata)", exp: 1 },
+        { inp : "sin@mata(0)", exp: 0 },
+        { inp : "sin@mata(pi@mata/2)", exp: 1 },
+        { inp : "sin@mata(pi@mata)", exp: 0 },
+        { inp : "sin@mata(2*pi@mata)", exp: 0 },
+        { inp : "logb@mata(4, 2)", exp: 2 },
+        { inp : "logb@mata(125, 5)", exp: 3 },
+        { inp : "log@mata(1)", exp: 0 },
+        { inp : "log@mata(2)", exp: Math.log(2) },
     ];
     for (const c of cases) {
         const i = new Interpreter();
@@ -136,6 +148,10 @@ test("test mata", async () => {
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
         const got = await res!.evalfn(i.global);
-        expect(got).toEqual(c.exp);
+        if (isNumber(got)) {
+            expect(got).toBeCloseTo(c.exp as number);
+        } else {
+            expect(got).toEqual(c.exp);
+        }
     }
 });
