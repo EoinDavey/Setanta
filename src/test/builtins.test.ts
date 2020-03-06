@@ -98,6 +98,25 @@ test("test go_lit", async () => {
     }
 });
 
+test("uas/íos test", async () => {
+    interface TC { inp: string; exp: number; }
+    const cases: TC[] = [
+        { inp : "uas(3, 4)", exp : 4 },
+        { inp : "íos(3, 4)", exp : 3 },
+        { inp : "ios(3, 4)", exp : 3 },
+        { inp : "uas(3, 3)", exp : 3 },
+        { inp : "íos(-3, 3)", exp : -3 },
+    ];
+    for (const c of cases) {
+        const i = new Interpreter();
+        const p = new Parser(c.inp);
+        const res = p.matchExpr(0);
+        expect(res).not.toBeNull();
+        const got = await res!.evalfn(i.global);
+        expect(got).toEqual(c.exp);
+    }
+});
+
 test("test mata", async () => {
     interface TC { inp: string; exp: Value; }
     const cases: TC[] = [

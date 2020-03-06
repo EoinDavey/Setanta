@@ -106,6 +106,45 @@ export const Builtins: Array<[string, Value]> = [
         },
     ],
     [
+        // args[0-1]: number
+        // íos returns min of args[0], args[1]
+        "íos", {
+            ainm : "íos",
+            arity : () => 2,
+            call : (args: Value[]): Promise<number> => {
+                const a = Asserts.assertNumber(args[0]);
+                const b = Asserts.assertNumber(args[1]);
+                return Promise.resolve(Math.min(a, b));
+            },
+        },
+    ],
+    [
+        // args[0-1]: number
+        // íos returns min of args[0], args[1]
+        "ios", {
+            ainm : "íos",
+            arity : () => 2,
+            call : (args: Value[]): Promise<number> => {
+                const a = Asserts.assertNumber(args[0]);
+                const b = Asserts.assertNumber(args[1]);
+                return Promise.resolve(Math.min(a, b));
+            },
+        },
+    ],
+    [
+        // args[0-1]: number
+        // uas returns max of args[0], args[1]
+        "uas", {
+            ainm : "uas",
+            arity : () => 2,
+            call : (args: Value[]): Promise<number> => {
+                const a = Asserts.assertNumber(args[0]);
+                const b = Asserts.assertNumber(args[1]);
+                return Promise.resolve(Math.max(a, b));
+            },
+        },
+    ],
+    [
         // Built in maths object
         "mata", new ObjWrap("mata", [
             // constants
