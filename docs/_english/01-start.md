@@ -4,7 +4,7 @@ title: Start Here
 toc: true
 ---
 
-# How to use Setanta?
+# How to use Setanta
 
 To try Setanta, you have two choices.
 
