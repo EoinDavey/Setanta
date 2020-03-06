@@ -21,12 +21,16 @@ Is féidir linn an struchtúr seo a úsáid arís is arís, mar seo
 
 ```
 má ainm == 'Oisín'
-    scríobh('Oisin, tar liomsa go Tír na nÓg')
+    scríobh('Oisín, tar liomsa go Tír na nÓg')
 nó má ainm == 'Fionn'
     scríobh('Dia duit Fionn, an bhfuil Oisín anseo?')
 nó
     scríobh('Tá brón orm, Níl aithne agam ort')
 ```
+
+- Má tá `ainm` cothrom le 'Oisín', scríobhann an cód sin 'Oisín, tar liomsa go Tír na nÓg'.
+- Mura bhfuil `ainm` cothrom le 'Oisín', ansin seiceálann sé go bhfuil `ainm` cothrom le 'Fionn', más ionann iad scríobhann sé 'Dia duit Fionn, an bhfuil Oisín anseo?'
+- Mura bhfuil `ainm` cothrom le 'Oisín' nó 'Fionn', ansin scríobhann sé 'Tá brón orm, Níl aithne agam ort'
 
 Úsáid `{` agus `}` chun grúpa treoracha a cruthú.
 
@@ -66,14 +70,14 @@ le i idir (10, 0)
 
 Scríobhann an ríomhchlár seo 10, 9, ... 1.
 
-Is féidir leat uimhir eile a chur idir na lúibíní chun an céim a athrú. Mar shampla
+Is féidir leat uimhir eile a chur idir na lúibíní chun an céim idir na huimhreacha a athrú. Mar shampla
 
 ```
 le i idir (0, 10, 3)
     scríobh(i)
 ```
 
-Scríobhann é sin `0, 3, 6, 9`
+Scríobhann é sin `0, 3, 6, 9` mar tá méid an chéim 3.
 
 ### Nuair-a
 

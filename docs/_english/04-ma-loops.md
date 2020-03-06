@@ -5,7 +5,7 @@ toc: true
 ---
 ## Má ... nó ...
 
-You can make choices in your program! We use the word `má` to make a check, and then to make a choice with the result of that check. Look at the following program:
+You can make choices in your program! We use the word `má` (meaning "if") to make a check, and then to make a choice with the result of that check. Look at the following program:
 
 ```
 aois := 14
@@ -27,6 +27,10 @@ nó má ainm == 'Fionn'
 nó
     scríobh('Tá brón orm, Níl aithne agam ort')
 ```
+
+- If `ainm` is equal to 'Oisín' this writes 'Oisin, tar liomsa go Tír na nÓg' (Oisín, come with me to Tír na nÓg).
+- If `ainm` isn't equal to Oisin, it then checks if `ainm` is equal to 'Fionn', if it is it writes 'Dia duit Fionn, an bhfuil Oisín anseo?' (Hello Fionn, is Oisín here).
+- If `ainm` wasn't Oisín or Fionn, then it writes 'Tá brón orm, Níl aithne agam ort' (I'm sorry, I don't know you)
 
 Use `{` and `}` to make a group of instructions.
 
@@ -66,14 +70,14 @@ le i idir (10, 0)
 
 This program writes 10, 9, .... 1.
 
-You can put another number in the brackets to change the step. For example:
+You can put another number in the brackets to change the step between numbers. For example:
 
 ```
 le i idir (0, 10, 3)
     scríobh(i)
 ```
 
-This writes 0, 3, 6, 9
+This writes 0, 3, 6, 9 as the step size is 3.
 
 ### Nuair-a
 
@@ -117,7 +121,7 @@ This loop writes `0 1 2 3 4 5 6 7 9 8 9`, because for each `i < 0`, the `chunn-c
 
 ## Big example
 
-We have an example now that uses every we saw, loops, `má`, variables, the stage ....
+We have an example now that uses everything we've seen, loops, `má`, variables, the stage ....
 
 Run this code and look at the stage:
 ```
@@ -155,4 +159,4 @@ cruthLán@stáitse([[300, 270], [270, 350], [330, 350]])
 
 ![An aghaidh](/assets/images/teagaisc/aghaidh.gif)
 
-Now go to the [next tutorial: Gníomhs (actions)](/english/05-gniomh)
+Now go to the [next tutorial: Actions (gníomh)](/english/05-gniomh)
