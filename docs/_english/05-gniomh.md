@@ -15,7 +15,7 @@ scríobh('Dia duit ' + ainm)
 
 Run that program, type your name into the console, and press the enter key.
 
-![Your name here](/assets/images/teagaisc/teagaisc07.png)
+![Your name here](/assets/images/teagaisc/teagaisc09.png)
 
 This is the result:
 
