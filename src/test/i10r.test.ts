@@ -1063,3 +1063,41 @@ test("stop test", async () => {
     const stop = new Promise((resolve) => setTimeout(() => resolve(i.stop())));
     await stop;
 });
+
+test("test comments", async () => {
+    interface TC { inp: string; exp: Value; env?: Environment; }
+    const cases: TC[] = [
+        {
+            exp: 16,
+            inp: `
+            >-- Set res to 16
+            res := 16
+            `,
+        },
+        {
+            exp: 42,
+            inp: `
+            res := >-- initialise res --< 42
+            `,
+        },
+        {
+            exp: 314,
+            inp: `
+            res := 314
+            >-- res is now 314
+            `,
+        },
+    ];
+    for (const c of cases) {
+        const i = new Interpreter();
+        if (c.env) {
+            i.global = c.env;
+        }
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        await i.interpret(res.ast!);
+        expect(i.global.get("res")).toEqual(c.exp);
+    }
+});

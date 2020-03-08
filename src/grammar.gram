@@ -102,7 +102,7 @@ Litreacha   := _ '\'' val='([^\'\\]|\\.)*' '\''
                     return () => Promise.resolve(x);
                }
 _           := wspace*
-wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n))'
+wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
 gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
 PlusMinus   := '\+|-'
 AsgnOp      := '=|\+=|\*=|-=|%=|\/='

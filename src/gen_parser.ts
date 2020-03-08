@@ -104,7 +104,7 @@
 *                     return () => Promise.resolve(x);
 *                }
 * _           := wspace*
-* wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n))'
+* wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
 * gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
 * PlusMinus   := '\+|-'
 * AsgnOp      := '=|\+=|\*=|-=|%=|\/='
@@ -1657,7 +1657,7 @@ export class Parser {
         return this.loop<wspace>(() => this.matchwspace($$dpth + 1, cr), true);
     }
     public matchwspace($$dpth: number, cr?: ContextRecorder): Nullable<wspace> {
-        return this.regexAccept(String.raw`(?:\s|>--(?:(?!--<).)*(--<|\n))`, $$dpth + 1, cr);
+        return this.regexAccept(String.raw`(?:\s|>--(?:(?!--<).)*(--<|\n|$))`, $$dpth + 1, cr);
     }
     public matchgap($$dpth: number, cr?: ContextRecorder): Nullable<gap> {
         return this.choice<gap>([
