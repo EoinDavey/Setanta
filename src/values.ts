@@ -48,6 +48,16 @@ export function idxList(x: Value, idx: Promise<Value>): Promise<Value> {
     });
 }
 
+// Quick index list, for use with quick evaluation strategies
+export function qIdxList(x: Value, idx: Value): Value {
+    const ls = Asserts.assertIndexable(x);
+    const v = Asserts.assertNumber(idx);
+    if (v < 0 || v >= ls.length) {
+        throw new RuntimeError(`Tá ${goLitreacha(v)} thar teorainn an liosta`);
+    }
+    return ls[v];
+}
+
 export class ObjWrap implements Obj {
     public ainm: string;
     public attrs: Map<string, Value>;

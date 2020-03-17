@@ -68,7 +68,6 @@ test("test expressions", async () => {
         {inp : "-x[0]", exp: -2, env : Environment.from([["x", [2]]])},
         {inp : "!fíor", exp: false},
         {inp : "!breag", exp: true},
-        {inp : "fad('abc')", exp: 3},
         {inp : "'abc'[0]", exp: "a"},
     ];
     for (const c of cases) {
@@ -81,6 +80,9 @@ test("test expressions", async () => {
         expect(res).not.toBeNull();
         try {
             const got = await res!.evalfn(i.global);
+            const quickGet = res!.qeval;
+            expect(quickGet).not.toBeNull();
+            expect(quickGet!(i.global)).toEqual(c.exp);
             expect(got).toEqual(c.exp);
         } catch (e) {
             console.log(c.inp);

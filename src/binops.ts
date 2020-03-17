@@ -2,13 +2,13 @@ import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { Environment } from "./env";
 import { RuntimeError } from "./error";
-import { EvalFn } from "./evals";
+import { EvalFn, hasQuick, HasQuick, MaybeQuickEv } from "./evals";
 import { And, Or } from "./gen_parser";
 import { cat, repeat } from "./liosta";
 import { strcat, strrep } from "./litreacha";
 import { Comparable, goLitreacha, Ref, TypeCheck, Value } from "./values";
 
-interface IEvalable {evalfn: EvalFn; }
+interface IEvalable {evalfn: EvalFn; qeval: MaybeQuickEv; }
 
 type BinOp = (a: Value, b: Value) => Value;
 
@@ -54,6 +54,93 @@ export function binOpEvalFn(obj: {head: IEvalable, tail: Array<{trm: IEvalable, 
                 y.trm.evalfn(env).then((b: Value) =>
                     evalBinOp(a, b, y.op))),
             obj.head.evalfn(env));
+}
+
+export function orQuickBinOp(or: Or): MaybeQuickEv {
+    if (or.tail.length === 0) {
+        const childF = or.head.qeval;
+        return childF === null ? null : childF.bind(or.head);
+    }
+    const head = or.head;
+    if (!hasQuick(head)) {
+        return null;
+    }
+    const tail: HasQuick[] = [];
+    for (const op of or.tail) {
+        const trm = op.trm;
+        if (!hasQuick(trm)) {
+            return null;
+        }
+        tail.push(trm);
+    }
+    return (env: Environment) => {
+        let acc = head.qeval(env);
+        for (const op of tail) {
+            if (Checks.isTrue(acc)) {
+                return acc;
+            }
+            acc = op.qeval(env);
+        }
+        return acc;
+    };
+}
+
+export function andQuickBinOp(and: And): MaybeQuickEv {
+    if (and.tail.length === 0) {
+        const childF = and.head.qeval;
+        return childF === null ? null : childF.bind(and.head);
+    }
+    const head = and.head;
+    if (!hasQuick(head)) {
+        return null;
+    }
+    const tail: HasQuick[] = [];
+    for (const op of and.tail) {
+        const trm = op.trm;
+        if (!hasQuick(trm)) {
+            return null;
+        }
+        tail.push(trm);
+    }
+    return (env: Environment) => {
+        let acc = head.qeval(env);
+        for (const op of tail) {
+            if (!Checks.isTrue(acc)) {
+                return acc;
+            }
+            acc = op.qeval(env);
+        }
+        return acc;
+    };
+}
+
+export function binOpQuickEvalFn(obj: {head: IEvalable, tail: Array<{trm: IEvalable, op: string}>}): MaybeQuickEv {
+    if (obj.tail.length === 0) {
+        const childF = obj.head.qeval;
+        return childF === null ? null : childF.bind(obj.head);
+    }
+    // Check if all operands are quick
+    const head = obj.head;
+    if (!hasQuick(head)) {
+        return null;
+    }
+    interface QuickOp {
+        trm: HasQuick;
+        op: string;
+    }
+    const ops: QuickOp[] = [];
+    for (const op of obj.tail) {
+        if (!hasQuick(op.trm)) {
+            return null;
+        }
+        ops.push(op as QuickOp); // Safe as checked non-null in hasQuick check
+    }
+    return (env: Environment) => {
+        return ops.reduce((x: Value, y): Value => {
+            const b = y.trm.qeval(env);
+            return evalBinOp(x, b, y.op);
+        }, head.qeval(env));
+    };
 }
 
 function makeBinOp<L extends Value, R extends Value>(lassert: (v: Value) => L,

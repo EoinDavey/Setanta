@@ -4,8 +4,12 @@ import { callFunc, idxList, Value } from "./values";
 import { unescapeChars } from "./litreacha";
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
-import { orBinOp, andBinOp, binOpEvalFn } from "./binops";
+import { orBinOp, orQuickBinOp, andBinOp, andQuickBinOp,
+    binOpEvalFn, binOpQuickEvalFn } from "./binops";
 import { objLookupsEval, postfixArgsEval, csArgsEval, prefEval, EvalFn } from "./evals";
+import { MaybeQuickEv, qBoolEval, qCSArgsEval, qEvalToEval, qIdEval, qIntEval,
+    qObjLookupsEval, qListLitEval, qLitreachaEval, qPostfixArgsEval, qPrefEval, 
+    QuickEvalFn } from "./evals";
 ---
 Program     := stmts=AsgnStmt* _
 AsgnStmt    := IfStmt
@@ -47,25 +51,38 @@ ToradhStmt  := _ 'toradh' &gap exp=Expr?
 Expr        := And
 And         := head=Or tail={_ '\&' trm=Or}*
                .evalfn = EvalFn { return andBinOp(this); }
+               .qeval = MaybeQuickEv { return andQuickBinOp(this); }
 Or          := head=Eq tail={_ '\|' trm=Eq}*
                .evalfn = EvalFn { return orBinOp(this) }
+               .qeval = MaybeQuickEv { return orQuickBinOp(this); }
 Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
                .evalfn = EvalFn { return binOpEvalFn(this) }
+               .qeval = MaybeQuickEv { return binOpQuickEvalFn(this); }
 Comp        := head=Sum tail={_ op=Compare trm=Sum}*
                .evalfn = EvalFn { return binOpEvalFn(this) }
+               .qeval = MaybeQuickEv { return binOpQuickEvalFn(this); }
 Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
                .evalfn = EvalFn { return binOpEvalFn(this) }
+               .qeval = MaybeQuickEv { return binOpQuickEvalFn(this); }
 Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
-               .evalfn = EvalFn { return binOpEvalFn(this) }
+               .evalfn = EvalFn { return binOpEvalFn(this); }
+               .qeval = MaybeQuickEv { return binOpQuickEvalFn(this); }
 Prefix      := _ op='-|!'? pf=Postfix
-               .evalfn = EvalFn { return prefEval(this) }
+               .evalfn = EvalFn { return prefEval(this); }
+               .qeval = MaybeQuickEv { return qPrefEval(this); }
 Postfix     := at=ObjLookups ops=PostOp*
                .evalfn = EvalFn { return postfixArgsEval(this); }
+               .qeval = MaybeQuickEv { return qPostfixArgsEval(this); }
 ObjLookups  := _ attrs={id=ID '@' !wspace}* root=Atom
                .evalfn = EvalFn { return objLookupsEval(this); }
+               .qeval = MaybeQuickEv { return qObjLookupsEval(this); }
 PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 Atom        :=  _ '\(' trm=Expr '\)'
                .evalfn = EvalFn { return (env: Environment) => this.trm.evalfn(env); }
+               .qeval = MaybeQuickEv {
+                    const childF = this.trm.qeval;
+                    return childF === null ? null : childF.bind(this.trm);
+               }
              | ID
              | Litreacha
              | Int
@@ -77,30 +94,26 @@ ListLit     := _ '\[' els=CSArgs? _ '\]'
                .evalfn = EvalFn {
                    return (env: Environment) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
                }
+               .qeval = MaybeQuickEv { return qListLitEval(this); }
 CSArgs      := head=Expr tail={_ ',' exp=Expr}*
                .evalfn = (env:Environment)=>Promise<Value[]> { return csArgsEval(this); }
+               .qeval = MaybeQuickEv { return qCSArgsEval(this); }
 CSIDs       := head=ID tail={_ ',' id=ID}*
 ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
-               .evalfn = EvalFn {
-                   return (env: Environment) => Promise.resolve(env.get(this.id));
-               }
+               .evalfn = EvalFn { return qEvalToEval(qIdEval(this.id)); }
+               .qeval = QuickEvalFn { return qIdEval(this.id); }
 Bool        := _ bool='f[ií]or|br[eé]ag'
-               .evalfn = EvalFn {
-                   const x = this.bool === 'fior' || this.bool === 'fíor';
-                   return () => Promise.resolve(x);
-               }
+               .evalfn = EvalFn { return qEvalToEval(qBoolEval(this.bool)); }
+               .qeval = QuickEvalFn { return qBoolEval(this.bool); }
 Neamhni     := _ 'neamhn[ií]'
                .evalfn = EvalFn { return () => Promise.resolve(null); }
+               .qeval = QuickEvalFn { return () => null; }
 Int         := _ int='-?[0-9]+(?:\.[0-9]+)?'
-               .evalfn = EvalFn { 
-                   const v = parseFloat(this.int);
-                   return () => Promise.resolve(v);
-               }
+               .evalfn = EvalFn { return qEvalToEval(qIntEval(this.int)); }
+               .qeval = QuickEvalFn { return qIntEval(this.int); }
 Litreacha   := _ '\'' val='([^\'\\]|\\.)*' '\''
-               .evalfn = EvalFn {
-                    const x = unescapeChars(this.val);
-                    return () => Promise.resolve(x);
-               }
+               .evalfn = EvalFn { return qEvalToEval(qLitreachaEval(this.val)); }
+               .qeval = QuickEvalFn { return qLitreachaEval(this.val); }
 _           := wspace*
 wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
 gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
