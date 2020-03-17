@@ -9,9 +9,8 @@
 * import { orBinOp, orQuickBinOp, andBinOp, andQuickBinOp,
 *     binOpEvalFn, binOpQuickEvalFn } from "./binops";
 * import { objLookupsEval, postfixArgsEval, csArgsEval, prefEval, EvalFn } from "./evals";
-* import { MaybeQuickEv, qBoolEval, qCSArgsEval, qEvalToEval, qIdEval, qIntEval,
-*     qObjLookupsEval, qListLitEval, qLitreachaEval, qPostfixArgsEval, qPrefEval, 
-*     QuickEvalFn } from "./evals";
+* import { qEvalToEval } from "./evals";
+* import * as Quick from "./quickevals";
 * ---
 * Program     := stmts=AsgnStmt* _
 * AsgnStmt    := IfStmt
@@ -53,35 +52,35 @@
 * Expr        := And
 * And         := head=Or tail={_ '\&' trm=Or}*
 *                .evalfn = EvalFn { return andBinOp(this); }
-*                .qeval = MaybeQuickEv { return andQuickBinOp(this); }
+*                .qeval = Quick.MaybeEv { return andQuickBinOp(this); }
 * Or          := head=Eq tail={_ '\|' trm=Eq}*
 *                .evalfn = EvalFn { return orBinOp(this) }
-*                .qeval = MaybeQuickEv { return orQuickBinOp(this); }
+*                .qeval = Quick.MaybeEv { return orQuickBinOp(this); }
 * Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
 *                .evalfn = EvalFn { return binOpEvalFn(this) }
-*                .qeval = MaybeQuickEv { return binOpQuickEvalFn(this); }
+*                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
 * Comp        := head=Sum tail={_ op=Compare trm=Sum}*
 *                .evalfn = EvalFn { return binOpEvalFn(this) }
-*                .qeval = MaybeQuickEv { return binOpQuickEvalFn(this); }
+*                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
 * Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
 *                .evalfn = EvalFn { return binOpEvalFn(this) }
-*                .qeval = MaybeQuickEv { return binOpQuickEvalFn(this); }
+*                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
 * Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
 *                .evalfn = EvalFn { return binOpEvalFn(this); }
-*                .qeval = MaybeQuickEv { return binOpQuickEvalFn(this); }
+*                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
 * Prefix      := _ op='-|!'? pf=Postfix
 *                .evalfn = EvalFn { return prefEval(this); }
-*                .qeval = MaybeQuickEv { return qPrefEval(this); }
+*                .qeval = Quick.MaybeEv { return Quick.qPrefEval(this); }
 * Postfix     := at=ObjLookups ops=PostOp*
 *                .evalfn = EvalFn { return postfixArgsEval(this); }
-*                .qeval = MaybeQuickEv { return qPostfixArgsEval(this); }
+*                .qeval = Quick.MaybeEv { return Quick.qPostfixArgsEval(this); }
 * ObjLookups  := _ attrs={id=ID '@' !wspace}* root=Atom
 *                .evalfn = EvalFn { return objLookupsEval(this); }
-*                .qeval = MaybeQuickEv { return qObjLookupsEval(this); }
+*                .qeval = Quick.MaybeEv { return Quick.qObjLookupsEval(this); }
 * PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
 * Atom        :=  _ '\(' trm=Expr '\)'
 *                .evalfn = EvalFn { return (env: Environment) => this.trm.evalfn(env); }
-*                .qeval = MaybeQuickEv {
+*                .qeval = Quick.MaybeEv {
 *                     const childF = this.trm.qeval;
 *                     return childF === null ? null : childF.bind(this.trm);
 *                }
@@ -96,26 +95,26 @@
 *                .evalfn = EvalFn {
 *                    return (env: Environment) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
 *                }
-*                .qeval = MaybeQuickEv { return qListLitEval(this); }
+*                .qeval = Quick.MaybeEv { return Quick.qListLitEval(this); }
 * CSArgs      := head=Expr tail={_ ',' exp=Expr}*
 *                .evalfn = (env:Environment)=>Promise<Value[]> { return csArgsEval(this); }
-*                .qeval = ((env:Environment)=>Value[])|null { return qCSArgsEval(this); }
+*                .qeval = ((env:Environment)=>Value[])|null { return Quick.qCSArgsEval(this); }
 * CSIDs       := head=ID tail={_ ',' id=ID}*
 * ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
-*                .evalfn = EvalFn { return qEvalToEval(qIdEval(this.id)); }
-*                .qeval = QuickEvalFn { return qIdEval(this.id); }
+*                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id)); }
+*                .qeval = Quick.EvalFn { return Quick.qIdEval(this.id); }
 * Bool        := _ bool='f[ií]or|br[eé]ag'
-*                .evalfn = EvalFn { return qEvalToEval(qBoolEval(this.bool)); }
-*                .qeval = QuickEvalFn { return qBoolEval(this.bool); }
+*                .evalfn = EvalFn { return qEvalToEval(Quick.qBoolEval(this.bool)); }
+*                .qeval = Quick.EvalFn { return Quick.qBoolEval(this.bool); }
 * Neamhni     := _ 'neamhn[ií]'
 *                .evalfn = EvalFn { return () => Promise.resolve(null); }
-*                .qeval = QuickEvalFn { return () => null; }
+*                .qeval = Quick.EvalFn { return () => null; }
 * Int         := _ int='-?[0-9]+(?:\.[0-9]+)?'
-*                .evalfn = EvalFn { return qEvalToEval(qIntEval(this.int)); }
-*                .qeval = QuickEvalFn { return qIntEval(this.int); }
+*                .evalfn = EvalFn { return qEvalToEval(Quick.qIntEval(this.int)); }
+*                .qeval = Quick.EvalFn { return Quick.qIntEval(this.int); }
 * Litreacha   := _ '\'' val='([^\'\\]|\\.)*' '\''
-*                .evalfn = EvalFn { return qEvalToEval(qLitreachaEval(this.val)); }
-*                .qeval = QuickEvalFn { return qLitreachaEval(this.val); }
+*                .evalfn = EvalFn { return qEvalToEval(Quick.qLitreachaEval(this.val)); }
+*                .qeval = Quick.EvalFn { return Quick.qLitreachaEval(this.val); }
 * _           := wspace*
 * wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
 * gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
@@ -135,9 +134,8 @@ import * as Checks from "./checks";
 import { orBinOp, orQuickBinOp, andBinOp, andQuickBinOp,
     binOpEvalFn, binOpQuickEvalFn } from "./binops";
 import { objLookupsEval, postfixArgsEval, csArgsEval, prefEval, EvalFn } from "./evals";
-import { MaybeQuickEv, qBoolEval, qCSArgsEval, qEvalToEval, qIdEval, qIntEval,
-    qObjLookupsEval, qListLitEval, qLitreachaEval, qPostfixArgsEval, qPrefEval, 
-    QuickEvalFn } from "./evals";
+import { qEvalToEval } from "./evals";
+import * as Quick from "./quickevals";
 
 type Nullable<T> = T | null;
 type $$RuleType<T> = (log?: (msg: string) => void) => Nullable<T>;
@@ -343,7 +341,7 @@ export class And {
     public head: Or;
     public tail: And_$0[];
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(head : Or, tail : And_$0[]){
         this.head = head;
         this.tail = tail;
@@ -364,7 +362,7 @@ export class Or {
     public head: Eq;
     public tail: Or_$0[];
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(head : Eq, tail : Or_$0[]){
         this.head = head;
         this.tail = tail;
@@ -385,7 +383,7 @@ export class Eq {
     public head: Comp;
     public tail: Eq_$0[];
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(head : Comp, tail : Eq_$0[]){
         this.head = head;
         this.tail = tail;
@@ -407,7 +405,7 @@ export class Comp {
     public head: Sum;
     public tail: Comp_$0[];
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(head : Sum, tail : Comp_$0[]){
         this.head = head;
         this.tail = tail;
@@ -429,7 +427,7 @@ export class Sum {
     public head: Product;
     public tail: Sum_$0[];
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(head : Product, tail : Sum_$0[]){
         this.head = head;
         this.tail = tail;
@@ -451,7 +449,7 @@ export class Product {
     public head: Prefix;
     public tail: Product_$0[];
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(head : Prefix, tail : Product_$0[]){
         this.head = head;
         this.tail = tail;
@@ -473,7 +471,7 @@ export class Prefix {
     public op: Nullable<string>;
     public pf: Postfix;
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(op : Nullable<string>, pf : Postfix){
         this.op = op;
         this.pf = pf;
@@ -481,7 +479,7 @@ export class Prefix {
         return prefEval(this);
         })()
         this.qeval = (() => {
-        return qPrefEval(this);
+        return Quick.qPrefEval(this);
         })()
     }
 }
@@ -490,7 +488,7 @@ export class Postfix {
     public at: ObjLookups;
     public ops: PostOp[];
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(at : ObjLookups, ops : PostOp[]){
         this.at = at;
         this.ops = ops;
@@ -498,7 +496,7 @@ export class Postfix {
         return postfixArgsEval(this);
         })()
         this.qeval = (() => {
-        return qPostfixArgsEval(this);
+        return Quick.qPostfixArgsEval(this);
         })()
     }
 }
@@ -507,7 +505,7 @@ export class ObjLookups {
     public attrs: ObjLookups_$0[];
     public root: Atom;
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(attrs : ObjLookups_$0[], root : Atom){
         this.attrs = attrs;
         this.root = root;
@@ -515,7 +513,7 @@ export class ObjLookups {
         return objLookupsEval(this);
         })()
         this.qeval = (() => {
-        return qObjLookupsEval(this);
+        return Quick.qObjLookupsEval(this);
         })()
     }
 }
@@ -537,7 +535,7 @@ export class Atom_1 {
     public kind: ASTKinds.Atom_1 = ASTKinds.Atom_1
     public trm: Expr;
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(trm : Expr){
         this.trm = trm;
         this.evalfn = (() => {
@@ -564,14 +562,14 @@ export class ListLit {
     public kind: ASTKinds.ListLit = ASTKinds.ListLit
     public els: Nullable<CSArgs>;
     public evalfn: EvalFn
-    public qeval: MaybeQuickEv
+    public qeval: Quick.MaybeEv
     constructor(els : Nullable<CSArgs>){
         this.els = els;
         this.evalfn = (() => {
         return (env: Environment) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
         })()
         this.qeval = (() => {
-        return qListLitEval(this);
+        return Quick.qListLitEval(this);
         })()
     }
 }
@@ -588,7 +586,7 @@ export class CSArgs {
         return csArgsEval(this);
         })()
         this.qeval = (() => {
-        return qCSArgsEval(this);
+        return Quick.qCSArgsEval(this);
         })()
     }
 }
@@ -609,14 +607,14 @@ export class ID {
     public kind: ASTKinds.ID = ASTKinds.ID
     public id: string;
     public evalfn: EvalFn
-    public qeval: QuickEvalFn
+    public qeval: Quick.EvalFn
     constructor(id : string){
         this.id = id;
         this.evalfn = (() => {
-        return qEvalToEval(qIdEval(this.id));
+        return qEvalToEval(Quick.qIdEval(this.id));
         })()
         this.qeval = (() => {
-        return qIdEval(this.id);
+        return Quick.qIdEval(this.id);
         })()
     }
 }
@@ -627,21 +625,21 @@ export class Bool {
     public kind: ASTKinds.Bool = ASTKinds.Bool
     public bool: string;
     public evalfn: EvalFn
-    public qeval: QuickEvalFn
+    public qeval: Quick.EvalFn
     constructor(bool : string){
         this.bool = bool;
         this.evalfn = (() => {
-        return qEvalToEval(qBoolEval(this.bool));
+        return qEvalToEval(Quick.qBoolEval(this.bool));
         })()
         this.qeval = (() => {
-        return qBoolEval(this.bool);
+        return Quick.qBoolEval(this.bool);
         })()
     }
 }
 export class Neamhni {
     public kind: ASTKinds.Neamhni = ASTKinds.Neamhni
     public evalfn: EvalFn
-    public qeval: QuickEvalFn
+    public qeval: Quick.EvalFn
     constructor(){
         this.evalfn = (() => {
         return () => Promise.resolve(null);
@@ -655,14 +653,14 @@ export class Int {
     public kind: ASTKinds.Int = ASTKinds.Int
     public int: string;
     public evalfn: EvalFn
-    public qeval: QuickEvalFn
+    public qeval: Quick.EvalFn
     constructor(int : string){
         this.int = int;
         this.evalfn = (() => {
-        return qEvalToEval(qIntEval(this.int));
+        return qEvalToEval(Quick.qIntEval(this.int));
         })()
         this.qeval = (() => {
-        return qIntEval(this.int);
+        return Quick.qIntEval(this.int);
         })()
     }
 }
@@ -670,14 +668,14 @@ export class Litreacha {
     public kind: ASTKinds.Litreacha = ASTKinds.Litreacha
     public val: string;
     public evalfn: EvalFn
-    public qeval: QuickEvalFn
+    public qeval: Quick.EvalFn
     constructor(val : string){
         this.val = val;
         this.evalfn = (() => {
-        return qEvalToEval(qLitreachaEval(this.val));
+        return qEvalToEval(Quick.qLitreachaEval(this.val));
         })()
         this.qeval = (() => {
-        return qLitreachaEval(this.val);
+        return Quick.qLitreachaEval(this.val);
         })()
     }
 }

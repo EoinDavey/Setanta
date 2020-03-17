@@ -2,10 +2,11 @@ import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { Environment } from "./env";
 import { RuntimeError } from "./error";
-import { EvalFn, hasQuick, HasQuick, MaybeQuickEv } from "./evals";
+import { EvalFn } from "./evals";
 import { And, Or } from "./gen_parser";
 import { cat, repeat } from "./liosta";
 import { strcat, strrep } from "./litreacha";
+import { IsQuick, isQuick, MaybeEv as MaybeQuickEv } from "./quickevals";
 import { Comparable, goLitreacha, Ref, TypeCheck, Value } from "./values";
 
 interface IEvalable {evalfn: EvalFn; qeval: MaybeQuickEv; }
@@ -62,13 +63,13 @@ export function orQuickBinOp(or: Or): MaybeQuickEv {
         return childF === null ? null : childF.bind(or.head);
     }
     const head = or.head;
-    if (!hasQuick(head)) {
+    if (!isQuick(head)) {
         return null;
     }
-    const tail: HasQuick[] = [];
+    const tail: IsQuick[] = [];
     for (const op of or.tail) {
         const trm = op.trm;
-        if (!hasQuick(trm)) {
+        if (!isQuick(trm)) {
             return null;
         }
         tail.push(trm);
@@ -91,13 +92,13 @@ export function andQuickBinOp(and: And): MaybeQuickEv {
         return childF === null ? null : childF.bind(and.head);
     }
     const head = and.head;
-    if (!hasQuick(head)) {
+    if (!isQuick(head)) {
         return null;
     }
-    const tail: HasQuick[] = [];
+    const tail: IsQuick[] = [];
     for (const op of and.tail) {
         const trm = op.trm;
-        if (!hasQuick(trm)) {
+        if (!isQuick(trm)) {
             return null;
         }
         tail.push(trm);
@@ -121,19 +122,19 @@ export function binOpQuickEvalFn(obj: {head: IEvalable, tail: Array<{trm: IEvala
     }
     // Check if all operands are quick
     const head = obj.head;
-    if (!hasQuick(head)) {
+    if (!isQuick(head)) {
         return null;
     }
     interface QuickOp {
-        trm: HasQuick;
+        trm: IsQuick;
         op: string;
     }
     const ops: QuickOp[] = [];
     for (const op of obj.tail) {
-        if (!hasQuick(op.trm)) {
+        if (!isQuick(op.trm)) {
             return null;
         }
-        ops.push(op as QuickOp); // Safe as checked non-null in hasQuick check
+        ops.push(op as QuickOp); // Safe as checked non-null in isQuick check
     }
     return (env: Environment) => {
         return ops.reduce((x: Value, y): Value => {
