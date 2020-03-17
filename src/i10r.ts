@@ -95,6 +95,10 @@ export class Interpreter {
             case ASTKinds.CtlchStmt:
                 return Promise.resolve(this.execCtlchStmt(st, env));
             default:
+                if (st.qeval !== null) {
+                    st.qeval(env);
+                    return Promise.resolve();
+                }
                 return st.evalfn(env).then();
         }
     }
@@ -172,6 +176,9 @@ export class Interpreter {
     }
     public execToradhStmt(b: P.ToradhStmt, env: Environment): Promise<void> {
         if (b.exp) {
+            if (b.exp.qeval !== null) { // Check if quick
+                return Promise.reject(new Toradh(b.exp.qeval(env)));
+            }
             return b.exp.evalfn(env).then((v: Value) => Promise.reject(new Toradh(v)));
         }
         return Promise.reject(new Toradh(null));
@@ -238,19 +245,32 @@ export class Interpreter {
         });
     }
     public execDefn(a: P.DefnStmt, env: Environment): Promise<void> {
+        if (env.has(a.id.id)) {
+            return Promise.reject(new RuntimeError(`Tá ${a.id.id} sa scóip seo cheana féin`));
+        }
+        // Try use quick strategy
+        if (a.expr.qeval !== null) {
+            const val = a.expr.qeval(env);
+            env.define(a.id.id, val);
+            return Promise.resolve();
+        }
         return a.expr.evalfn(env).then((val) => {
-            if (env.has(a.id.id)) {
-                return Promise.reject(new RuntimeError(`Tá ${a.id.id} sa scóip seo cheana féin`));
-            }
             return env.define(a.id.id, val);
         });
     }
     public execAssgn(t: P.AssgnStmt, env: Environment): Promise<void> {
+        // Direct assignment is taken care of separately due to no current value
         if (t.op === "=") {
+            // Try quick evaluation of expression
+            if (t.expr.qeval !== null) {
+                const val = t.expr.qeval(env);
+                return this.refPostfix(t.lhs, env).then((ref: Ref) => ref(val));
+            }
             return t.expr.evalfn(env).then((val: Value) => {
                 return this.refPostfix(t.lhs, env).then((ref: Ref) => ref(val));
             });
         }
+        // TODO quick eval these
         return t.expr.evalfn(env).then((dv: Value) =>
             this.refPostfix(t.lhs, env).then((ref: Ref) =>
                 t.lhs.evalfn(env).then((cur: Value) => evalAsgnOp(ref, cur, dv, t.op))));

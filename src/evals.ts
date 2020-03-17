@@ -38,11 +38,20 @@ export function postfixArgsEval(pf: Postfix): EvalFn {
             return x.then((val) => {
                 if ("args" in y) {
                     if (y.args) {
+                        // Can use quick strategy
+                        if (y.args.qeval !== null) {
+                            const args = y.args.qeval(env);
+                            return callFunc(val, args);
+                        }
                         return y.args.evalfn(env).then((args: Value[]) => {
                             return callFunc(val, args);
                         });
                     }
                     return callFunc(val, []);
+                }
+                // Try using quick strategy
+                if (y.expr.qeval !== null) {
+                    return qIdxList(val, y.expr.qeval(env));
                 }
                 return idxList(val, y.expr.evalfn(env));
             });
@@ -98,7 +107,7 @@ export function qIdEval(id: string): QuickEvalFn {
     return (env: Environment) => env.get(id);
 }
 
-export function qCSArgsEval(args: CSArgs): MaybeQuickEv {
+export function qCSArgsEval(args: CSArgs): ((env: Environment) => Value[]) | null {
     const head = args.head;
     if (!hasQuick(head)) {
         return null;

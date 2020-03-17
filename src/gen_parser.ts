@@ -99,7 +99,7 @@
 *                .qeval = MaybeQuickEv { return qListLitEval(this); }
 * CSArgs      := head=Expr tail={_ ',' exp=Expr}*
 *                .evalfn = (env:Environment)=>Promise<Value[]> { return csArgsEval(this); }
-*                .qeval = MaybeQuickEv { return qCSArgsEval(this); }
+*                .qeval = ((env:Environment)=>Value[])|null { return qCSArgsEval(this); }
 * CSIDs       := head=ID tail={_ ',' id=ID}*
 * ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
 *                .evalfn = EvalFn { return qEvalToEval(qIdEval(this.id)); }
@@ -580,7 +580,7 @@ export class CSArgs {
     public head: Expr;
     public tail: CSArgs_$0[];
     public evalfn: (env:Environment)=>Promise<Value[]>
-    public qeval: MaybeQuickEv
+    public qeval: ((env:Environment)=>Value[])|null
     constructor(head : Expr, tail : CSArgs_$0[]){
         this.head = head;
         this.tail = tail;
