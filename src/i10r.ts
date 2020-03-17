@@ -270,7 +270,28 @@ export class Interpreter {
                 return this.refPostfix(t.lhs, env).then((ref: Ref) => ref(val));
             });
         }
-        // TODO quick eval these
+        // If both lhs and rhs are quick
+        if (t.expr.qeval !== null && t.lhs.qeval !== null) {
+            const dv = t.expr.qeval(env);
+            const cur = t.lhs.qeval(env);
+            return this.refPostfix(t.lhs, env).then((ref: Ref) =>
+                evalAsgnOp(ref, cur, dv, t.op));
+
+        }
+        // If only rhs is quick
+        if (t.expr.qeval !== null) {
+            const dv = t.expr.qeval(env);
+            return this.refPostfix(t.lhs, env).then((ref: Ref) =>
+                t.lhs.evalfn(env).then((cur: Value) => evalAsgnOp(ref, cur, dv, t.op)));
+        }
+        // If only lhs is quick
+        if (t.lhs.qeval !== null) {
+            const cur = t.lhs.qeval(env);
+            return t.expr.evalfn(env).then((dv: Value) =>
+                this.refPostfix(t.lhs, env).then((ref: Ref) =>
+                    evalAsgnOp(ref, cur, dv, t.op)));
+        }
+        // Neither are quick
         return t.expr.evalfn(env).then((dv: Value) =>
             this.refPostfix(t.lhs, env).then((ref: Ref) =>
                 t.lhs.evalfn(env).then((cur: Value) => evalAsgnOp(ref, cur, dv, t.op))));
