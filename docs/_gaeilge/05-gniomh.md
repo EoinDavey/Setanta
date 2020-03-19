@@ -8,10 +8,12 @@ Sa teagaisc seo, bhíomar ag úsáid an focal `scríobh` chun rudaí a scríobh 
 
 Mar shampla scríobh an ríomhchlár seo isteach san eagarthóir:
 
-```
-ainm := ceist('Cad is ainm duit?')
-scríobh('Dia duit ' + ainm)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">ainm</span> := <span class="n">ceist</span>(<span class="s">&#x27;Cad is ainm duit?&#x27;</span>)
+<span class="n">scríobh</span>(<span class="s">&#x27;Dia duit &#x27;</span> <span class="o">+</span> <span class="n">ainm</span>)</code></pre>
+</div>
+</div>
 
 Rith an ríomhchlár sin, clóscríobh d'ainm isteach sa chonsól agus brúigh an eochair iontrála.
 
@@ -31,11 +33,13 @@ Cruthaímid gníomhartha leis an bhfocal `gníomh`.
 
 Mar shampla, déanfaimid gníomh chun 'Dia duit' a scríobh ar an gconsól mar seo:
 
-```
-gníomh diaDuit() {
-    scríobh('Dia duit')
-}
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">gníomh</span> <span class="n">diaDuit</span>() {
+    <span class="n">scríobh</span>(<span class="s">&#x27;Dia duit&#x27;</span>)
+}</code></pre>
+</div>
+</div>
 
 Chun an gníomh `diaDuit` a úsáid, scríobhaimid `diaDuit()`. Bain triail as é sin anois!
 
@@ -53,52 +57,57 @@ Ba chóir dúinn ceithre phéire ciorcail a tharraingt.
 
 Chun péire ciorcail amháin a tharraingt, scríobhfaimis cód mar seo
 
-```
-dath@stáitse('dearg')
-ciorcalLán@stáitse(100, 100, 100)
-dath@stáitse('glas')
-ciorcalLán@stáitse(100, 100, 50)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">50</span>)</code></pre>
+</div>
+</div>
 
 Ach cad a scríobhfaimis dá theastódh uainn ceithre phéire a tharraingt? D'fhéadfaimis ríomhchlár an fhada a scríobh mar seo:
 
-```
-dath@stáitse('dearg')
-ciorcalLán@stáitse(100, 100, 100)
-dath@stáitse('glas')
-ciorcalLán@stáitse(100, 100, 50)
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">50</span>)
 
-dath@stáitse('dearg')
-ciorcalLán@stáitse(100, 300, 100)
-dath@stáitse('glas')
-ciorcalLán@stáitse(100, 300, 50)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">50</span>)
 
-dath@stáitse('dearg')
-ciorcalLán@stáitse(300, 100, 100)
-dath@stáitse('glas')
-ciorcalLán@stáitse(300, 100, 50)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">50</span>)
 
-dath@stáitse('dearg')
-ciorcalLán@stáitse(300, 300, 100)
-dath@stáitse('glas')
-ciorcalLán@stáitse(300, 300, 50)
-
-```
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">50</span>)</code></pre>
+</div>
+</div>
 
 Bheadh tú ag scríobh an rud cheanna arís 's arís. Áfach, is féidir linn gníomh a cruthú chun péire amháin a tharraingt, agus ansin úsáidfimid é ceithre huaire:
 
-```
-gníomh dháChiorcal(x, y) {
-    dath@stáitse('dearg')
-    ciorcalLán@stáitse(x, y, 100)
-    dath@stáitse('glas')
-    ciorcalLán@stáitse(x, y, 50)
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">gníomh</span> <span class="n">dháChiorcal</span>(<span class="n">x</span><span class="p">,</span> <span class="n">y</span>) {
+    <span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+    <span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="m">100</span>)
+    <span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+    <span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="m">50</span>)
 }
-dháChiorcal(100, 100)
-dháChiorcal(100, 300)
-dháChiorcal(300, 100)
-dháChiorcal(300, 300)
-```
+<span class="n">dháChiorcal</span>(<span class="m">100</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dháChiorcal</span>(<span class="m">100</span><span class="p">,</span> <span class="m">300</span>)
+<span class="n">dháChiorcal</span>(<span class="m">300</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dháChiorcal</span>(<span class="m">300</span><span class="p">,</span> <span class="m">300</span>)</code></pre>
+</div>
+</div>
 
 ![Ceithre ciorcal gif](/assets/images/teagaisc/ceithreciorcal.gif)
 
@@ -110,14 +119,16 @@ Féach arís ar an ríomhchlár `scríobh('Dia duit')`. Tugaimid an luach "Dia d
 
 Is féidir linn argóintí a úsáid lenár gcuid gníomhartha féin freisin. Abair gur mhaith linn gníomh a dhéanamh chun scríobh rudaí trí huaire. Is féidir linn rud mar seo a scríobh:
 
-```
-gníomh tríhuaire(x) {
-    scríobh(x)
-    scríobh(x)
-    scríobh(x)
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">gníomh</span> <span class="n">tríhuaire</span>(<span class="n">x</span>) {
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+    <span class="n">scríobh</span>(<span class="n">x</span>)
 }
-tríhuaire('Is aoibhinn liom Setanta')
-```
+<span class="n">tríhuaire</span>(<span class="s">&#x27;Is aoibhinn liom Setanta&#x27;</span>)</code></pre>
+</div>
+</div>
 
 Féach ar an toradh!
 

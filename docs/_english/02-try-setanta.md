@@ -38,10 +38,12 @@ Congratulations!, you wrote your first Setanta program!
 
 You can use Setanta to draw shapes on the stage
 
-```
-dath@stáitse('dearg')
-ciorcal@stáitse(200, 200, 100)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcal</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">200</span><span class="p">,</span> <span class="m">200</span><span class="p">,</span> <span class="m">100</span>)</code></pre>
+</div>
+</div>
 
 The first line changes the colour of the pen to dearg (red). Then the second line draws a circle around the point (200, 200) with radius 100. Press the "Tosaigh" (Start) button and look at the stage.
 
@@ -49,14 +51,16 @@ The first line changes the colour of the pen to dearg (red). Then the second lin
 
 You can draw rectangles, squares or any other shape! Try out this code:
 
-```
-dath@stáitse('buí')
-dron@stáitse(300, 300, 400, 200)
-dath@stáitse('oráiste')
-ciorcalLán@stáitse(300, 300, 50)
-ciorcalLán@stáitse(700, 300, 50)
-ciorcal@stáitse(300, 500, 50)
-ciorcal@stáitse(700, 500, 50)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;buí&#x27;</span>)
+<span class="n">dron</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">400</span><span class="p">,</span> <span class="m">200</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;oráiste&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">50</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">700</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">50</span>)
+<span class="n">ciorcal</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">500</span><span class="p">,</span> <span class="m">50</span>)
+<span class="n">ciorcal</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">700</span><span class="p">,</span> <span class="m">500</span><span class="p">,</span> <span class="m">50</span>)</code></pre>
+</div>
+</div>
 
 [The next tutorial: Setanta 101](/english/03-tutorial)

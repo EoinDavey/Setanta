@@ -7,26 +7,30 @@ toc: true
 
 You can make choices in your program! We use the word `má` (meaning "if") to make a check, and then to make a choice with the result of that check. Look at the following program:
 
-```
-aois := 14
-má aois >= 13 & aois <= 19
-    scríobh('Is déagóir thú')
-nó
-    scríobh('Ní déagóir thú')
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">aois</span> := <span class="m">14</span>
+<span class="k">má</span> <span class="n">aois</span> <span class="o">&gt;=</span> <span class="m">13</span> <span class="o">&amp;</span> <span class="n">aois</span> <span class="o">&lt;=</span> <span class="m">19</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Is déagóir thú&#x27;</span>)
+<span class="k">nó</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Ní déagóir thú&#x27;</span>)</code></pre>
+</div>
+</div>
 
 This program checks if `aois` is between 13 and 14. If it's true, it writes 'Is déagóir thú' (You're a teenager). If it's not true it writes 'Ní déagóir thú' (You're not a teenager).
 
 We can use this structure again and again, like this.
 
-```
-má ainm == 'Oisín'
-    scríobh('Oisin, tar liomsa go Tír na nÓg')
-nó má ainm == 'Fionn'
-    scríobh('Dia duit Fionn, an bhfuil Oisín anseo?')
-nó
-    scríobh('Tá brón orm, Níl aithne agam ort')
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">má</span> <span class="n">ainm</span> <span class="o">==</span> <span class="s">&#x27;Oisín&#x27;</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Oisin, tar liomsa go Tír na nÓg&#x27;</span>)
+<span class="k">nó</span> <span class="k">má</span> <span class="n">ainm</span> <span class="o">==</span> <span class="s">&#x27;Fionn&#x27;</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Dia duit Fionn, an bhfuil Oisín anseo?&#x27;</span>)
+<span class="k">nó</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Tá brón orm, Níl aithne agam ort&#x27;</span>)</code></pre>
+</div>
+</div>
 
 - If `ainm` is equal to 'Oisín' this writes 'Oisin, tar liomsa go Tír na nÓg' (Oisín, come with me to Tír na nÓg).
 - If `ainm` isn't equal to Oisin, it then checks if `ainm` is equal to 'Fionn', if it is it writes 'Dia duit Fionn, an bhfuil Oisín anseo?' (Hello Fionn, is Oisín here).
@@ -34,15 +38,17 @@ nó
 
 Use `{` and `}` to make a group of instructions.
 
-```
-má x == 6 {
-    scríobh(x)
-    scríobh(2 * x)
-} nó {
-    scríobh(x)
-    scríobh(3 * x)
-}
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">má</span> <span class="n">x</span> <span class="o">==</span> <span class="m">6</span> {
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+    <span class="n">scríobh</span>(<span class="m">2</span> <span class="o">*</span> <span class="n">x</span>)
+} <span class="k">nó</span> {
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+    <span class="n">scríobh</span>(<span class="m">3</span> <span class="o">*</span> <span class="n">x</span>)
+}</code></pre>
+</div>
+</div>
 
 **You can use `ma` and `no` if you can't type 'á' or 'ó'.**
 
@@ -54,28 +60,34 @@ We use loops when we need to do something again and again.
 
 When we know how many times we want to do something, we can use this loop
 
-```
-le i idir (0, 10)
-    scríobh(i)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">0</span><span class="p">,</span> <span class="m">10</span>)
+    <span class="n">scríobh</span>(<span class="n">i</span>)</code></pre>
+</div>
+</div>
 
 This program writes every number between 0 and 10, it doesn't write 10 because the loop stops before the last number.
 
 The loop works in the other direction too.
 
-```
-le i idir (10, 0)
-    scríobh(i)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">10</span><span class="p">,</span> <span class="m">0</span>)
+    <span class="n">scríobh</span>(<span class="n">i</span>)</code></pre>
+</div>
+</div>
 
 This program writes 10, 9, .... 1.
 
 You can put another number in the brackets to change the step between numbers. For example:
 
-```
-le i idir (0, 10, 3)
-    scríobh(i)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">0</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">3</span>)
+    <span class="n">scríobh</span>(<span class="n">i</span>)</code></pre>
+</div>
+</div>
 
 This writes 0, 3, 6, 9 as the step size is 3.
 
@@ -83,13 +95,15 @@ This writes 0, 3, 6, 9 as the step size is 3.
 
 There is a simpler loop available too, called `nuair-a`. Look at this for example:
 
-```
-x := 0
-nuair-a x < 5 {
-    scríobh(x)
-    x = x + 1
-}
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">x</span> := <span class="m">0</span>
+<span class="k">nuair-a</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="m">5</span> {
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+    <span class="n">x</span> = <span class="n">x</span> <span class="o">+</span> <span class="m">1</span>
+}</code></pre>
+</div>
+</div>
 
 We get `0, 1, 2, 3, 4`. At first the loop checks the term after the `nuair-a`, if it's true, it follows the instructions in the loop, and it goes back to the start. If it's not true, it breaks out of the loop. In this example, it goes through the loop 5 times, and then `x == 6`, specifically `x < 5` is not true, and with that, the loop is finished.
 
@@ -97,25 +111,29 @@ We get `0, 1, 2, 3, 4`. At first the loop checks the term after the `nuair-a`, i
 
 In both of those loops, `le idir` and `nuair-a`, you can use the instructions `bris` and `chun-cinn`. `bris` does exactly what it says, it breaks out of the loop. If Setanta follows this instruction, it stops the loop and it continues after the loop.
 
-```
-x := 0
-nuair-a x < 100 {
-    má x == 10
-        bris
-    scríobh(x)
-}
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">x</span> := <span class="m">0</span>
+<span class="k">nuair-a</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="m">100</span> {
+    <span class="k">má</span> <span class="n">x</span> <span class="o">==</span> <span class="m">10</span>
+        <span class="k">bris</span>
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+}</code></pre>
+</div>
+</div>
 This loop writes `0 1 2 3 4 5 6 7 8 9`, and then `x == 10` and we break out of the loop.
 
 `chun-cinn` does something different. `chun-cinn` goes directly to the top of the loop, and it starts with the next one. For example:
 
-```
-le i idir (-10, 10) {
-    má i < 0
-        chun-cinn
-    scríobh(i)
-}
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (-<span class="m">10</span><span class="p">,</span> <span class="m">10</span>) {
+    <span class="k">má</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">0</span>
+        <span class="k">chun-cinn</span>
+    <span class="n">scríobh</span>(<span class="n">i</span>)
+}</code></pre>
+</div>
+</div>
 
 This loop writes `0 1 2 3 4 5 6 7 9 8 9`, because for each `i < 0`, the `chunn-cinn` instruction is followed, and we start with the next number.
 
@@ -124,38 +142,40 @@ This loop writes `0 1 2 3 4 5 6 7 9 8 9`, because for each `i < 0`, the `chunn-c
 We have an example now that uses everything we've seen, loops, `má`, variables, the stage ....
 
 Run this code and look at the stage:
-```
-dath@stáitse('gorm')
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;gorm&#x27;</span>)
 
->-- Na súile
-ciorcalLán@stáitse(200, 200, 50)
-ciorcalLán@stáitse(400, 200, 50)
+<span class="c">&gt;-- Na súile
+</span><span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">200</span><span class="p">,</span> <span class="m">200</span><span class="p">,</span> <span class="m">50</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">400</span><span class="p">,</span> <span class="m">200</span><span class="p">,</span> <span class="m">50</span>)
 
-dath@stáitse('dearg')
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
 
-x := 100
-y := 400
+<span class="n">x</span> := <span class="m">100</span>
+<span class="n">y</span> := <span class="m">400</span>
 
->-- Béal
-le i idir (0, 40) {
-    dron@stáitse(x, y, 20, 20)
-    x += 10
-    má i < 10
-    	y += 3
-    nó má i < 20
-    	y += 1
-    nó má i < 30
-    	y -= 1
-    nó
-    	y -= 3
+<span class="c">&gt;-- Béal
+</span><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">0</span><span class="p">,</span> <span class="m">40</span>) {
+    <span class="n">dron</span><span class="o">@</span><span class="n">stáitse</span>(<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="m">20</span><span class="p">,</span> <span class="m">20</span>)
+    <span class="n">x</span> += <span class="m">10</span>
+    <span class="k">má</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">10</span>
+    	<span class="n">y</span> += <span class="m">3</span>
+    <span class="k">nó</span> <span class="k">má</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">20</span>
+    	<span class="n">y</span> += <span class="m">1</span>
+    <span class="k">nó</span> <span class="k">má</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">30</span>
+    	<span class="n">y</span> -= <span class="m">1</span>
+    <span class="k">nó</span>
+    	<span class="n">y</span> -= <span class="m">3</span>
 }
 
->-- srón
+<span class="c">&gt;-- srón
+</span>
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;oráiste&#x27;</span>)
 
-dath@stáitse('oráiste')
-
-cruthLán@stáitse([[300, 270], [270, 350], [330, 350]])
-```
+<span class="n">cruthLán</span><span class="o">@</span><span class="n">stáitse</span>([[<span class="m">300</span><span class="p">,</span> <span class="m">270</span>]<span class="p">,</span> [<span class="m">270</span><span class="p">,</span> <span class="m">350</span>]<span class="p">,</span> [<span class="m">330</span><span class="p">,</span> <span class="m">350</span>]])</code></pre>
+</div>
+</div>
 
 ![An aghaidh](/assets/images/teagaisc/aghaidh.gif)
 

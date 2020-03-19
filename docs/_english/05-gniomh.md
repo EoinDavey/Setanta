@@ -8,10 +8,12 @@ In this tutorial, we were using the word `scríobh` to write things out on the c
 
 For example, write this program into the editor:
 
-```
-ainm := ceist('Cad is ainm duit?')
-scríobh('Dia duit ' + ainm)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">ainm</span> := <span class="n">ceist</span>(<span class="s">&#x27;Cad is ainm duit?&#x27;</span>)
+<span class="n">scríobh</span>(<span class="s">&#x27;Dia duit &#x27;</span> <span class="o">+</span> <span class="n">ainm</span>)</code></pre>
+</div>
+</div>
 
 Run that program, type your name into the console, and press the enter key.
 
@@ -31,11 +33,13 @@ We create *action*s with the word `gníomh`
 
 For example, we will make an *action* to write 'Dia duit' on the console like this:
 
-```
-gníomh diaDuit() {
-    scríobh('Dia duit')
-}
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">gníomh</span> <span class="n">diaDuit</span>() {
+    <span class="n">scríobh</span>(<span class="s">&#x27;Dia duit&#x27;</span>)
+}</code></pre>
+</div>
+</div>
 
 To use this *action*, we write `diaDuit()`. Try it out now!
 
@@ -53,52 +57,57 @@ We should draw four pairs of circles.
 
 To draw a single pair of circles, we could write code like this
 
-```
-dath@stáitse('dearg')
-ciorcalLán@stáitse(100, 100, 100)
-dath@stáitse('glas')
-ciorcalLán@stáitse(100, 100, 50)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">50</span>)</code></pre>
+</div>
+</div>
 
 But what would we write if we wanted to draw four pairs? We would have to write a very long program like this:
 
-```
-dath@stáitse('dearg')
-ciorcalLán@stáitse(100, 100, 100)
-dath@stáitse('glas')
-ciorcalLán@stáitse(100, 100, 50)
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">50</span>)
 
-dath@stáitse('dearg')
-ciorcalLán@stáitse(100, 300, 100)
-dath@stáitse('glas')
-ciorcalLán@stáitse(100, 300, 50)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">100</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">50</span>)
 
-dath@stáitse('dearg')
-ciorcalLán@stáitse(300, 100, 100)
-dath@stáitse('glas')
-ciorcalLán@stáitse(300, 100, 50)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">50</span>)
 
-dath@stáitse('dearg')
-ciorcalLán@stáitse(300, 300, 100)
-dath@stáitse('glas')
-ciorcalLán@stáitse(300, 300, 50)
-
-```
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">300</span><span class="p">,</span> <span class="m">300</span><span class="p">,</span> <span class="m">50</span>)</code></pre>
+</div>
+</div>
 
 You would be writing the same thing again and again. However, we can create an *action* to draw a pair of circles, and then we will use that four times:
 
-```
-gníomh dháChiorcal(x, y) {
-    dath@stáitse('dearg')
-    ciorcalLán@stáitse(x, y, 100)
-    dath@stáitse('glas')
-    ciorcalLán@stáitse(x, y, 50)
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">gníomh</span> <span class="n">dháChiorcal</span>(<span class="n">x</span><span class="p">,</span> <span class="n">y</span>) {
+    <span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
+    <span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="m">100</span>)
+    <span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;glas&#x27;</span>)
+    <span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="m">50</span>)
 }
-dháChiorcal(100, 100)
-dháChiorcal(100, 300)
-dháChiorcal(300, 100)
-dháChiorcal(300, 300)
-```
+<span class="n">dháChiorcal</span>(<span class="m">100</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dháChiorcal</span>(<span class="m">100</span><span class="p">,</span> <span class="m">300</span>)
+<span class="n">dháChiorcal</span>(<span class="m">300</span><span class="p">,</span> <span class="m">100</span>)
+<span class="n">dháChiorcal</span>(<span class="m">300</span><span class="p">,</span> <span class="m">300</span>)</code></pre>
+</div>
+</div>
 
 ![Four circles gif](/assets/images/teagaisc/ceithreciorcal.gif)
 
@@ -110,15 +119,17 @@ Look again at the program `scríobh('Dia duit')`. We give the value 'Dia duit' t
 
 We can use arguments with our own *action*s too. Say we want to create an *action* to write things three times. We can write something like this:
 
-```
-gníomh tríhuaire(x) {
-    scríobh(x)
-    scríobh(x)
-    scríobh(x)
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">gníomh</span> <span class="n">tríhuaire</span>(<span class="n">x</span>) {
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+    <span class="n">scríobh</span>(<span class="n">x</span>)
 }
 
-tríhuaire('Is aoibhinn liom Setanta')
-```
+<span class="n">tríhuaire</span>(<span class="s">&#x27;Is aoibhinn liom Setanta&#x27;</span>)</code></pre>
+</div>
+</div>
 
 Look at the result!
 

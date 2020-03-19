@@ -7,26 +7,30 @@ toc: true
 
 Is féidir leat rogha a dhéanamh i do ríomhchlár! Úsáidimid an focal `má` chun seiceáil a dhéanamh, agus ansin rogha a dhéanamh le toradh an seiceáil. Féach ar an ríomhchlár seo.
 
-```
-aois := 14
-má aois >= 13 & aois <= 19
-    scríobh('Is déagóir thú')
-nó
-    scríobh('Ní déagóir thú')
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">aois</span> := <span class="m">14</span>
+<span class="k">má</span> <span class="n">aois</span> <span class="o">&gt;=</span> <span class="m">13</span> <span class="o">&amp;</span> <span class="n">aois</span> <span class="o">&lt;=</span> <span class="m">19</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Is déagóir thú&#x27;</span>)
+<span class="k">nó</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Ní déagóir thú&#x27;</span>)</code></pre>
+</div>
+</div>
 
 Seiceálann an ríomhchlár seo go bhfuil `aois` idir 13 agus 14. Má tá sé fíor, scríobhann sé 'Is déagóir thú', mura bhfuil sé fíor scríobhann sé 'Ní déagóir thú'.
 
 Is féidir linn an struchtúr seo a úsáid arís is arís, mar seo
 
-```
-má ainm == 'Oisín'
-    scríobh('Oisín, tar liomsa go Tír na nÓg')
-nó má ainm == 'Fionn'
-    scríobh('Dia duit Fionn, an bhfuil Oisín anseo?')
-nó
-    scríobh('Tá brón orm, Níl aithne agam ort')
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">má</span> <span class="n">ainm</span> <span class="o">==</span> <span class="s">&#x27;Oisín&#x27;</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Oisín, tar liomsa go Tír na nÓg&#x27;</span>)
+<span class="k">nó</span> <span class="k">má</span> <span class="n">ainm</span> <span class="o">==</span> <span class="s">&#x27;Fionn&#x27;</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Dia duit Fionn, an bhfuil Oisín anseo?&#x27;</span>)
+<span class="k">nó</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Tá brón orm, Níl aithne agam ort&#x27;</span>)</code></pre>
+</div>
+</div>
 
 - Má tá `ainm` cothrom le 'Oisín', scríobhann an cód sin 'Oisín, tar liomsa go Tír na nÓg'.
 - Mura bhfuil `ainm` cothrom le 'Oisín', ansin seiceálann sé go bhfuil `ainm` cothrom le 'Fionn', más ionann iad scríobhann sé 'Dia duit Fionn, an bhfuil Oisín anseo?'
@@ -34,15 +38,17 @@ nó
 
 Úsáid `{` agus `}` chun grúpa treoracha a cruthú.
 
-```
-má x == 6 {
-    scríobh(x)
-    scríobh(2 * x)
-} nó {
-    scríobh(x)
-    scríobh(3 * x)
-}
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">má</span> <span class="n">x</span> <span class="o">==</span> <span class="m">6</span> {
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+    <span class="n">scríobh</span>(<span class="m">2</span> <span class="o">*</span> <span class="n">x</span>)
+} <span class="k">nó</span> {
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+    <span class="n">scríobh</span>(<span class="m">3</span> <span class="o">*</span> <span class="n">x</span>)
+}</code></pre>
+</div>
+</div>
 
 **Is féidir leat `ma` agus `no` a úsaid mura féidir leat 'á' nó 'ó' a chlóscríobh.**
 
@@ -54,28 +60,34 @@ Bainimid úsáid as lúba nuair a bhfuil gá dúinn rud a dhéanamh arís 's ar�
 
 Nuair atá fhios againn cé mhéad uair a bhfuil gá dúinn an rud a dhéanamh, is féidir linn úsáid an lúb seo
 
-```
-le i idir (0, 10)
-    scríobh(i)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">0</span><span class="p">,</span> <span class="m">10</span>)
+    <span class="n">scríobh</span>(<span class="n">i</span>)</code></pre>
+</div>
+</div>
 
 Scríobhann an ríomhchlár seo gach uimhir idir 0 agus 10, ní scríobhann sé 10 mar stopann an lúb roimh an uimhir deireanach.
 
 Oibríonn an lúb sa treo eile freisin
 
-```
-le i idir (10, 0)
-    scríobh(i)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">10</span><span class="p">,</span> <span class="m">0</span>)
+    <span class="n">scríobh</span>(<span class="n">i</span>)</code></pre>
+</div>
+</div>
 
 Scríobhann an ríomhchlár seo 10, 9, ... 1.
 
 Is féidir leat uimhir eile a chur idir na lúibíní chun an céim idir na huimhreacha a athrú. Mar shampla
 
-```
-le i idir (0, 10, 3)
-    scríobh(i)
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">0</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">3</span>)
+    <span class="n">scríobh</span>(<span class="n">i</span>)</code></pre>
+</div>
+</div>
 
 Scríobhann é sin `0, 3, 6, 9` mar tá méid an chéim 3.
 
@@ -83,13 +95,15 @@ Scríobhann é sin `0, 3, 6, 9` mar tá méid an chéim 3.
 
 Tá lúb níos simplí ar fháil freisin, le ainm `nuair-a`. Féach ar seo mar shampla
 
-```
-x := 0
-nuair-a x < 5 {
-    scríobh(x)
-    x = x + 1
-}
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">x</span> := <span class="m">0</span>
+<span class="k">nuair-a</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="m">5</span> {
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+    <span class="n">x</span> = <span class="n">x</span> <span class="o">+</span> <span class="m">1</span>
+}</code></pre>
+</div>
+</div>
 
 Faighimid `0, 1, 2, 3, 4`. Ar dtús seiceálann an lúb an téarma tar éis `nuair-a`, má bhfuil sé fíor, leanann sé na treoracha sa lúb, agus téann sé ar ais go dtí an tús. Nuair a nach bhfuil sé fíor, briseann sé amach as an lúb. Sa sampla sin, téann sé tríd an lúb 5 uair, agus ansin tá `x == 6`, go háirithe níl `x < 5`, agus mar sin, tá an lúb críochnaithe.
 
@@ -97,25 +111,29 @@ Faighimid `0, 1, 2, 3, 4`. Ar dtús seiceálann an lúb an téarma tar éis `nua
 
 Sa dá lúb sin, `le idir` agus `nuair-a`, is féidir leat na treoracha `bris` agus `chun-cinn` a úsáid. Déanann `bris` díreach an rud a deir sé, briseann sé amach as an lúb. Má leanann Setanta an treoir sin, stop sé an lúb agus leanann sé ar aghaidh tar éis an lúb.
 
-```
-x := 0
-nuair-a x < 100 {
-    má x == 10
-        bris
-    scríobh(x)
-}
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">x</span> := <span class="m">0</span>
+<span class="k">nuair-a</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="m">100</span> {
+    <span class="k">má</span> <span class="n">x</span> <span class="o">==</span> <span class="m">10</span>
+        <span class="k">bris</span>
+    <span class="n">scríobh</span>(<span class="n">x</span>)
+}</code></pre>
+</div>
+</div>
 Scríobhann an lúb seo `0 1 2 3 4 5 6 7 8 9`, agus ansin tá `x == 10` agus brisimid as an lúb.
 
 Déanann `chun-cinn` rud difriúil. Téann `chun-cinn` díreach go dtí barr an lúb, agus tosaíonn sé leis an gcéad ceann eile. Mar shampla
 
-```
-le i idir (-10, 10) {
-    má i < 0
-        chun-cinn
-    scríobh(i)
-}
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (-<span class="m">10</span><span class="p">,</span> <span class="m">10</span>) {
+    <span class="k">má</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">0</span>
+        <span class="k">chun-cinn</span>
+    <span class="n">scríobh</span>(<span class="n">i</span>)
+}</code></pre>
+</div>
+</div>
 
 Scríobhann an lúb seo `0 1 2 3 4 5 6 7 8 9` mar le gach `i < 0`, leantar an treoir `chun-cinn` agus tosaímid leis an gcéad uimhir eile.
 
@@ -124,38 +142,40 @@ Scríobhann an lúb seo `0 1 2 3 4 5 6 7 8 9` mar le gach `i < 0`, leantar an tr
 Tá sampla againn anois a úsáideann gach rud a chonaiceamar, lúba, `má`, athróga, an stáitse ...
 
 Rith an cód seo agus féach ar an stáitse:
-```
-dath@stáitse('gorm')
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;gorm&#x27;</span>)
 
->-- Na súile
-ciorcalLán@stáitse(200, 200, 50)
-ciorcalLán@stáitse(400, 200, 50)
+<span class="c">&gt;-- Na súile
+</span><span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">200</span><span class="p">,</span> <span class="m">200</span><span class="p">,</span> <span class="m">50</span>)
+<span class="n">ciorcalLán</span><span class="o">@</span><span class="n">stáitse</span>(<span class="m">400</span><span class="p">,</span> <span class="m">200</span><span class="p">,</span> <span class="m">50</span>)
 
-dath@stáitse('dearg')
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;dearg&#x27;</span>)
 
-x := 100
-y := 400
+<span class="n">x</span> := <span class="m">100</span>
+<span class="n">y</span> := <span class="m">400</span>
 
->-- Béal
-le i idir (0, 40) {
-    dron@stáitse(x, y, 20, 20)
-    x += 10
-    má i < 10
-    	y += 3
-    nó má i < 20
-    	y += 1
-    nó má i < 30
-    	y -= 1
-    nó
-    	y -= 3
+<span class="c">&gt;-- Béal
+</span><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">0</span><span class="p">,</span> <span class="m">40</span>) {
+    <span class="n">dron</span><span class="o">@</span><span class="n">stáitse</span>(<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="m">20</span><span class="p">,</span> <span class="m">20</span>)
+    <span class="n">x</span> += <span class="m">10</span>
+    <span class="k">má</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">10</span>
+    	<span class="n">y</span> += <span class="m">3</span>
+    <span class="k">nó</span> <span class="k">má</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">20</span>
+    	<span class="n">y</span> += <span class="m">1</span>
+    <span class="k">nó</span> <span class="k">má</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">30</span>
+    	<span class="n">y</span> -= <span class="m">1</span>
+    <span class="k">nó</span>
+    	<span class="n">y</span> -= <span class="m">3</span>
 }
 
->-- srón
+<span class="c">&gt;-- srón
+</span>
+<span class="n">dath</span><span class="o">@</span><span class="n">stáitse</span>(<span class="s">&#x27;oráiste&#x27;</span>)
 
-dath@stáitse('oráiste')
-
-cruthLán@stáitse([[300, 270], [270, 350], [330, 350]])
-```
+<span class="n">cruthLán</span><span class="o">@</span><span class="n">stáitse</span>([[<span class="m">300</span><span class="p">,</span> <span class="m">270</span>]<span class="p">,</span> [<span class="m">270</span><span class="p">,</span> <span class="m">350</span>]<span class="p">,</span> [<span class="m">330</span><span class="p">,</span> <span class="m">350</span>]])</code></pre>
+</div>
+</div>
 
 ![An aghaidh](/assets/images/teagaisc/aghaidh.gif)
 
