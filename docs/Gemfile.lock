@@ -204,8 +204,8 @@ GEM
       jekyll (>= 3.5, < 5.0)
       jekyll-feed (~> 0.9)
       jekyll-seo-tag (~> 2.1)
-    minimal-mistakes-jekyll (4.18.1)
-      jekyll (>= 3.6, < 5.0)
+    minimal-mistakes-jekyll (4.19.1)
+      jekyll (>= 3.7, < 5.0)
       jekyll-feed (~> 0.1)
       jekyll-gist (~> 1.5)
       jekyll-include-cache (~> 0.1)
@@ -215,7 +215,7 @@ GEM
     multipart-post (2.1.1)
     nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
-    octokit (4.16.0)
+    octokit (4.17.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
     pathutil (0.16.2)
@@ -227,7 +227,7 @@ GEM
     rouge (3.13.0)
     ruby-enum (0.7.2)
       i18n
-    rubyzip (2.2.0)
+    rubyzip (2.3.0)
     safe_yaml (1.0.5)
     sass (3.7.4)
       sass-listen (~> 4.0.0)
@@ -244,7 +244,7 @@ GEM
       ethon (>= 0.9.0)
     tzinfo (1.2.6)
       thread_safe (~> 0.1)
-    unicode-display_width (1.6.1)
+    unicode-display_width (1.7.0)
     zeitwerk (2.3.0)
 
 PLATFORMS
