@@ -88,7 +88,6 @@ Atom        :=  _ '\(' trm=Expr '\)'
              | Bool
              | Neamhni
              | ListLit
-LSpec       := id=ID ops=PostOp*
 ListLit     := _ '\[' els=CSArgs? _ '\]'
                .evalfn = EvalFn {
                    return (env: Environment) => this.els ? this.els.evalfn(env) : Promise.resolve([]);

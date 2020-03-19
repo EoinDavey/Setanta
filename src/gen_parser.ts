@@ -90,7 +90,6 @@
 *              | Bool
 *              | Neamhni
 *              | ListLit
-* LSpec       := id=ID ops=PostOp*
 * ListLit     := _ '\[' els=CSArgs? _ '\]'
 *                .evalfn = EvalFn {
 *                    return (env: Environment) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
@@ -208,7 +207,6 @@ export enum ASTKinds {
     Atom_5,
     Atom_6,
     Atom_7,
-    LSpec,
     ListLit,
     CSArgs,
     CSArgs_$0,
@@ -553,11 +551,6 @@ export type Atom_4 = Int;
 export type Atom_5 = Bool;
 export type Atom_6 = Neamhni;
 export type Atom_7 = ListLit;
-export interface LSpec {
-    kind: ASTKinds.LSpec;
-    id: ID;
-    ops: PostOp[];
-}
 export class ListLit {
     public kind: ASTKinds.ListLit = ASTKinds.ListLit
     public els: Nullable<CSArgs>;
@@ -1520,24 +1513,6 @@ export class Parser {
     }
     public matchAtom_7($$dpth: number, cr?: ContextRecorder): Nullable<Atom_7> {
         return this.matchListLit($$dpth + 1, cr);
-    }
-    public matchLSpec($$dpth: number, cr?: ContextRecorder): Nullable<LSpec> {
-        return this.runner<LSpec>($$dpth,
-            (log) => {
-                if (log) {
-                    log("LSpec");
-                }
-                let id: Nullable<ID>;
-                let ops: Nullable<PostOp[]>;
-                let res: Nullable<LSpec> = null;
-                if (true
-                    && (id = this.matchID($$dpth + 1, cr)) !== null
-                    && (ops = this.loop<PostOp>(() => this.matchPostOp($$dpth + 1, cr), true)) !== null
-                ) {
-                    res = {kind: ASTKinds.LSpec, id, ops};
-                }
-                return res;
-            }, cr)();
     }
     public matchListLit($$dpth: number, cr?: ContextRecorder): Nullable<ListLit> {
         return this.runner<ListLit>($$dpth,
