@@ -72,10 +72,10 @@ Prefix      := _ op='-|!'? pf=Postfix
 Postfix     := at=ObjLookups ops=PostOp*
                .evalfn = EvalFn { return postfixArgsEval(this); }
                .qeval = Quick.MaybeEv { return Quick.qPostfixArgsEval(this); }
-ObjLookups  := _ attrs={id=ID '@' !wspace}* root=Atom
+ObjLookups  := attrs={id=ID '@' !wspace}* root=Atom
                .evalfn = EvalFn { return objLookupsEval(this); }
                .qeval = Quick.MaybeEv { return Quick.qObjLookupsEval(this); }
-PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
+PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr _ '\]'
 Atom        :=  _ '\(' trm=Expr '\)'
                .evalfn = EvalFn { return (env: Environment) => this.trm.evalfn(env); }
                .qeval = Quick.MaybeEv {

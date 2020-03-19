@@ -74,10 +74,10 @@
 * Postfix     := at=ObjLookups ops=PostOp*
 *                .evalfn = EvalFn { return postfixArgsEval(this); }
 *                .qeval = Quick.MaybeEv { return Quick.qPostfixArgsEval(this); }
-* ObjLookups  := _ attrs={id=ID '@' !wspace}* root=Atom
+* ObjLookups  := attrs={id=ID '@' !wspace}* root=Atom
 *                .evalfn = EvalFn { return objLookupsEval(this); }
 *                .qeval = Quick.MaybeEv { return Quick.qObjLookupsEval(this); }
-* PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr '\]'
+* PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr _ '\]'
 * Atom        :=  _ '\(' trm=Expr '\)'
 *                .evalfn = EvalFn { return (env: Environment) => this.trm.evalfn(env); }
 *                .qeval = Quick.MaybeEv {
@@ -1396,7 +1396,6 @@ export class Parser {
                 let root: Nullable<Atom>;
                 let res: Nullable<ObjLookups> = null;
                 if (true
-                    && this.match_($$dpth + 1, cr) !== null
                     && (attrs = this.loop<ObjLookups_$0>(() => this.matchObjLookups_$0($$dpth + 1, cr), true)) !== null
                     && (root = this.matchAtom($$dpth + 1, cr)) !== null
                 ) {
@@ -1459,6 +1458,7 @@ export class Parser {
                 if (true
                     && this.regexAccept(String.raw`\[`, $$dpth + 1, cr) !== null
                     && (expr = this.matchExpr($$dpth + 1, cr)) !== null
+                    && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`\]`, $$dpth + 1, cr) !== null
                 ) {
                     res = {kind: ASTKinds.PostOp_2, expr};
