@@ -129,4 +129,4 @@ It takes two arguments, specifically `x` and `y`.
 The *action* takes the arguments and it puts the value in the variables `x` and `y` inside the body of the *action*.
 Then the code inside the *action* is run, using the variables. It draws the pair of circles around the point (x, y).
 
-[Now go the next tutorial: Results](/english/06-torthai)
+[Now go the next tutorial: Results](/english/06-results)
