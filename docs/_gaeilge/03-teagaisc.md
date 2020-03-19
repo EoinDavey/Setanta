@@ -54,6 +54,26 @@ scríobh('Dia duit' + ', ' + 'Eoin is ainm dom')
 
 Scríobhann sé seo `Dia duit, Eoin is ainm dom`.
 
+## Liostaí
+
+Cruthaigh liosta i Setanta le `[` agus `]`, mar shampla:
+
+```
+[1, 2, 3]
+['An Dagda', 'Lugh', 'Mór-Ríoghain', 'Nuada']
+```
+
+Tá liostaí an chumhachtach. Tá uimhir ag gach suíomh i liosta. Is féidir leat ball liosta a fháil má bhfuil uimhir shuíomh an bhaill agat. Tugaimid an uimhir 0 ar an chéad bhall den liosta, an uimhir 1 den dara ball, an uimhir 2 ar an tríú ball etc.
+
+Má tá uimhir an shuíomh agat, is féidir leat `[` agus `]` a úsáid arís chun an ball a fháil. Mar shampla:
+
+```
+['Dia', 'Duit'][0] == 'Dia'
+['Dia', 'Duit'][1] == 'Duit'
+
+[100, 200, 300, 400][2] == 300
+```
+
 ## Tráchtanna
 
 Má scríobhann tú an siombail `>--` i do ríomhchlár, Is trácht é aon rud a scríobhann tú tar éis é sin ar an líne chéanna, agus ní cuid den ríomhchlár é. Mar shampla

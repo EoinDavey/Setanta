@@ -53,6 +53,26 @@ scríobh('Hello' + ', ' + 'my name is Eoin')
 
 This writes `Hello, My name is Eoin`.
 
+## Lists
+
+Create lists in Setanta with `[` and `]`, for example:
+
+```
+[1, 2, 3]
+['An Dagda', 'Lugh', 'Mór-Ríoghain', 'Nuada']
+```
+
+Lists are very powerful. Every position in a list has a number. You can get an element of a list if you have the number of the position of the element. We give the number 0 to the first element of the list, the number 1 to the second element, the number 2 to the third etc.
+
+If you have the number of the position, you can use `[` and `]` again to get the member. For example:
+
+```
+['Dia', 'Duit'][0] == 'Dia'
+['Dia', 'Duit'][1] == 'Duit'
+
+[100, 200, 300, 400][2] == 300
+```
+
 ## Comments
 
 If you write the symbol `>--` in your program, Anything you write after it on the same line is a comment, and is not part of the program. For example
