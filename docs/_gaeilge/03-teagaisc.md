@@ -75,7 +75,7 @@ Cruthaigh liosta i Setanta le `[` agus `]`, mar shampla:
 </div>
 </div>
 
-Tá liostaí an chumhachtach. Tá uimhir ag gach suíomh i liosta. Is féidir leat ball liosta a fháil má bhfuil uimhir shuíomh an bhaill agat. Tugaimid an uimhir 0 ar an chéad bhall den liosta, an uimhir 1 den dara ball, an uimhir 2 ar an tríú ball etc.
+Tá liostaí an chumhachtach. Tá uimhir ag gach suíomh i liosta. Is féidir leat ball liosta a fháil má bhfuil uimhir shuíomh an bhaill agat. Tugaimid an uimhir 0 ar an chéad bhall den liosta, an uimhir 1 ar an dara ball, an uimhir 2 ar an tríú ball etc.
 
 Má tá uimhir an shuíomh agat, is féidir leat `[` agus `]` a úsáid arís chun an ball a fháil. Mar shampla:
 
@@ -88,9 +88,15 @@ Má tá uimhir an shuíomh agat, is féidir leat `[` agus `]` a úsáid arís ch
 </div>
 </div>
 
+Is féidir leat `+` a úsáid le dhá liosta chun liosta nua dhéanamh.
+
+```setanta
+[1, 2, 3] + [4, 5, 6] == [1, 2, 3, 4, 5, 6]
+```
+
 ## Tráchtanna
 
-Má scríobhann tú an siombail `>--` i do ríomhchlár, Is trácht é aon rud a scríobhann tú tar éis é sin ar an líne chéanna, agus ní cuid den ríomhchlár é. Mar shampla
+Má scríobhann tú an siombail `>--` i do ríomhchlár, is trácht é aon rud a scríobhann tú tar éis é sin ar an líne chéanna, agus ní cuid den ríomhchlár é. Mar shampla
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -102,7 +108,7 @@ Tá tráchtanna an úsáideach mar ceadaíonn sé dúinn nótaí a scríobh iná
 
 ## Athróga
 
-Is féidir le Setanta luachanna a chuimhnigh. Mar shampla, cuir an cód seo san eagarthóir agus rith é:
+Úsáideann tú **athróga** chun uimhreacha, liostaí nó aon rud a stóráil. Cuireann tú rud éigin san athróg agus níos déanaí is féidir leat é a fháil ar ais. Ban triail as é seo mar shampla:
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -111,9 +117,9 @@ Is féidir le Setanta luachanna a chuimhnigh. Mar shampla, cuir an cód seo san 
 </div>
 </div>
 
-Scríobhann sé `20` amach sa chonsól.
+Scríobhann sé `20` amach sa chonsól. Chuir an chéad líne `10` isteach i `x` agus d'úsáid an dara líne é.
 
-Sá ríomhchlár seo is **athróg** é `x`. Is féidir linn athróga a úsáid i ngach áit a úsáidimid uimhreacha nó litreacha.
+Sá ríomhchlár seo is **athróg** é `x`. Is féidir linn athróga a úsáid i ngach áit a úsáidimid uimhreacha, litreacha nó aon rud.
 
 Cruthaímid athróg nua le `:=`
 

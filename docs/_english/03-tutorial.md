@@ -87,6 +87,12 @@ If you have the number of the position, you can use `[` and `]` again to get the
 </div>
 </div>
 
+You can use `+` with two lists to make a new list:
+
+```setanta
+[1, 2, 3] + [4, 5, 6] == [1, 2, 3, 4, 5, 6]
+```
+
 ## Comments
 
 If you write the symbol `>--` in your program, Anything you write after it on the same line is a comment, and is not part of the program. For example
@@ -101,7 +107,7 @@ Comments are very useful because they allow us to write notes in our programs.
 
 ## Variables
 
-Setanta can remember values. For example, put this code in the editor and run it:
+You use **variables** to store numbers, lists or anything. You put something in the variables and later you can get it back. Try this out for example:
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -110,9 +116,9 @@ Setanta can remember values. For example, put this code in the editor and run it
 </div>
 </div>
 
-It writes out `20` in the console.
+It writes out `20` in the console. The first line put `10` in `x` and the second line used it.
 
-In this program `x` is a **variable**. We can use variables everywhere that we use numbers and litreacha.
+In this program `x` is a **variable**. We can use variables everywhere that we use numbers , litreacha or anything.
 
 We create new variables with `:=`.
 

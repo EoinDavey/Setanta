@@ -23,7 +23,7 @@ Seo é an toradh:
 
 ![Dia duit Eoin](/assets/images/teagaisc/ainm.gif)
 
-Is sampla eile de gníomhartha é `ceist`, is féidir leat `ceist` a úsáid chun ceist a chur, agus an freagair a sábháil i athróg éigin.
+Is sampla eile de gníomhartha é `ceist`, is féidir leat `ceist` a úsáid chun ceist a chur, agus an freagair a shábháil in athróg éigin.
 
 ## Ag cruthú ár ngníomhartha féin
 
@@ -49,7 +49,7 @@ Tugaimid '**corp** an gnímh' ar an cód idir `{` agus `}`, sa gníomh `diaDuit`
 
 ## Sampla
 
-Mar shampla. Abair gur mhaith leat an pictiúr seo a tharraingt:
+Mar shampla: Abair gur mhaith leat an pictiúr seo a tharraingt:
 
 ![Ceithre ciorcal](/assets/images/teagaisc/ceithreciorcal.png)
 
@@ -135,8 +135,8 @@ Féach ar an toradh!
 ![Trí huaire](/assets/images/teagaisc/trihuaire.gif)
 
 Anois féach ar ais ar an gníomh `dháChiorcal` a chruthaíomar níos luaithe.
-Tógann sé dhá **argóint** aige, go háirithe `x` agus `y`.
+Tógann sé dhá **argóint**, go háirithe `x` agus `y`.
 Tógann an gníomh na argóintí agus cuireann sé an luach sna athróga `x` agus `y` istigh de corp an gnímh.
 Ansin ritheann an cód isteach sa gníomh, ag úsáid na athróga. Tarraingíonn sé an péire ciorcail timpeall an pointe (x, y).
 
-[Ansin téigh go dtí an céad teagaisc eile: Torthaí](/gaeilge/06-torthai)
+[Anois téigh go dtí an céad teagaisc eile: Torthaí](/gaeilge/06-torthai)

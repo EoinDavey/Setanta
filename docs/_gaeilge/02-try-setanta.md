@@ -6,7 +6,7 @@ toc: true
 
 ## try-setanta.ie
 
-Nuair a théann tú chuig [try-setanta.ie](https://try-setanta.ie), feicfidh tú rud cosúil le seo.
+Nuair a théann tú go [try-setanta.ie](https://try-setanta.ie), feicfidh tú rud cosúil le seo.
 
 ![An chéad suíomh](/assets/images/teagaisc/teagaisc01.png)
 

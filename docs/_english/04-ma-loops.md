@@ -69,17 +69,6 @@ When we know how many times we want to do something, we can use this loop
 
 This program writes every number between 0 and 10, it doesn't write 10 because the loop stops before the last number.
 
-The loop works in the other direction too.
-
-<div class="language-python highlighter-rouge">
-<div class="highlight">
-<pre class="highlight"><code><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">10</span><span class="p">,</span> <span class="m">0</span>)
-    <span class="n">scríobh</span>(<span class="n">i</span>)</code></pre>
-</div>
-</div>
-
-This program writes 10, 9, .... 1.
-
 You can put another number in the brackets to change the step between numbers. For example:
 
 <div class="language-python highlighter-rouge">
@@ -91,9 +80,31 @@ You can put another number in the brackets to change the step between numbers. F
 
 This writes 0, 3, 6, 9 as the step size is 3.
 
+#### Example
+
+We will use a loop to make a list of every number between 0 and 10.
+
+```setanta
+liosta := []
+
+le i idir (0, 10) {
+    liosta = liosta + [i]
+}
+
+scríobh(liosta)
+```
+
+Run that code and look at the console.
+
+![List of numbers](/assets/images/teagaisc/liostauimhreacha.png)
+
 ### Nuair-a
 
-There is a simpler loop available too, called `nuair-a`. Look at this for example:
+There is a simpler loop available too, called `nuair-a` (which translates as "when").
+
+At first the loop checks the term after the `nuair-a`, if it's true, it follows the instructions in the loop, and it goes back to the start. If it's not true, it breaks out of the loop. It does this over and over until the check is false.
+
+In the following example, it goes through the loop 5 times, and then `x == 6`, specifically `x < 5` is not true, and with that, the loop is finished.
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -105,7 +116,7 @@ There is a simpler loop available too, called `nuair-a`. Look at this for exampl
 </div>
 </div>
 
-We get `0, 1, 2, 3, 4`. At first the loop checks the term after the `nuair-a`, if it's true, it follows the instructions in the loop, and it goes back to the start. If it's not true, it breaks out of the loop. In this example, it goes through the loop 5 times, and then `x == 6`, specifically `x < 5` is not true, and with that, the loop is finished.
+We get `0, 1, 2, 3, 4`.
 
 ### bris & chun-cinn
 

@@ -69,17 +69,6 @@ Nuair atá fhios againn cé mhéad uair a bhfuil gá dúinn an rud a dhéanamh, 
 
 Scríobhann an ríomhchlár seo gach uimhir idir 0 agus 10, ní scríobhann sé 10 mar stopann an lúb roimh an uimhir deireanach.
 
-Oibríonn an lúb sa treo eile freisin
-
-<div class="language-python highlighter-rouge">
-<div class="highlight">
-<pre class="highlight"><code><span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">10</span><span class="p">,</span> <span class="m">0</span>)
-    <span class="n">scríobh</span>(<span class="n">i</span>)</code></pre>
-</div>
-</div>
-
-Scríobhann an ríomhchlár seo 10, 9, ... 1.
-
 Is féidir leat uimhir eile a chur idir na lúibíní chun an céim idir na huimhreacha a athrú. Mar shampla
 
 <div class="language-python highlighter-rouge">
@@ -91,9 +80,31 @@ Is féidir leat uimhir eile a chur idir na lúibíní chun an céim idir na huim
 
 Scríobhann é sin `0, 3, 6, 9` mar tá méid an chéim 3.
 
+#### Sampla
+
+Úsáidfimid lúb chun liosta a cruthú de gach uimhir idir 0 agus 10.
+
+```setanta
+liosta := []
+
+le i idir (0, 10) {
+    liosta = liosta + [i]
+}
+
+scríobh(liosta)
+```
+
+Rith an cód sin agus féach ar an gconsól.
+
+![Liosta uimhreacha](/assets/images/teagaisc/liostauimhreacha.png)
+
 ### Nuair-a
 
-Tá lúb níos simplí ar fháil freisin, le ainm `nuair-a`. Féach ar seo mar shampla
+Tá lúb níos simplí ar fáil freisin le ainm `nuair-a`.
+
+Ar dtús seiceálann an lúb an téarma tar éis `nuair-a`, má bhfuil sé fíor leanann sé na treoracha sa lúb, agus téann sé ar ais go dtí tús na lúibe. Mura bhfuil sé fíor, briseann sé amach as an lúb. Déanann sé é seo arís is arís go mbeidh an téarma bréagach.
+
+Sa sampla seo a leanas, ritheann an lúb 5 uair, agus ansin tá `x` cothrom le `6`, go háirithe níl `x < 5`, agus mar sin tá an lúb críochnaithe.
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -105,7 +116,8 @@ Tá lúb níos simplí ar fháil freisin, le ainm `nuair-a`. Féach ar seo mar s
 </div>
 </div>
 
-Faighimid `0, 1, 2, 3, 4`. Ar dtús seiceálann an lúb an téarma tar éis `nuair-a`, má bhfuil sé fíor, leanann sé na treoracha sa lúb, agus téann sé ar ais go dtí an tús. Nuair a nach bhfuil sé fíor, briseann sé amach as an lúb. Sa sampla sin, téann sé tríd an lúb 5 uair, agus ansin tá `x == 6`, go háirithe níl `x < 5`, agus mar sin, tá an lúb críochnaithe.
+
+Faighimid `0, 1, 2, 3, 4`. 
 
 ### bris & chun-cinn
 
@@ -123,7 +135,7 @@ Sa dá lúb sin, `le idir` agus `nuair-a`, is féidir leat na treoracha `bris` a
 </div>
 Scríobhann an lúb seo `0 1 2 3 4 5 6 7 8 9`, agus ansin tá `x == 10` agus brisimid as an lúb.
 
-Déanann `chun-cinn` rud difriúil. Téann `chun-cinn` díreach go dtí barr an lúb, agus tosaíonn sé leis an gcéad ceann eile. Mar shampla
+Déanann `chun-cinn` rud difriúil. Téann `chun-cinn` díreach go dtí barr na lúibe, agus tosaíonn sé leis an gcéad ceann eile. Mar shampla:
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
