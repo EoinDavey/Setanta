@@ -114,3 +114,23 @@ Nuair atá an lúb críochnaithe is é suim an liosta iomlán an luach atá san 
 Anois is féidir linn bain triail as an gníomh. Úsáid é chun an liosta `[1, 2, 3, 4]` a shuimiú le `suimLiosta([1, 2, 3, 4])` agus féach ar an toradh. Faighimid 10, mar tá 1 + 2 + 3 + 4 cothrom le 10.
 
 ![Oibríonn suimLiosta](/assets/images/teagaisc/oibrionnSuimLiosta.png)
+
+## NB
+
+Oibríonn an focal `toradh` cosúil le `bris`. Nuair a leanann Setanta `toradh`, stopann an gníomh go hiomlán. Chun é seo a mhínigh, féach ar an gníomh seo:
+
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">gníomh</span> <span class="n">f</span>() {
+    <span class="n">scríobh</span>(<span class="s">&#x27;Dia duit&#x27;</span>)
+    <span class="k">toradh</span> <span class="s">&#x27;Críochnaithe&#x27;</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Dia is Muire duit&#x27;</span>)
+}
+
+<span class="n">f</span>()</code></pre>
+</div>
+</div>
+
+![Toradh NB](/assets/images/teagaisc/toradhnb.png)
+
+Ní scríobh an ríomhchlár 'Dia is Muire duit' mar stop sé nuair a shroich sé an líne `toradh 'Críochnaithe'`.

@@ -113,3 +113,23 @@ When the loop is finished the value of the variable `sum` is the sum of the whol
 We can run this code and see that it's working! Try `listSum([1, 2, 3, 4])` and see that it returns 10, which is 1 + 2 + 3 + 4.
 
 ![listSum works!](/assets/images/teagaisc/listsumworks.png)
+
+## NB
+
+The word `toradh` works like the word `bris`. When Setanta follows `toradh`, the action stops completely. To explain this, look at this action:
+
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">gníomh</span> <span class="n">f</span>() {
+    <span class="n">scríobh</span>(<span class="s">&#x27;Dia duit&#x27;</span>)
+    <span class="k">toradh</span> <span class="s">&#x27;Críochnaithe&#x27;</span>
+    <span class="n">scríobh</span>(<span class="s">&#x27;Dia is Muire duit&#x27;</span>)
+}
+
+<span class="n">f</span>()</code></pre>
+</div>
+</div>
+
+![Toradh NB](/assets/images/teagaisc/toradhnb.png)
+
+The program didn't write 'Dia is Muire duit', because it stopped when it reached the line `toradh 'Críochnaithe'`.
