@@ -90,9 +90,11 @@ Má tá uimhir an shuíomh agat, is féidir leat `[` agus `]` a úsáid arís ch
 
 Is féidir leat `+` a úsáid le dhá liosta chun liosta nua dhéanamh.
 
-```setanta
-[1, 2, 3] + [4, 5, 6] == [1, 2, 3, 4, 5, 6]
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code>[<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span>] <span class="o">+</span> [<span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">6</span>] <span class="o">==</span> [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">6</span>]</code></pre>
+</div>
+</div>
 
 ## Tráchtanna
 

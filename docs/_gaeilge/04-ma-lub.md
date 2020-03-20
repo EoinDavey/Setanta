@@ -84,15 +84,17 @@ Scríobhann é sin `0, 3, 6, 9` mar tá méid an chéim 3.
 
 Úsáidfimid lúb chun liosta a cruthú de gach uimhir idir 0 agus 10.
 
-```setanta
-liosta := []
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">liosta</span> := []
 
-le i idir (0, 10) {
-    liosta = liosta + [i]
+<span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">0</span><span class="p">,</span> <span class="m">10</span>) {
+    <span class="n">liosta</span> = <span class="n">liosta</span> <span class="o">+</span> [<span class="n">i</span>]
 }
 
-scríobh(liosta)
-```
+<span class="n">scríobh</span>(<span class="n">liosta</span>)</code></pre>
+</div>
+</div>
 
 Rith an cód sin agus féach ar an gconsól.
 

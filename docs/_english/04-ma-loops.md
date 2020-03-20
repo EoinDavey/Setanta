@@ -84,15 +84,17 @@ This writes 0, 3, 6, 9 as the step size is 3.
 
 We will use a loop to make a list of every number between 0 and 10.
 
-```setanta
-liosta := []
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">liosta</span> := []
 
-le i idir (0, 10) {
-    liosta = liosta + [i]
+<span class="k">le</span> <span class="n">i</span> <span class="k">idir</span> (<span class="m">0</span><span class="p">,</span> <span class="m">10</span>) {
+    <span class="n">liosta</span> = <span class="n">liosta</span> <span class="o">+</span> [<span class="n">i</span>]
 }
 
-scríobh(liosta)
-```
+<span class="n">scríobh</span>(<span class="n">liosta</span>)</code></pre>
+</div>
+</div>
 
 Run that code and look at the console.
 

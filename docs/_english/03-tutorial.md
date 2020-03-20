@@ -89,9 +89,11 @@ If you have the number of the position, you can use `[` and `]` again to get the
 
 You can use `+` with two lists to make a new list:
 
-```setanta
-[1, 2, 3] + [4, 5, 6] == [1, 2, 3, 4, 5, 6]
-```
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code>[<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span>] <span class="o">+</span> [<span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">6</span>] <span class="o">==</span> [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">6</span>]</code></pre>
+</div>
+</div>
 
 ## Comments
 
