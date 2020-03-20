@@ -17,6 +17,8 @@ gaeilge:
             url: /gaeilge/05-gniomh
           - title: "Torthaí"
             url: /gaeilge/06-torthai
+          - title: "Rudaí & Creatlacha"
+            url: /gaeilge/07-creatlach
 
 english:
     - title: "Tutorial"
@@ -33,3 +35,5 @@ english:
             url: /english/05-gniomh
           - title: "Results"
             url: /english/06-results
+          - title: "Objects & Outlines"
+            url: /english/07-creatlach
