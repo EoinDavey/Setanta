@@ -92,7 +92,7 @@ export function goLitreacha(v: Value): string {
         return "neamhní";
     }
     if (Checks.isLiosta(v)) {
-        return `[${v.map(goLitreacha).join(",")}]`;
+        return `[${v.map(goLitreacha).join(", ")}]`;
     }
     if (Checks.isCallable(v)) {
         return `< gníomh ${v.ainm} >`;
