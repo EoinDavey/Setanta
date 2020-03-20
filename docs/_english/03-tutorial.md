@@ -6,7 +6,7 @@ toc: true
 
 ## Maths
 
-Setanta can do maths. Type `scríobh(2*3)` into the editor, click "Tosaigh", and look at the console. `6` will be written there.
+Setanta can do maths. Type `scríobh(2*3)` into the editor, click start, and look at the console. `6` will be written there.
 ![6](/assets/images/teagaisc/teagaisc06.png)
 
 Look what this program writes.

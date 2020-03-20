@@ -7,7 +7,7 @@ toc: true
 ## Matamaitic
 
 Is féidir le Setanta matamaitic a dhéanamh.
-Clóscríobh `scríobh(2 * 3)` isteach san eagarthóir, cliceáil ar "Tosaigh" agus féach ar an gconsól. Beidh `6` scríofa ansin.
+Clóscríobh `scríobh(2 * 3)` isteach san eagarthóir, cliceáil ar an gcnaipe tosaigh agus féach ar an gconsól. Beidh `6` scríofa ansin.
 ![6](/assets/images/teagaisc/teagaisc06.png)
 
 Féach cad a scríobhann an ríomhchlár seo

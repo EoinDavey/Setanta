@@ -14,7 +14,7 @@ There are three pieces on the site. They are the "stáitse" (stage), the editor 
 
 ![The parts](/assets/images/teagaisc/tutorial01.png)
 
-You can write Setanta programs in the editor. Then when you click the "Tosaigh" (start) button, the program starts running. Then the program can draw shapes on the stage, or write phrases out on the console.
+You can write Setanta programs in the editor. Then when you click the start button, the program starts running. Then the program can draw shapes on the stage, or write phrases out on the console.
 
 ## Example
 
@@ -24,7 +24,7 @@ Type `scríobh('Dia duit')` in the editor like this
 
 ![Dia duit](/assets/images/teagaisc/teagaisc03.png)
 
-Now, click on the "Tosaigh" button.
+Now, click on the start button.
 
 ![Dia duit](/assets/images/teagaisc/teagaisc04.png)
 
@@ -45,7 +45,7 @@ You can use Setanta to draw shapes on the stage
 </div>
 </div>
 
-The first line changes the colour of the pen to dearg (red). Then the second line draws a circle around the point (200, 200) with radius 100. Press the "Tosaigh" (Start) button and look at the stage.
+The first line changes the colour of the pen to dearg (red). Then the second line draws a circle around the point (200, 200) with radius 100. Press the start button and look at the stage.
 
 ![Circle](/assets/images/teagaisc/ciorcal.gif)
 

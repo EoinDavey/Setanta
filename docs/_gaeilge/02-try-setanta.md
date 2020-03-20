@@ -14,7 +14,7 @@ Tá trí phíosa ar an suíomh. Is iad an stáitse, an eagarthóir, agus an cons
 
 ![Na píosaí](/assets/images/teagaisc/teagaisc02.png)
 
-Is féidir leat ríomhchlár Setanta a chlóscríobh san eagarthóir. Ansin nuair a chliceálann tú an cnaipe "Tosaigh", tosaíonn an ríomhchláir ag rith. Ansin is féidir leis an ríomhchláir cruthanna a tharraingt ar an stáitse, nó frasaí a scríobh amach ar an gconsól.
+Is féidir leat ríomhchlár Setanta a chlóscríobh san eagarthóir. Ansin nuair a chliceálann tú an cnaipe tosaigh, tosaíonn an ríomhchláir ag rith. Ansin is féidir leis an ríomhchláir cruthanna a tharraingt ar an stáitse, nó frasaí a scríobh amach ar an gconsól.
 
 ## Sampla
 
@@ -24,7 +24,7 @@ Clóscríobh `scríobh('Dia duit')` isteach san eagarthóir mar seo.
 
 ![scríobh Dia Duit](/assets/images/teagaisc/teagaisc03.png)
 
-Anois, cliceáil ar an gcnaipe "Tosaigh"
+Anois, cliceáil ar an gcnaipe tosaigh
 
 ![An cnaipe](/assets/images/teagaisc/teagaisc04.png)
 
@@ -45,7 +45,7 @@ Is féidir leat úsáid Setanta chun cruthanna a tarraingt ar an stáitse.
 </div>
 </div>
 
-Athraíonn an chéad líne an dath an pheann go dearg. Ansin tarraingíonn an dara líne ciorcal timpeall an pointe (200, 200) le ga 100. Brúigh an cnaipe "Tosaigh" agus féach ar an stáitse.
+Athraíonn an chéad líne dath an phinn go dearg. Ansin tarraingíonn an dara líne ciorcal timpeall an pointe (200, 200) le ga 100. Brúigh an cnaipe tosaigh agus féach ar an stáitse.
 
 ![Ciorcal](/assets/images/teagaisc/ciorcal.gif)
 
