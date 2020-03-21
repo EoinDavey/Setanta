@@ -11,7 +11,7 @@ Setanta can do maths. Type `scríobh(2*3)` into the editor, click start, and loo
 
 Look what this program writes.
 
-<div class="language-python highlighter-rouge">
+<div class="highlighter-rouge">
 <div class="highlight">
 <pre class="highlight"><code><span class="n">scríobh</span>(<span class="m">2</span> <span class="o">+</span> <span class="m">2</span>)
 <span class="n">scríobh</span>(<span class="m">4</span> <span class="o">*</span> (<span class="m">2</span> <span class="o">+</span> <span class="m">3</span>))
@@ -46,10 +46,10 @@ You can write phrases too, we saw this earlier with the simple program:
 </div>
 
 We call these phrases "litreacha". You create *litreacha* with two `'`s. For example:
-<div class="language-python highlighter-rouge">
+<div class="highlighter-rouge">
 <div class="highlight">
 <pre class="highlight"><code><span class="s">&#x27;Hello&#x27;</span>
-<span class="s">&#x27;I\&#x27;m Eoin&#x27;</span></code></pre>
+<span class="s">&#x27;My name is Cú Chulainn&#x27;</span></code></pre>
 </div>
 </div>
 
@@ -111,7 +111,7 @@ Comments are very useful because they allow us to write notes in our programs.
 
 You use **variables** to store numbers, lists or anything. You put something in the variables and later you can get it back. Try this out for example:
 
-<div class="language-python highlighter-rouge">
+<div class="highlighter-rouge">
 <div class="highlight">
 <pre class="highlight"><code><span class="n">x</span> := <span class="m">10</span>
 <span class="n">scríobh</span>(<span class="n">x</span> <span class="o">*</span> <span class="m">2</span>)</code></pre>
@@ -126,14 +126,28 @@ We create new variables with `:=`.
 
 We can change the value in the variable `x` with `=`.
 
-<div class="language-python highlighter-rouge">
+<div class="highlighter-rouge">
 <div class="highlight">
 <pre class="highlight"><code><span class="n">x</span> := <span class="m">10</span> <span class="c">&gt;-- New variable with value 10
-</span><span class="n">x</span> = <span class="n">x</span> <span class="o">+</span> <span class="m">10</span></code></pre>
+</span><span class="n">x</span> = <span class="m">20</span></code></pre>
 </div>
 </div>
 
-Now `x` is equal to 20. What does this program write?
+Now `x` is equal to 20.
+
+When you use `=` or `:=`, Setanta computes the term on the right, and then puts the result in the variable on the left. Because of this, we can use the same variables on the left and the right. For example:
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">x</span> := <span class="m">1</span>
+<span class="n">x</span> = <span class="n">x</span> <span class="o">+</span> <span class="m">2</span>
+<span class="n">scríobh</span>(<span class="n">x</span>)</code></pre>
+</div>
+</div>
+
+![Three](/assets/images/teagaisc/tri.png)
+
+What does this program write?
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -168,6 +182,22 @@ We can use variables to draw things on the stage too. Put the following code in 
 </div>
 
 ![Two circles](/assets/images/teagaisc/dhaciorcal.gif)
+
+## Changing lists
+
+We can change members of lists with `=` too. For example:
+
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">l</span> := [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span>]
+<span class="n">l</span>[<span class="m">0</span>] = <span class="m">4</span>
+<span class="n">scríobh</span>(<span class="n">l</span>)</code></pre>
+</div>
+</div>
+
+![Changed list](/assets/images/teagaisc/liostaathru.png)
+
+The first value of the list has changed!
 
 ## Next
 You learned a lot of new things, go to [the next page](/english/04-ma-loops) to learn about `má` and loops.

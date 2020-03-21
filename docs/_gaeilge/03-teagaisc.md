@@ -129,12 +129,26 @@ Táimid in ann an luach san athróg `x` a athrú le `=`.
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
-<pre class="highlight"><code><span class="n">x</span> := <span class="m">10</span> <span class="c">&gt;-- athróg nua le luach 10
-</span><span class="n">x</span> = <span class="n">x</span> <span class="o">+</span> <span class="m">10</span></code></pre>
+<pre class="highlight"><code><span class="n">x</span> := <span class="m">10</span>
+<span class="n">x</span> = <span class="m">20</span></code></pre>
 </div>
 </div>
 
-Anois tá `x` cothrom le 20. Cad a scríobhann an ríomhchlár seo?
+Anois tá `x` cothrom le 20.
+
+Nuair a úsáideann tú `=` no `:=`, ríomhann Setanta an téarma ar dheis, agus ansin cuireann sé an toradh isteach san athróg ar chlé. Mar gheall ar seo, is féidir linn an athróg céanna a úsáid ar dheis agus ar chlé. Mar shampla:
+
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">x</span> := <span class="m">1</span>
+<span class="n">x</span> = <span class="n">x</span> <span class="o">+</span> <span class="m">2</span>
+<span class="n">scríobh</span>(<span class="n">x</span>)</code></pre>
+</div>
+</div>
+
+![A trí](/assets/images/teagaisc/tri.png)
+
+Cad a scríobhann an ríomhchlár seo?
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -169,6 +183,22 @@ Is féidir linn athróga a úsáid chun rudaí a tarraingt ar an stáitse freisi
 </div>
 
 ![Dhá ciorcal](/assets/images/teagaisc/dhaciorcal.gif)
+
+## Ag athrú liostaí
+
+Is féidir linn ball de liosta a athrú le `=` freisin. Mar shampla:
+
+<div class="language-python highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">l</span> := [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span>]
+<span class="n">l</span>[<span class="m">0</span>] = <span class="m">4</span>
+<span class="n">scríobh</span>(<span class="n">l</span>)</code></pre>
+</div>
+</div>
+
+![Liosta athraithe](/assets/images/teagaisc/liostaathru.png)
+
+Tá an chéad ball den liosta athraithe!
 
 ## Anois
 D'fhoghlaim tú a lán rudaí nua, téigh go dtí an [chéad leathanach eile](/gaeilge/04-ma-lub) chun foghlaim faoi `má` agus lúba.

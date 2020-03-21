@@ -17,7 +17,7 @@ After this part of the tutorial, you will understand what is happening when we u
 
 ## Objects
 
-We call the variable `stáitse` an object. An object is a group of actions and values. For example, the actions `dath` and `ciorcal` are in `stáitse`.
+An object is a group of actions and values. For example, the actions `dath` and `ciorcal` that we saw before are in the object `stáitse`.
 
 You use the symbol `@` to get a member of an object. We write `dath@stáitse` to get the action and then we call the action with `dath@stáitse('dearg')`.
 
@@ -79,3 +79,68 @@ Notice that `Cow` is not an object, it's an outline. We can create the object wi
 </div>
 
 Put that into the editor and try it out. Create a few other functions or a completely different class!
+
+## Changing objects
+
+Objects have memory too, we can store values in objects with `=`.
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="c">&gt;-- Outline with no actions
+</span><span class="k">creatlach</span> <span class="n">EmptyObject</span> {
+}
+
+<span class="c">&gt;-- Create a new object
+</span><span class="n">obj</span> := <span class="n">EmptyObject</span>()
+
+<span class="c">&gt;-- Put &#x27;Sara&#x27; in name@obj
+</span><span class="n">name</span><span class="o">@</span><span class="n">obj</span> = <span class="s">&#x27;Sara&#x27;</span>
+
+<span class="n">scríobh</span>(<span class="n">name</span><span class="o">@</span><span class="n">obj</span>) <span class="c">&gt;-- This writes &#x27;Sara&#x27;</span></code></pre>
+</div>
+</div>
+
+- At the start we create a new outline without any actions. We call it `EmptyObject`.
+- Then we type `obj := EmptyObject()` to create an object from the `EmptyObject` outline.
+- We use the symbol `@` to put 'Sara' in the member `name` with the line `name@obj = 'Sara'`.
+- Then when we call `scríobh` with `name@obj`, it writes 'Sara' out on the console.
+
+To see the full power of outlines, we need to talk about the word `seo` (meaning "this").
+
+## The word "seo".
+
+We would like to change an object with the actions that are inside the outline of the object. We use the word `seo` (meaning "this") to do this. Look at this for example:
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">creatlach</span> <span class="n">Person</span> {
+
+    <span class="k">gníomh</span> <span class="n">changeName</span>(<span class="n">name</span>) {
+        <span class="n">name</span><span class="o">@</span><span class="n">seo</span> = <span class="n">name</span>
+    }
+
+    <span class="k">gníomh</span> <span class="n">speak</span>() {
+        <span class="n">scríobh</span>(<span class="s">&#x27;Hi! My name is &#x27;</span> <span class="o">+</span> <span class="n">name</span><span class="o">@</span><span class="n">seo</span>)
+    }
+}
+
+<span class="n">me</span> := <span class="n">Person</span>()
+<span class="n">changeName</span><span class="o">@</span><span class="n">me</span>(<span class="s">&#x27;Eoin&#x27;</span>)
+
+<span class="n">speak</span><span class="o">@</span><span class="n">me</span>()</code></pre>
+</div>
+</div>
+
+And now look at the console:
+
+```
+Hi! My name is Eoin
+```
+
+We used the word `seo` inside the action `changeName` and `speak`.
+
+We create a new object with `Person()` and we put it in the variable `me`. Then we used `changeName@me('Eoin')` to change the name of the person to 'Eoin'
+
+When we called `speak` with `speak@me()`, it wrote 'Hi! My name is Eoin' out on the console.
+
+We can use the same outline again and again to make a lot of objects.
