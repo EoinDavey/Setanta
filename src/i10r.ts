@@ -30,7 +30,7 @@ export class Interpreter {
     public global: Environment = new Environment();
     private skipCnt: number = 0;
     private stopped: boolean = false;
-    constructor(externals?: Array<[string[], Value]>) {
+    constructor(externals?: [string[], Value][]) {
         this.global = Environment.from(Builtins);
         if (externals) {
             for (const ext of externals) {

@@ -7,7 +7,7 @@ import { athchuir } from "./litreacha";
 import { Rud } from "./rud";
 import { callFunc, goLitreacha, ObjWrap, Value } from "./values";
 
-export const Builtins: Array<[string, Value]> = [
+export const Builtins: [string, Value][] = [
     [
         // Fad returns length of liosta / litreacha
         "fad", {

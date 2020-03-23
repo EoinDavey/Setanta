@@ -61,7 +61,7 @@ export function qIdxList(x: Value, idx: Value): Value {
 export class ObjWrap implements Obj {
     public ainm: string;
     public attrs: Map<string, Value>;
-    constructor(ainm: string, attrs: Array<[string[], Value]>) {
+    constructor(ainm: string, attrs: [string[], Value][]) {
         this.ainm = ainm;
         this.attrs = new Map();
         for (const attr of attrs) {

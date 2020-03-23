@@ -3,7 +3,7 @@ import { Value } from "./values";
 
 export class Environment {
 
-    public static from(arr: Array<[string, Value]>): Environment {
+    public static from(arr: [string, Value][]): Environment {
         const v = new Environment();
         for (const x of arr) {
             v.define(x[0], x[1]);

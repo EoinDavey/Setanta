@@ -10,7 +10,7 @@ import * as fs from "fs";
 
 const [, , ...pargs] = process.argv;
 
-function getExternals(léighfn: () => Promise<string|null>): Array<[string[], Value]> {
+function getExternals(léighfn: () => Promise<string|null>): [string[], Value][] {
     return [
         [
             ["scríobh", "scriobh"], {

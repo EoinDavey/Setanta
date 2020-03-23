@@ -45,7 +45,7 @@ export function andBinOp(and: And): EvalFn {
             , and.head.evalfn(env));
 }
 
-export function binOpEvalFn(obj: {head: IEvalable, tail: Array<{trm: IEvalable, op: string}>}): EvalFn {
+export function binOpEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, op: string}[]}): EvalFn {
     if (obj.tail.length === 0) {
         return obj.head.evalfn.bind(obj.head);
     }
@@ -115,7 +115,7 @@ export function andQuickBinOp(and: And): MaybeQuickEv {
     };
 }
 
-export function binOpQuickEvalFn(obj: {head: IEvalable, tail: Array<{trm: IEvalable, op: string}>}): MaybeQuickEv {
+export function binOpQuickEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, op: string}[]}): MaybeQuickEv {
     if (obj.tail.length === 0) {
         const childF = obj.head.qeval;
         return childF === null ? null : childF.bind(obj.head);
