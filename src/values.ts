@@ -97,5 +97,5 @@ export function goLitreacha(v: Value): string {
     if (Checks.isCallable(v)) {
         return `< gníomh ${v.ainm} >`;
     }
-    return `< obj ${v.ainm} >`; // TODO athraigh go Gaeilge
+    return `< rud ${v.ainm} >`;
 }

@@ -41,19 +41,19 @@ export function assertObj(x: Value): Obj {
     if (Checks.isObj(x)) {
         return x;
     }
-    throw new RuntimeError(`${goLitreacha(x)} is not callable`); // TODO → Gaeilge
+    throw new RuntimeError(`Ní rud é ${goLitreacha(x)}`);
 }
 
 export function assertComparable(a: Value): Comparable {
     if (Checks.isComparable(a)) {
         return a;
     }
-    throw new RuntimeError(`Ní feidir leat comparáid a dheanamh le ${goLitreacha(a)}`);
+    throw new RuntimeError(`Ní féidir leat comparáid a dheanamh le ${goLitreacha(a)}`);
 }
 
 export function assertIndexable(a: Value): ArrayLike<Value> {
     if (Checks.isLiosta(a) || Checks.isLitreacha(a)) {
         return a;
     }
-    throw new RuntimeError(`${goLitreacha(a)} is not indexable`); // TODO → Gaeilge
+    throw new RuntimeError(`Ní liosta nó litreacha é ${goLitreacha(a)}`);
 }

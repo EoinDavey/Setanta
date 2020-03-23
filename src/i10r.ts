@@ -109,7 +109,7 @@ export class Interpreter {
             const subPost: P.Postfix = new P.Postfix(p.at, ops);
             return subPost.evalfn(env).then((val: Value) => {
                 if ("args" in op) {
-                    return Promise.reject(new RuntimeError("Ní feidir leat luach a thabhairt do gníomh"));
+                    return Promise.reject(new RuntimeError("Ní féidir leat luach a thabhairt do gníomh"));
                 }
                 const arr: Value[] = Asserts.assertLiosta(val);
                 return op.expr.evalfn(env).then((idxV: Value) => {
@@ -142,7 +142,7 @@ export class Interpreter {
     public refAtom(a: P.Atom, env: Environment): Promise<Ref> {
         if (a.kind !== ASTKinds.ID) {
             return a.evalfn(env).then((v: Value) => {
-                return Promise.reject(new RuntimeError("Ní feidir leat luach a thabhairt do " + goLitreacha(v)));
+                return Promise.reject(new RuntimeError("Ní féidir leat luach a thabhairt do " + goLitreacha(v)));
             });
         }
         return Promise.resolve((v: Value) => {

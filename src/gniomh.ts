@@ -55,6 +55,7 @@ export class GníomhWrap implements Gníomh {
     public arity() { return this.ar; }
     public call(args: Value[]): Promise<Value> {
         if (this.seo === null) {
+            // Really really should not happen
             return Promise.reject(new RuntimeError("COMPLETE FAILURE"));
         }
         return this.f(this.seo, args);

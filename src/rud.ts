@@ -46,6 +46,6 @@ class TuisWrap implements Obj {
         throw new RuntimeError(`Níl aon ball le ainm ${s} ag tuismitheoir de ${this.cr.ainm}`);
     }
     public setAttr(id: string, v: Value) {
-        throw new RuntimeError("Ní feidir leat tuismitheoir a athrú");
+        throw new RuntimeError("Ní féidir leat tuismitheoir a athrú");
     }
 }

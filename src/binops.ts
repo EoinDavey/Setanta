@@ -243,7 +243,7 @@ function evalBinOp(a: Value, b: Value, op: string): Value {
             }
         }
     }
-    throw new RuntimeError(`Ní feider leat ${goLitreacha(op)} a úsaid le ${goLitreacha(a)} agus ${goLitreacha(b)}`);
+    throw new RuntimeError(`Ní féidir leat ${goLitreacha(op)} a úsaid le ${goLitreacha(a)} agus ${goLitreacha(b)}`);
 }
 
 type AsgnOp = (ref: Ref, cur: Value, dv: Value) => void;
@@ -317,5 +317,5 @@ export function evalAsgnOp(ref: Ref, cur: Value, dv: Value, op: string) {
             }
         }
     }
-    throw new RuntimeError(`Ní feider leat ${goLitreacha(op)} a úsaid le ${goLitreacha(cur)} agus ${goLitreacha(dv)}`);
+    throw new RuntimeError(`Ní féidir leat ${goLitreacha(op)} a úsáid le ${goLitreacha(cur)} agus ${goLitreacha(dv)}`);
 }
