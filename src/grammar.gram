@@ -41,7 +41,7 @@ AssgnStmt   := _ lhs=Postfix _ op=AsgnOp _ expr=Expr
 GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
     stmts=AsgnStmt*
 _ '}'
-CtlchStmt   := _ 'creatlach' &gap id=ID tuis={_ 'ó' id=ID}? _ '{'
+CtlchStmt   := _ 'creatlach' &gap id=ID tuis={_ 'ó' &gap id=ID}? _ '{'
     gniomhs=GniomhStmt*
 _ '}'
 BrisStmt    := _ 'bris'

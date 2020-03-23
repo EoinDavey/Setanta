@@ -43,7 +43,7 @@
 * GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
 *     stmts=AsgnStmt*
 * _ '}'
-* CtlchStmt   := _ 'creatlach' &gap id=ID tuis={_ 'ó' id=ID}? _ '{'
+* CtlchStmt   := _ 'creatlach' &gap id=ID tuis={_ 'ó' &gap id=ID}? _ '{'
 *     gniomhs=GniomhStmt*
 * _ '}'
 * BrisStmt    := _ 'bris'
@@ -1068,6 +1068,7 @@ export class Parser {
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`ó`, $$dpth + 1, cr) !== null
+                    && this.noConsume<gap>(() => this.matchgap($$dpth + 1, cr)) !== null
                     && (id = this.matchID($$dpth + 1, cr)) !== null
                 ) {
                     res = {kind: ASTKinds.CtlchStmt_$0, id};
