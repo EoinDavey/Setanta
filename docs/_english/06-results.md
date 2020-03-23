@@ -32,7 +32,7 @@ In the same way, the action `go_uimh` has a result. You use `go_uimh` to convert
 
 ## Our own functions.
 
-It's clear that results are very usefule. We can create actions with results with the word `toradh` (meaning "result"). Say we want to create an action to add two numbers. We can write this:
+It's clear that results are very useful. We can create actions with results with the word `toradh` (meaning "result"). Say we want to create an action to add two numbers. We can write this:
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
