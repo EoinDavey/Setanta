@@ -2,7 +2,7 @@
 import * as readline from "readline";
 import * as Asserts from "./asserts";
 import { RuntimeError } from "./error";
-import { ASTKinds, Parser } from "./gen_parser";
+import { ParseResult, ASTKinds, Parser } from "./gen_parser";
 import { Interpreter, STOP } from "./i10r";
 import { goLitreacha, Value } from "./values";
 
@@ -44,6 +44,25 @@ function getExternals(léighfn: () => Promise<string|null>): [string[], Value][]
     ];
 }
 
+async function getAst(getLine: () => Promise<string|null>,
+    continuance: () => Promise<string|null>): Promise<ParseResult> {
+    let prev = "";
+    while(true) {
+        const inpFn = prev === "" ? getLine : continuance;
+        const inp = await inpFn();
+        if(inp === null)
+            continue;
+        const line = prev + inp;
+        const parser = new Parser(line);
+        const res = parser.parse();
+        if(res.err === null)
+            return res;
+        if(res.err.pos.offset !== line.length)
+            return res;
+        prev = line;
+    }
+}
+
 async function repl() {
     const rl: readline.Interface = readline.createInterface({
         input: process.stdin,
@@ -54,20 +73,19 @@ async function repl() {
             rl.question("᚛ ", (resp) => r(resp));
         });
     };
+    const continuance = (): Promise<string|null> => {
+        return new Promise((r) => rl.question("...", r));
+    }
     const i = new Interpreter(getExternals(getLine));
     while (true) {
-        const res = await getLine();
-        if (!res) {
-            continue;
-        }
-        const parser = new Parser(res as string);
-        const p = parser.parse();
+        const p = await getAst(getLine, continuance);
         if (p.err) {
             console.log("" + p.err);
             continue;
         }
         const ast = p.ast!;
         try {
+            // This is an expression, we can print the result
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
                     console.log(goLitreacha(await ast.stmts[0].evalfn(i.global)));
                     continue;
