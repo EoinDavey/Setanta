@@ -144,3 +144,87 @@ We create a new object with `Person()` and we put it in the variable `me`. Then 
 When we called `speak` with `speak@me()`, it wrote 'Hi! My name is Eoin' out on the console.
 
 We can use the same outline again and again to make a lot of objects.
+
+## The "nua" action
+
+We will now create an outline for a person. We need to create a lot of actions to store the name, age and address:
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">creatlach</span> <span class="n">Person</span> {
+    <span class="k">gníomh</span> <span class="n">changeName</span>(<span class="n">name</span>) {
+        <span class="n">name</span><span class="o">@</span><span class="n">seo</span> = <span class="n">name</span>
+    }
+    <span class="k">gníomh</span> <span class="n">changeAge</span>(<span class="n">age</span>) {
+        <span class="n">age</span><span class="o">@</span><span class="n">seo</span> = <span class="n">age</span>
+    }
+    <span class="k">gníomh</span> <span class="n">changeAddress</span>(<span class="n">address</span>) {
+        <span class="n">address</span><span class="o">@</span><span class="n">seo</span> = <span class="n">address</span>
+    }
+    <span class="k">gníomh</span> <span class="n">speak</span>() {
+        <span class="n">scríobh</span>(<span class="s">&#x27;Hi, my name is&#x27;</span><span class="p">,</span> <span class="n">name</span><span class="o">@</span><span class="n">seo</span>)
+        <span class="n">scríobh</span>(<span class="s">&#x27;I am&#x27;</span><span class="p">,</span> <span class="n">age</span><span class="o">@</span><span class="n">seo</span><span class="p">,</span> <span class="s">&#x27;years old&#x27;</span>)
+        <span class="n">scríobh</span>(<span class="s">&#x27;I live in&#x27;</span><span class="p">,</span> <span class="n">address</span><span class="o">@</span><span class="n">seo</span>)
+    }
+}</code></pre>
+</div>
+</div>
+
+When we want to create an object, we have to write a lot of code:
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">bart</span> := <span class="n">Person</span>()
+<span class="n">changeName</span><span class="o">@</span><span class="n">bart</span>(<span class="s">&#x27;Bart Simpson&#x27;</span>)
+<span class="n">changeAge</span><span class="o">@</span><span class="n">bart</span>(<span class="m">10</span>)
+<span class="n">changeAddress</span><span class="o">@</span><span class="n">bart</span>(<span class="s">&#x27;Springfield&#x27;</span>)</code></pre>
+</div>
+</div>
+
+To solve this problem, we can use a special action, the "nua" action. "Nua" translates as "new".
+
+When you put an action in an outline with the name "nua", that action is ran when an object is created from the outline. For example: We can write the `Person` outline we wrote earlier with the "nua" function like this:
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">creatlach</span> <span class="n">Person</span> {
+    <span class="k">gníomh</span> <span class="n">nua</span>(<span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">address</span>) {
+        <span class="n">name</span><span class="o">@</span><span class="n">seo</span> = <span class="n">name</span>
+        <span class="n">age</span><span class="o">@</span><span class="n">seo</span> = <span class="n">age</span>
+        <span class="n">address</span><span class="o">@</span><span class="n">seo</span> = <span class="n">address</span>
+    }
+    <span class="k">gníomh</span> <span class="n">speak</span>() {
+        <span class="n">scríobh</span>(<span class="s">&#x27;Hi, my name is&#x27;</span><span class="p">,</span> <span class="n">name</span><span class="o">@</span><span class="n">seo</span>)
+        <span class="n">scríobh</span>(<span class="s">&#x27;I am&#x27;</span><span class="p">,</span> <span class="n">age</span><span class="o">@</span><span class="n">seo</span><span class="p">,</span> <span class="s">&#x27;years old&#x27;</span>)
+        <span class="n">scríobh</span>(<span class="s">&#x27;I live in&#x27;</span><span class="p">,</span> <span class="n">address</span><span class="o">@</span><span class="n">seo</span>)
+    }
+}</code></pre>
+</div>
+</div>
+
+We deleted the actions `changeName`, `changeAge` and `changeAddress`, and instead we wrote one action with the name "nua".
+
+Now, instead of the long piece of code we wrote earlier to create the `bart` object. We can write this:
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">bart</span> := <span class="n">Person</span>(<span class="s">&#x27;Bart Simpson&#x27;</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="s">&#x27;Springfield&#x27;</span>)
+<span class="n">speak</span><span class="o">@</span><span class="n">bart</span>()</code></pre>
+</div>
+</div>
+
+That's a lot less code!
+
+When we create a new object with
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">Person</span>(<span class="s">&#x27;Bart Simpson&#x27;</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="s">&#x27;Springfield&#x27;</span>)</code></pre>
+</div>
+</div>
+
+It calls the action "nua" in the outline.
+
+Then when we run `speak@bart()`, it writes the correct the name, age and address on the console.
+
+![Bart](/assets/images/teagaisc/bart-en.png)

@@ -144,3 +144,88 @@ Chruthaíomar rud nua le `Duine()` agus chuireamar é san athróg `mise`. Ansin 
 Nuair a ghlaomar ar `labhair` le `labhair@mise()`, scríobh sé 'Dia duit, is mise Eoin' amach ar an gconsól.
 
 Táimid in ann an creatlach chéanna a úsáid arís is arís chun a lán rudaí a cruthú.
+
+## An gníomh "nua"
+
+Cruthóimid creatlach do dhuine anois. Chun an ainm, aois agus seoladh a stóráil, tá gá dúinn a lán gníomhartha a cruthú:
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">creatlach</span> <span class="n">Duine</span> {
+    <span class="k">gníomh</span> <span class="n">athraighAinm</span>(<span class="n">ainm</span>) {
+        <span class="n">ainm</span><span class="o">@</span><span class="n">seo</span> = <span class="n">ainm</span>
+    }
+    <span class="k">gníomh</span> <span class="n">athraighAois</span>(<span class="n">aois</span>) {
+        <span class="n">aois</span><span class="o">@</span><span class="n">seo</span> = <span class="n">aois</span>
+    }
+    <span class="k">gníomh</span> <span class="n">athraighSeoladh</span>(<span class="n">seoladh</span>) {
+        <span class="n">seoladh</span><span class="o">@</span><span class="n">seo</span> = <span class="n">seoladh</span>
+    }
+    <span class="k">gníomh</span> <span class="n">labhair</span>() {
+        <span class="n">scríobh</span>(<span class="s">&#x27;Dia duit, Is mise&#x27;</span><span class="p">,</span> <span class="n">ainm</span><span class="o">@</span><span class="n">seo</span>)
+        <span class="n">scríobh</span>(<span class="s">&#x27;Tá mé&#x27;</span><span class="p">,</span> <span class="n">aois</span><span class="o">@</span><span class="n">seo</span><span class="p">,</span> <span class="s">&#x27;d\&#x27;aois&#x27;</span>)
+        <span class="n">scríobh</span>(<span class="s">&#x27;Tá mé i mo chónaí i&#x27;</span><span class="p">,</span> <span class="n">seoladh</span><span class="o">@</span><span class="n">seo</span>)
+    }
+}</code></pre>
+</div>
+</div>
+
+Nuair is mian linn rud a cruthú, caithimid a lán cód a scríobh:
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">bart</span> := <span class="n">Duine</span>()
+<span class="n">athraighAinm</span><span class="o">@</span><span class="n">bart</span>(<span class="s">&#x27;Bart Simpson&#x27;</span>)
+<span class="n">athraighAois</span><span class="o">@</span><span class="n">bart</span>(<span class="m">10</span>)
+<span class="n">athraighSeoladh</span><span class="o">@</span><span class="n">bart</span>(<span class="s">&#x27;Springfield&#x27;</span>)</code></pre>
+</div>
+</div>
+
+Chun an fadhb sin a réiteach, is féidir linn gníomh speisialta a úsáid, an gníomh "`nua`".
+
+Nuair a cuireann tú gníomh isteach i gcreatlach éigin leis an ainm "`nua`", ritear an gníomh sin nuair a cruthaítear rud ón gcreatlach. Mar shampla, is féidir linn an creatlach `Duine` a scríobhamar níos luaithe a scríobh arís le gníomh "`nua`" mar seo:
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="k">creatlach</span> <span class="n">Duine</span> {
+    <span class="k">gníomh</span> <span class="n">nua</span>(<span class="n">ainm</span><span class="p">,</span> <span class="n">aois</span><span class="p">,</span> <span class="n">seoladh</span>) {
+        <span class="n">ainm</span><span class="o">@</span><span class="n">seo</span> = <span class="n">ainm</span>
+        <span class="n">aois</span><span class="o">@</span><span class="n">seo</span> = <span class="n">aois</span>
+        <span class="n">seoladh</span><span class="o">@</span><span class="n">seo</span> = <span class="n">seoladh</span>
+    }
+    
+    <span class="k">gníomh</span> <span class="n">labhair</span>() {
+        <span class="n">scríobh</span>(<span class="s">&#x27;Dia duit, Is mise&#x27;</span><span class="p">,</span> <span class="n">ainm</span><span class="o">@</span><span class="n">seo</span>)
+        <span class="n">scríobh</span>(<span class="s">&#x27;Tá mé&#x27;</span><span class="p">,</span> <span class="n">aois</span><span class="o">@</span><span class="n">seo</span><span class="p">,</span> <span class="s">&#x27;bliana d\&#x27;aois&#x27;</span>)
+        <span class="n">scríobh</span>(<span class="s">&#x27;Tá mé i mo chónaí i&#x27;</span><span class="p">,</span> <span class="n">seoladh</span><span class="o">@</span><span class="n">seo</span>)
+    }
+}</code></pre>
+</div>
+</div>
+
+Scriosamar na gníomhartha `athraighAinm`, `athraighAois` agus `athraighSeoladh`, agus in ionad sin, scríobhamar gníomh amháin leis an ainm "`nua`".
+
+Anois, in ionad an píosa cód fada a scríobhamar níos luaithe chun an rud `bart` a cruthú, is féidir linn é seo a scríobh:
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">bart</span> := <span class="n">Duine</span>(<span class="s">&#x27;Bart Simpson&#x27;</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="s">&#x27;Springfield&#x27;</span>)
+<span class="n">labhair</span><span class="o">@</span><span class="n">bart</span>()</code></pre>
+</div>
+</div>
+
+Tá sé sin i bhfad níos lú cód!
+
+Nuair a cruthaímid rud nua le
+
+<div class="highlighter-rouge">
+<div class="highlight">
+<pre class="highlight"><code><span class="n">Duine</span>(<span class="s">&#x27;Bart Simpson&#x27;</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="s">&#x27;Springfield&#x27;</span>)</code></pre>
+</div>
+</div>
+
+glaonn sé ar an gníomh "`nua`" sa chreatlach.
+
+Ansin nuair a rithimid `labhair@bart()`, scríobhann sé an ainm, an aois agus an seoladh ar an gconsól.
+
+![Bart](/assets/images/teagaisc/bart.png)
