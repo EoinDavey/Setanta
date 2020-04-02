@@ -106,10 +106,10 @@ export class Interpreter {
         if (p.ops.length > 0) {
             const ops: P.PostOp[] = p.ops.slice(0, p.ops.length - 1);
             const op: P.PostOp = p.ops[p.ops.length - 1];
-            const subPost: P.Postfix = new P.Postfix(p.at, ops);
+            const subPost: P.Postfix = new P.Postfix(p.start, p.at, ops, p.end);
             return subPost.evalfn(env).then((val: Value) => {
                 if ("args" in op) {
-                    return Promise.reject(new RuntimeError("Ní féidir leat luach a thabhairt do gníomh"));
+                    return Promise.reject(new RuntimeError("Ní féidir leat luach a thabhairt do gníomh", p.start, p.end));
                 }
                 const arr: Value[] = Asserts.assertLiosta(val);
                 return op.expr.evalfn(env).then((idxV: Value) => {

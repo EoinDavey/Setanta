@@ -69,7 +69,7 @@ Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
 Prefix      := _ op='-|!'? pf=Postfix
                .evalfn = EvalFn { return prefEval(this); }
                .qeval = Quick.MaybeEv { return Quick.qPrefEval(this); }
-Postfix     := at=ObjLookups ops=PostOp*
+Postfix     := start=@ at=ObjLookups ops=PostOp* end=@
                .evalfn = EvalFn { return postfixArgsEval(this); }
                .qeval = Quick.MaybeEv { return Quick.qPostfixArgsEval(this); }
 ObjLookups  := attrs={id=ID '@' !wspace}* root=Atom

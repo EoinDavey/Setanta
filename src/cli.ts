@@ -2,13 +2,24 @@
 import * as readline from "readline";
 import * as Asserts from "./asserts";
 import { RuntimeError } from "./error";
-import { ParseResult, ASTKinds, Parser } from "./gen_parser";
+import { PosInfo, ParseResult, ASTKinds, Parser } from "./gen_parser";
 import { Interpreter, STOP } from "./i10r";
 import { goLitreacha, Value } from "./values";
 
 import * as fs from "fs";
 
 const [, , ...pargs] = process.argv;
+
+function printError(r: RuntimeError, source: string) {
+    if(r.start && r.end) {
+        console.error(`Eisceacht [${r.start.line}:${r.start.offset} - ${r.end.line}:${r.end.offset}]: ${r.msg}
+    ${source.slice(r.start.overallPos, r.end.overallPos)}`);
+    } else if(r.start) {
+        console.error(`${r.start.line}:${r.start.offset} Eisceacht: ${r.msg}`);
+    } else {
+        console.error(`Eisceacht: ${r.msg}`);
+    }
+}
 
 function getExternals(léighfn: () => Promise<string|null>): [string[], Value][] {
     return [
@@ -44,21 +55,21 @@ function getExternals(léighfn: () => Promise<string|null>): [string[], Value][]
     ];
 }
 
-async function getAst(getLine: () => Promise<string|null>,
-    continuance: () => Promise<string|null>): Promise<ParseResult> {
+async function getFullInput(getLine: () => Promise<string|null>,
+    continuance: () => Promise<string|null>): Promise<string|null> {
     let prev = "";
     while(true) {
         const inpFn = prev === "" ? getLine : continuance;
-        const inp = await inpFn();
+        const inp = (await inpFn()) + '\n';
         if(inp === null)
             continue;
         const line = prev + inp;
         const parser = new Parser(line);
         const res = parser.parse();
         if(res.err === null)
-            return res;
-        if(res.err.pos.offset !== line.length)
-            return res;
+            return line;
+        if(res.err.pos.overallPos !== line.length)
+            return null;
         prev = line;
     }
 }
@@ -77,13 +88,23 @@ async function repl() {
         return new Promise((r) => rl.question("...", r));
     }
     const i = new Interpreter(getExternals(getLine));
+    let soFar = "";
+    let prevPos: PosInfo = {overallPos: 0, line: 1, offset: 0};
     while (true) {
-        const p = await getAst(getLine, continuance);
-        if (p.err) {
-            console.log("" + p.err);
+        const input = await getFullInput(getLine, continuance);
+        if(input === null) {
+            // TODO print error
             continue;
         }
-        const ast = p.ast!;
+        soFar += input;
+        const parser = new Parser(soFar);
+        parser.reset(prevPos);
+        const res = parser.parse();
+
+        // Ignore that mark is private, for now - TODO fix this in tsPEG
+        // @ts-ignore
+        prevPos = parser.mark();
+        const ast = res.ast!;
         try {
             // This is an expression, we can print the result
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
@@ -93,9 +114,9 @@ async function repl() {
             await i.interpret(ast);
         } catch (err) {
             if (err instanceof RuntimeError) {
-                console.log(err.msg);
+                printError(err, soFar);
             } else if (err !== STOP) {
-                console.log(err);
+                console.error(err);
             }
         }
     }
@@ -131,7 +152,7 @@ async function runFile() {
         await i.interpret(res.ast!);
     } catch (err) {
         if (err instanceof RuntimeError) {
-            console.error(err.msg);
+            printError(err, inFile);
             process.exitCode = 1;
         } else {
             throw err;

@@ -71,7 +71,7 @@
 * Prefix      := _ op='-|!'? pf=Postfix
 *                .evalfn = EvalFn { return prefEval(this); }
 *                .qeval = Quick.MaybeEv { return Quick.qPrefEval(this); }
-* Postfix     := at=ObjLookups ops=PostOp*
+* Postfix     := start=@ at=ObjLookups ops=PostOp* end=@
 *                .evalfn = EvalFn { return postfixArgsEval(this); }
 *                .qeval = Quick.MaybeEv { return Quick.qPostfixArgsEval(this); }
 * ObjLookups  := attrs={id=ID '@' !wspace}* root=Atom
@@ -335,20 +335,20 @@ export interface ToradhStmt {
 }
 export type Expr = And;
 export class And {
-    public kind: ASTKinds.And = ASTKinds.And
+    public kind: ASTKinds.And = ASTKinds.And;
     public head: Or;
     public tail: And_$0[];
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(head : Or, tail : And_$0[]){
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(head: Or, tail: And_$0[]){
         this.head = head;
         this.tail = tail;
         this.evalfn = (() => {
         return andBinOp(this);
-        })()
+        })();
         this.qeval = (() => {
         return andQuickBinOp(this);
-        })()
+        })();
     }
 }
 export interface And_$0 {
@@ -356,20 +356,20 @@ export interface And_$0 {
     trm: Or;
 }
 export class Or {
-    public kind: ASTKinds.Or = ASTKinds.Or
+    public kind: ASTKinds.Or = ASTKinds.Or;
     public head: Eq;
     public tail: Or_$0[];
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(head : Eq, tail : Or_$0[]){
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(head: Eq, tail: Or_$0[]){
         this.head = head;
         this.tail = tail;
         this.evalfn = (() => {
         return orBinOp(this)
-        })()
+        })();
         this.qeval = (() => {
         return orQuickBinOp(this);
-        })()
+        })();
     }
 }
 export interface Or_$0 {
@@ -377,20 +377,20 @@ export interface Or_$0 {
     trm: Eq;
 }
 export class Eq {
-    public kind: ASTKinds.Eq = ASTKinds.Eq
+    public kind: ASTKinds.Eq = ASTKinds.Eq;
     public head: Comp;
     public tail: Eq_$0[];
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(head : Comp, tail : Eq_$0[]){
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(head: Comp, tail: Eq_$0[]){
         this.head = head;
         this.tail = tail;
         this.evalfn = (() => {
         return binOpEvalFn(this)
-        })()
+        })();
         this.qeval = (() => {
         return binOpQuickEvalFn(this);
-        })()
+        })();
     }
 }
 export interface Eq_$0 {
@@ -399,20 +399,20 @@ export interface Eq_$0 {
     trm: Comp;
 }
 export class Comp {
-    public kind: ASTKinds.Comp = ASTKinds.Comp
+    public kind: ASTKinds.Comp = ASTKinds.Comp;
     public head: Sum;
     public tail: Comp_$0[];
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(head : Sum, tail : Comp_$0[]){
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(head: Sum, tail: Comp_$0[]){
         this.head = head;
         this.tail = tail;
         this.evalfn = (() => {
         return binOpEvalFn(this)
-        })()
+        })();
         this.qeval = (() => {
         return binOpQuickEvalFn(this);
-        })()
+        })();
     }
 }
 export interface Comp_$0 {
@@ -421,20 +421,20 @@ export interface Comp_$0 {
     trm: Sum;
 }
 export class Sum {
-    public kind: ASTKinds.Sum = ASTKinds.Sum
+    public kind: ASTKinds.Sum = ASTKinds.Sum;
     public head: Product;
     public tail: Sum_$0[];
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(head : Product, tail : Sum_$0[]){
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(head: Product, tail: Sum_$0[]){
         this.head = head;
         this.tail = tail;
         this.evalfn = (() => {
         return binOpEvalFn(this)
-        })()
+        })();
         this.qeval = (() => {
         return binOpQuickEvalFn(this);
-        })()
+        })();
     }
 }
 export interface Sum_$0 {
@@ -443,20 +443,20 @@ export interface Sum_$0 {
     trm: Product;
 }
 export class Product {
-    public kind: ASTKinds.Product = ASTKinds.Product
+    public kind: ASTKinds.Product = ASTKinds.Product;
     public head: Prefix;
     public tail: Product_$0[];
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(head : Prefix, tail : Product_$0[]){
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(head: Prefix, tail: Product_$0[]){
         this.head = head;
         this.tail = tail;
         this.evalfn = (() => {
         return binOpEvalFn(this);
-        })()
+        })();
         this.qeval = (() => {
         return binOpQuickEvalFn(this);
-        })()
+        })();
     }
 }
 export interface Product_$0 {
@@ -465,54 +465,58 @@ export interface Product_$0 {
     trm: Prefix;
 }
 export class Prefix {
-    public kind: ASTKinds.Prefix = ASTKinds.Prefix
+    public kind: ASTKinds.Prefix = ASTKinds.Prefix;
     public op: Nullable<string>;
     public pf: Postfix;
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(op : Nullable<string>, pf : Postfix){
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(op: Nullable<string>, pf: Postfix){
         this.op = op;
         this.pf = pf;
         this.evalfn = (() => {
         return prefEval(this);
-        })()
+        })();
         this.qeval = (() => {
         return Quick.qPrefEval(this);
-        })()
+        })();
     }
 }
 export class Postfix {
-    public kind: ASTKinds.Postfix = ASTKinds.Postfix
+    public kind: ASTKinds.Postfix = ASTKinds.Postfix;
+    public start: PosInfo;
     public at: ObjLookups;
     public ops: PostOp[];
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(at : ObjLookups, ops : PostOp[]){
+    public end: PosInfo;
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(start: PosInfo, at: ObjLookups, ops: PostOp[], end: PosInfo){
+        this.start = start;
         this.at = at;
         this.ops = ops;
+        this.end = end;
         this.evalfn = (() => {
         return postfixArgsEval(this);
-        })()
+        })();
         this.qeval = (() => {
         return Quick.qPostfixArgsEval(this);
-        })()
+        })();
     }
 }
 export class ObjLookups {
-    public kind: ASTKinds.ObjLookups = ASTKinds.ObjLookups
+    public kind: ASTKinds.ObjLookups = ASTKinds.ObjLookups;
     public attrs: ObjLookups_$0[];
     public root: Atom;
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(attrs : ObjLookups_$0[], root : Atom){
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(attrs: ObjLookups_$0[], root: Atom){
         this.attrs = attrs;
         this.root = root;
         this.evalfn = (() => {
         return objLookupsEval(this);
-        })()
+        })();
         this.qeval = (() => {
         return Quick.qObjLookupsEval(this);
-        })()
+        })();
     }
 }
 export interface ObjLookups_$0 {
@@ -530,19 +534,19 @@ export interface PostOp_2 {
 }
 export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4 | Atom_5 | Atom_6 | Atom_7;
 export class Atom_1 {
-    public kind: ASTKinds.Atom_1 = ASTKinds.Atom_1
+    public kind: ASTKinds.Atom_1 = ASTKinds.Atom_1;
     public trm: Expr;
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(trm : Expr){
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(trm: Expr){
         this.trm = trm;
         this.evalfn = (() => {
         return (env: Environment) => this.trm.evalfn(env);
-        })()
+        })();
         this.qeval = (() => {
         const childF = this.trm.qeval;
                     return childF === null ? null : childF.bind(this.trm);
-        })()
+        })();
     }
 }
 export type Atom_2 = ID;
@@ -552,35 +556,35 @@ export type Atom_5 = Bool;
 export type Atom_6 = Neamhni;
 export type Atom_7 = ListLit;
 export class ListLit {
-    public kind: ASTKinds.ListLit = ASTKinds.ListLit
+    public kind: ASTKinds.ListLit = ASTKinds.ListLit;
     public els: Nullable<CSArgs>;
-    public evalfn: EvalFn
-    public qeval: Quick.MaybeEv
-    constructor(els : Nullable<CSArgs>){
+    public evalfn: EvalFn;
+    public qeval: Quick.MaybeEv;
+    constructor(els: Nullable<CSArgs>){
         this.els = els;
         this.evalfn = (() => {
         return (env: Environment) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
-        })()
+        })();
         this.qeval = (() => {
         return Quick.qListLitEval(this);
-        })()
+        })();
     }
 }
 export class CSArgs {
-    public kind: ASTKinds.CSArgs = ASTKinds.CSArgs
+    public kind: ASTKinds.CSArgs = ASTKinds.CSArgs;
     public head: Expr;
     public tail: CSArgs_$0[];
-    public evalfn: (env:Environment)=>Promise<Value[]>
-    public qeval: ((env:Environment)=>Value[])|null
-    constructor(head : Expr, tail : CSArgs_$0[]){
+    public evalfn: (env:Environment)=>Promise<Value[]>;
+    public qeval: ((env:Environment)=>Value[])|null;
+    constructor(head: Expr, tail: CSArgs_$0[]){
         this.head = head;
         this.tail = tail;
         this.evalfn = (() => {
         return csArgsEval(this);
-        })()
+        })();
         this.qeval = (() => {
         return Quick.qCSArgsEval(this);
-        })()
+        })();
     }
 }
 export interface CSArgs_$0 {
@@ -597,79 +601,79 @@ export interface CSIDs_$0 {
     id: ID;
 }
 export class ID {
-    public kind: ASTKinds.ID = ASTKinds.ID
+    public kind: ASTKinds.ID = ASTKinds.ID;
     public id: string;
-    public evalfn: EvalFn
-    public qeval: Quick.EvalFn
-    constructor(id : string){
+    public evalfn: EvalFn;
+    public qeval: Quick.EvalFn;
+    constructor(id: string){
         this.id = id;
         this.evalfn = (() => {
         return qEvalToEval(Quick.qIdEval(this.id));
-        })()
+        })();
         this.qeval = (() => {
         return Quick.qIdEval(this.id);
-        })()
+        })();
     }
 }
 export interface ID_$0 {
     kind: ASTKinds.ID_$0;
 }
 export class Bool {
-    public kind: ASTKinds.Bool = ASTKinds.Bool
+    public kind: ASTKinds.Bool = ASTKinds.Bool;
     public bool: string;
-    public evalfn: EvalFn
-    public qeval: Quick.EvalFn
-    constructor(bool : string){
+    public evalfn: EvalFn;
+    public qeval: Quick.EvalFn;
+    constructor(bool: string){
         this.bool = bool;
         this.evalfn = (() => {
         return qEvalToEval(Quick.qBoolEval(this.bool));
-        })()
+        })();
         this.qeval = (() => {
         return Quick.qBoolEval(this.bool);
-        })()
+        })();
     }
 }
 export class Neamhni {
-    public kind: ASTKinds.Neamhni = ASTKinds.Neamhni
-    public evalfn: EvalFn
-    public qeval: Quick.EvalFn
+    public kind: ASTKinds.Neamhni = ASTKinds.Neamhni;
+    public evalfn: EvalFn;
+    public qeval: Quick.EvalFn;
     constructor(){
         this.evalfn = (() => {
         return () => Promise.resolve(null);
-        })()
+        })();
         this.qeval = (() => {
         return () => null;
-        })()
+        })();
     }
 }
 export class Int {
-    public kind: ASTKinds.Int = ASTKinds.Int
+    public kind: ASTKinds.Int = ASTKinds.Int;
     public int: string;
-    public evalfn: EvalFn
-    public qeval: Quick.EvalFn
-    constructor(int : string){
+    public evalfn: EvalFn;
+    public qeval: Quick.EvalFn;
+    constructor(int: string){
         this.int = int;
         this.evalfn = (() => {
         return qEvalToEval(Quick.qIntEval(this.int));
-        })()
+        })();
         this.qeval = (() => {
         return Quick.qIntEval(this.int);
-        })()
+        })();
     }
 }
 export class Litreacha {
-    public kind: ASTKinds.Litreacha = ASTKinds.Litreacha
+    public kind: ASTKinds.Litreacha = ASTKinds.Litreacha;
     public val: string;
-    public evalfn: EvalFn
-    public qeval: Quick.EvalFn
-    constructor(val : string){
+    public evalfn: EvalFn;
+    public qeval: Quick.EvalFn;
+    constructor(val: string){
         this.val = val;
         this.evalfn = (() => {
         return qEvalToEval(Quick.qLitreachaEval(this.val));
-        })()
+        })();
         this.qeval = (() => {
         return Quick.qLitreachaEval(this.val);
-        })()
+        })();
     }
 }
 export type _ = wspace[];
@@ -699,7 +703,7 @@ export class Parser {
     private pos: PosInfo;
     private negating: boolean = false;
     constructor(input: string) {
-        this.pos = new PosInfo(0, 1, 0);
+        this.pos = {overallPos: 0, line: 1, offset: 0};
         this.input = input;
     }
     public reset(pos: PosInfo) {
@@ -1375,14 +1379,18 @@ export class Parser {
                 if (log) {
                     log("Postfix");
                 }
+                let start: Nullable<PosInfo>;
                 let at: Nullable<ObjLookups>;
                 let ops: Nullable<PostOp[]>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<Postfix> = null;
                 if (true
+                    && (start = this.mark()) !== null
                     && (at = this.matchObjLookups($$dpth + 1, cr)) !== null
                     && (ops = this.loop<PostOp>(() => this.matchPostOp($$dpth + 1, cr), true)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new Postfix(at, ops);
+                    res = new Postfix(start, at, ops, end);
                 }
                 return res;
             }, cr)();
@@ -1792,6 +1800,13 @@ export class Parser {
     public matchKeyword_9($$dpth: number, cr?: ContextRecorder): Nullable<Keyword_9> {
         return this.regexAccept(String.raw`creatlach`, $$dpth + 1, cr);
     }
+    public test(): boolean {
+        const mrk = this.mark();
+        const res = this.matchProgram(0);
+        const ans = res !== null && this.finished();
+        this.reset(mrk);
+        return ans;
+    }
     public parse(): ParseResult {
         const mrk = this.mark();
         const res = this.matchProgram(0);
@@ -1870,8 +1885,11 @@ export class Parser {
                             lind = i;
                         }
                     }
-                    this.pos = new PosInfo(reg.lastIndex, this.pos.line + lineJmp,
-                       lind === -1 ? this.pos.offset + res[0].length : (res[0].length - lind));
+                    this.pos = {
+                        overallPos: reg.lastIndex,
+                        line: this.pos.line + lineJmp,
+                        offset: lind === -1 ? this.pos.offset + res[0].length : (res[0].length - lind)
+                    };
                     return res[0];
                 }
                 return null;
@@ -1893,6 +1911,10 @@ export class Parser {
         return res === null ? true : null;
     }
 }
+export function parse(s: string): ParseResult {
+    const p = new Parser(s);
+    return p.parse();
+}
 export class ParseResult {
     public ast: Nullable<Program>;
     public err: Nullable<SyntaxErr>;
@@ -1901,15 +1923,10 @@ export class ParseResult {
         this.err = err;
     }
 }
-export class PosInfo {
-    public overallPos: number;
-    public line: number;
-    public offset: number;
-    constructor(overallPos: number, line: number, offset: number) {
-        this.overallPos = overallPos;
-        this.line = line;
-        this.offset = offset;
-    }
+export interface PosInfo {
+    readonly overallPos: number;
+    readonly line: number;
+    readonly offset: number;
 }
 export class SyntaxErr {
     public pos: PosInfo;
@@ -1925,7 +1942,7 @@ export class SyntaxErr {
     }
 }
 class ErrorTracker implements ContextRecorder {
-    private mxpos: PosInfo = new PosInfo(-1, -1, -1);
+    private mxpos: PosInfo = {overallPos: -1, line: -1, offset: -1};
     private mnd: number = -1;
     private prules: Set<string> = new Set();
     private pmatches: Set<string> = new Set();
