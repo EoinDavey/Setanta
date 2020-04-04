@@ -116,7 +116,8 @@ export class Interpreter {
                     const idx: number = Asserts.assertNumber(idxV);
                     return (v: Value) => {
                         if (idx < 0 || idx >= arr.length) {
-                            throw new RuntimeError(`Tá ${idx} thar teorainn an liosta`);
+                            throw new RuntimeError(`Tá ${idx} thar teorainn an liosta`,
+                                p.start, p.end);
                         }
                         arr[idx] = v;
                     };
@@ -142,7 +143,9 @@ export class Interpreter {
     public refAtom(a: P.Atom, env: Environment): Promise<Ref> {
         if (a.kind !== ASTKinds.ID) {
             return a.evalfn(env).then((v: Value) => {
-                return Promise.reject(new RuntimeError("Ní féidir leat luach a thabhairt do " + goLitreacha(v)));
+                return Promise.reject(
+                    new RuntimeError("Ní féidir leat luach a thabhairt do " +
+                        goLitreacha(v)));
             });
         }
         return Promise.resolve((v: Value) => {
@@ -165,7 +168,8 @@ export class Interpreter {
         if (b.tuis) {
             const tuis = env.get(b.tuis.id.id);
             if (!tuis || !(Checks.isCreatlach(tuis))) {
-                throw new RuntimeError(`Nil aon creatlach leis an ainm ${b.tuis.id.id}`);
+                throw new RuntimeError(`Nil aon creatlach leis an ainm ${b.tuis.id.id}`,
+                    b.tuis.parentstart, b.tuis.parentend);
             }
             const ctlch = new CreatlachImpl(b.id.id, gníomhs, tuis);
             env.define(b.id.id, ctlch);
@@ -246,7 +250,9 @@ export class Interpreter {
     }
     public execDefn(a: P.DefnStmt, env: Environment): Promise<void> {
         if (env.has(a.id.id)) {
-            return Promise.reject(new RuntimeError(`Tá ${a.id.id} sa scóip seo cheana féin`));
+            return Promise.reject(
+                new RuntimeError(`Tá ${a.id.id} sa scóip seo cheana féin`,
+                a.idstart, a.idend));
         }
         // Try use quick strategy
         if (a.expr.qeval !== null) {

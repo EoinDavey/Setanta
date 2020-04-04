@@ -38,12 +38,12 @@
 * BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
 * NuairStmt   := _ 'nuair-a' expr=Expr &gap stmt=NonAsgnStmt
 * LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr step={_ ',' step=Expr}? _ '\)' stmt=NonAsgnStmt
-* DefnStmt    := _ id=ID _ ':=' _ expr=Expr
+* DefnStmt    := _ idstart=@ id=ID idend=@ _ ':=' _ expr=Expr
 * AssgnStmt   := _ lhs=Postfix _ op=AsgnOp _ expr=Expr
 * GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
 *     stmts=AsgnStmt*
 * _ '}'
-* CtlchStmt   := _ 'creatlach' &gap id=ID tuis={_ 'ó' &gap id=ID}? _ '{'
+* CtlchStmt   := _ 'creatlach' &gap id=ID tuis={_ 'ó' &gap parentstart=@ id=ID parentend=@}? _ '{'
 *     gniomhs=GniomhStmt*
 * _ '}'
 * BrisStmt    := _ 'bris'
@@ -298,7 +298,9 @@ export interface LeStmt_$0 {
 }
 export interface DefnStmt {
     kind: ASTKinds.DefnStmt;
+    idstart: PosInfo;
     id: ID;
+    idend: PosInfo;
     expr: Expr;
 }
 export interface AssgnStmt {
@@ -321,7 +323,9 @@ export interface CtlchStmt {
 }
 export interface CtlchStmt_$0 {
     kind: ASTKinds.CtlchStmt_$0;
+    parentstart: PosInfo;
     id: ID;
+    parentend: PosInfo;
 }
 export interface BrisStmt {
     kind: ASTKinds.BrisStmt;
@@ -964,18 +968,22 @@ export class Parser {
                 if (log) {
                     log("DefnStmt");
                 }
+                let idstart: Nullable<PosInfo>;
                 let id: Nullable<ID>;
+                let idend: Nullable<PosInfo>;
                 let expr: Nullable<Expr>;
                 let res: Nullable<DefnStmt> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
+                    && (idstart = this.mark()) !== null
                     && (id = this.matchID($$dpth + 1, cr)) !== null
+                    && (idend = this.mark()) !== null
                     && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`:=`, $$dpth + 1, cr) !== null
                     && this.match_($$dpth + 1, cr) !== null
                     && (expr = this.matchExpr($$dpth + 1, cr)) !== null
                 ) {
-                    res = {kind: ASTKinds.DefnStmt, id, expr};
+                    res = {kind: ASTKinds.DefnStmt, idstart, id, idend, expr};
                 }
                 return res;
             }, cr)();
@@ -1067,15 +1075,19 @@ export class Parser {
                 if (log) {
                     log("CtlchStmt_$0");
                 }
+                let parentstart: Nullable<PosInfo>;
                 let id: Nullable<ID>;
+                let parentend: Nullable<PosInfo>;
                 let res: Nullable<CtlchStmt_$0> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`ó`, $$dpth + 1, cr) !== null
                     && this.noConsume<gap>(() => this.matchgap($$dpth + 1, cr)) !== null
+                    && (parentstart = this.mark()) !== null
                     && (id = this.matchID($$dpth + 1, cr)) !== null
+                    && (parentend = this.mark()) !== null
                 ) {
-                    res = {kind: ASTKinds.CtlchStmt_$0, id};
+                    res = {kind: ASTKinds.CtlchStmt_$0, parentstart, id, parentend};
                 }
                 return res;
             }, cr)();

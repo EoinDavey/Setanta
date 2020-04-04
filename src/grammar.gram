@@ -36,12 +36,12 @@ IfStmt      := _ 'm[áa]' &gap expr=Expr &gap stmt=NonAsgnStmt elsebranch={_ 'n[
 BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
 NuairStmt   := _ 'nuair-a' expr=Expr &gap stmt=NonAsgnStmt
 LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr step={_ ',' step=Expr}? _ '\)' stmt=NonAsgnStmt
-DefnStmt    := _ id=ID _ ':=' _ expr=Expr
+DefnStmt    := _ idstart=@ id=ID idend=@ _ ':=' _ expr=Expr
 AssgnStmt   := _ lhs=Postfix _ op=AsgnOp _ expr=Expr
 GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
     stmts=AsgnStmt*
 _ '}'
-CtlchStmt   := _ 'creatlach' &gap id=ID tuis={_ 'ó' &gap id=ID}? _ '{'
+CtlchStmt   := _ 'creatlach' &gap id=ID tuis={_ 'ó' &gap parentstart=@ id=ID parentend=@}? _ '{'
     gniomhs=GniomhStmt*
 _ '}'
 BrisStmt    := _ 'bris'
