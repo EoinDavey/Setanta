@@ -11,11 +11,15 @@ import * as fs from "fs";
 const [, , ...pargs] = process.argv;
 
 function printError(r: RuntimeError, source: string) {
-    if(r.start && r.end) {
-        console.error(`Eisceacht [${r.start.line}:${r.start.offset} - ${r.end.line}:${r.end.offset}]: ${r.msg}
-    ${source.slice(r.start.overallPos, r.end.overallPos)}`);
+    if(r.start && r.end && r.end.line - r.start.line <= 3) {
+        const sourceLines = source.split('\n');
+        console.error(`Eisceacht: ${r.msg}`);
+        for(let i = r.start.line; i <= r.end.line; i++)
+            console.error(`Líne ${i}: ${sourceLines[i-1]}`);
+    } else if(r.start && r.end) {
+        console.error(`Suíomh [${r.start.line}:${r.start.offset} - ${r.end.line}:${r.end.offset}]: Eisceacht: ${r.msg}`);
     } else if(r.start) {
-        console.error(`${r.start.line}:${r.start.offset} Eisceacht: ${r.msg}`);
+        console.error(`Líne ${r.start.line}:${r.start.offset} Eisceacht: ${r.msg}`);
     } else {
         console.error(`Eisceacht: ${r.msg}`);
     }
