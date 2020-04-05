@@ -50,22 +50,22 @@
 * CCStmt      := _ 'chun-cinn'
 * ToradhStmt  := _ 'toradh' &gap exp=Expr?
 * Expr        := And
-* And         := head=Or tail={_ '\&' trm=Or}*
+* And         := start=@ head=Or tail={_ '\&' trm=Or}* end=@
 *                .evalfn = EvalFn { return andBinOp(this); }
 *                .qeval = Quick.MaybeEv { return andQuickBinOp(this); }
-* Or          := head=Eq tail={_ '\|' trm=Eq}*
+* Or          := start=@ head=Eq tail={_ '\|' trm=Eq}* end=@
 *                .evalfn = EvalFn { return orBinOp(this) }
 *                .qeval = Quick.MaybeEv { return orQuickBinOp(this); }
-* Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
+* Eq          := start=@ head=Comp tail={_ op='[!=]=' trm=Comp}* end=@
 *                .evalfn = EvalFn { return binOpEvalFn(this) }
 *                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
-* Comp        := head=Sum tail={_ op=Compare trm=Sum}*
+* Comp        := start=@ head=Sum tail={_ op=Compare trm=Sum}* end=@
 *                .evalfn = EvalFn { return binOpEvalFn(this) }
 *                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
-* Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
+* Sum         := start=@ head=Product tail={_ op=PlusMinus trm=Product}* end=@
 *                .evalfn = EvalFn { return binOpEvalFn(this) }
 *                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
-* Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
+* Product     := start=@ head=Prefix tail={_ op=MulDiv trm=Prefix}* end=@
 *                .evalfn = EvalFn { return binOpEvalFn(this); }
 *                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
 * Prefix      := _ start=@ op='-|!'? pf=Postfix end=@
@@ -340,13 +340,17 @@ export interface ToradhStmt {
 export type Expr = And;
 export class And {
     public kind: ASTKinds.And = ASTKinds.And;
+    public start: PosInfo;
     public head: Or;
     public tail: And_$0[];
+    public end: PosInfo;
     public evalfn: EvalFn;
     public qeval: Quick.MaybeEv;
-    constructor(head: Or, tail: And_$0[]){
+    constructor(start: PosInfo, head: Or, tail: And_$0[], end: PosInfo){
+        this.start = start;
         this.head = head;
         this.tail = tail;
+        this.end = end;
         this.evalfn = (() => {
         return andBinOp(this);
         })();
@@ -361,13 +365,17 @@ export interface And_$0 {
 }
 export class Or {
     public kind: ASTKinds.Or = ASTKinds.Or;
+    public start: PosInfo;
     public head: Eq;
     public tail: Or_$0[];
+    public end: PosInfo;
     public evalfn: EvalFn;
     public qeval: Quick.MaybeEv;
-    constructor(head: Eq, tail: Or_$0[]){
+    constructor(start: PosInfo, head: Eq, tail: Or_$0[], end: PosInfo){
+        this.start = start;
         this.head = head;
         this.tail = tail;
+        this.end = end;
         this.evalfn = (() => {
         return orBinOp(this)
         })();
@@ -382,13 +390,17 @@ export interface Or_$0 {
 }
 export class Eq {
     public kind: ASTKinds.Eq = ASTKinds.Eq;
+    public start: PosInfo;
     public head: Comp;
     public tail: Eq_$0[];
+    public end: PosInfo;
     public evalfn: EvalFn;
     public qeval: Quick.MaybeEv;
-    constructor(head: Comp, tail: Eq_$0[]){
+    constructor(start: PosInfo, head: Comp, tail: Eq_$0[], end: PosInfo){
+        this.start = start;
         this.head = head;
         this.tail = tail;
+        this.end = end;
         this.evalfn = (() => {
         return binOpEvalFn(this)
         })();
@@ -404,13 +416,17 @@ export interface Eq_$0 {
 }
 export class Comp {
     public kind: ASTKinds.Comp = ASTKinds.Comp;
+    public start: PosInfo;
     public head: Sum;
     public tail: Comp_$0[];
+    public end: PosInfo;
     public evalfn: EvalFn;
     public qeval: Quick.MaybeEv;
-    constructor(head: Sum, tail: Comp_$0[]){
+    constructor(start: PosInfo, head: Sum, tail: Comp_$0[], end: PosInfo){
+        this.start = start;
         this.head = head;
         this.tail = tail;
+        this.end = end;
         this.evalfn = (() => {
         return binOpEvalFn(this)
         })();
@@ -426,13 +442,17 @@ export interface Comp_$0 {
 }
 export class Sum {
     public kind: ASTKinds.Sum = ASTKinds.Sum;
+    public start: PosInfo;
     public head: Product;
     public tail: Sum_$0[];
+    public end: PosInfo;
     public evalfn: EvalFn;
     public qeval: Quick.MaybeEv;
-    constructor(head: Product, tail: Sum_$0[]){
+    constructor(start: PosInfo, head: Product, tail: Sum_$0[], end: PosInfo){
+        this.start = start;
         this.head = head;
         this.tail = tail;
+        this.end = end;
         this.evalfn = (() => {
         return binOpEvalFn(this)
         })();
@@ -448,13 +468,17 @@ export interface Sum_$0 {
 }
 export class Product {
     public kind: ASTKinds.Product = ASTKinds.Product;
+    public start: PosInfo;
     public head: Prefix;
     public tail: Product_$0[];
+    public end: PosInfo;
     public evalfn: EvalFn;
     public qeval: Quick.MaybeEv;
-    constructor(head: Prefix, tail: Product_$0[]){
+    constructor(start: PosInfo, head: Prefix, tail: Product_$0[], end: PosInfo){
+        this.start = start;
         this.head = head;
         this.tail = tail;
+        this.end = end;
         this.evalfn = (() => {
         return binOpEvalFn(this);
         })();
@@ -1168,14 +1192,18 @@ export class Parser {
                 if (log) {
                     log("And");
                 }
+                let start: Nullable<PosInfo>;
                 let head: Nullable<Or>;
                 let tail: Nullable<And_$0[]>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<And> = null;
                 if (true
+                    && (start = this.mark()) !== null
                     && (head = this.matchOr($$dpth + 1, cr)) !== null
                     && (tail = this.loop<And_$0>(() => this.matchAnd_$0($$dpth + 1, cr), true)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new And(head, tail);
+                    res = new And(start, head, tail, end);
                 }
                 return res;
             }, cr)();
@@ -1204,14 +1232,18 @@ export class Parser {
                 if (log) {
                     log("Or");
                 }
+                let start: Nullable<PosInfo>;
                 let head: Nullable<Eq>;
                 let tail: Nullable<Or_$0[]>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<Or> = null;
                 if (true
+                    && (start = this.mark()) !== null
                     && (head = this.matchEq($$dpth + 1, cr)) !== null
                     && (tail = this.loop<Or_$0>(() => this.matchOr_$0($$dpth + 1, cr), true)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new Or(head, tail);
+                    res = new Or(start, head, tail, end);
                 }
                 return res;
             }, cr)();
@@ -1240,14 +1272,18 @@ export class Parser {
                 if (log) {
                     log("Eq");
                 }
+                let start: Nullable<PosInfo>;
                 let head: Nullable<Comp>;
                 let tail: Nullable<Eq_$0[]>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<Eq> = null;
                 if (true
+                    && (start = this.mark()) !== null
                     && (head = this.matchComp($$dpth + 1, cr)) !== null
                     && (tail = this.loop<Eq_$0>(() => this.matchEq_$0($$dpth + 1, cr), true)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new Eq(head, tail);
+                    res = new Eq(start, head, tail, end);
                 }
                 return res;
             }, cr)();
@@ -1277,14 +1313,18 @@ export class Parser {
                 if (log) {
                     log("Comp");
                 }
+                let start: Nullable<PosInfo>;
                 let head: Nullable<Sum>;
                 let tail: Nullable<Comp_$0[]>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<Comp> = null;
                 if (true
+                    && (start = this.mark()) !== null
                     && (head = this.matchSum($$dpth + 1, cr)) !== null
                     && (tail = this.loop<Comp_$0>(() => this.matchComp_$0($$dpth + 1, cr), true)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new Comp(head, tail);
+                    res = new Comp(start, head, tail, end);
                 }
                 return res;
             }, cr)();
@@ -1314,14 +1354,18 @@ export class Parser {
                 if (log) {
                     log("Sum");
                 }
+                let start: Nullable<PosInfo>;
                 let head: Nullable<Product>;
                 let tail: Nullable<Sum_$0[]>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<Sum> = null;
                 if (true
+                    && (start = this.mark()) !== null
                     && (head = this.matchProduct($$dpth + 1, cr)) !== null
                     && (tail = this.loop<Sum_$0>(() => this.matchSum_$0($$dpth + 1, cr), true)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new Sum(head, tail);
+                    res = new Sum(start, head, tail, end);
                 }
                 return res;
             }, cr)();
@@ -1351,14 +1395,18 @@ export class Parser {
                 if (log) {
                     log("Product");
                 }
+                let start: Nullable<PosInfo>;
                 let head: Nullable<Prefix>;
                 let tail: Nullable<Product_$0[]>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<Product> = null;
                 if (true
+                    && (start = this.mark()) !== null
                     && (head = this.matchPrefix($$dpth + 1, cr)) !== null
                     && (tail = this.loop<Product_$0>(() => this.matchProduct_$0($$dpth + 1, cr), true)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new Product(head, tail);
+                    res = new Product(start, head, tail, end);
                 }
                 return res;
             }, cr)();

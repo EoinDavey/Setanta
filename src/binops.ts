@@ -1,9 +1,9 @@
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { Environment } from "./env";
-import { RuntimeError } from "./error";
+import { RuntimeError, tagErrorLoc } from "./error";
 import { EvalFn } from "./evals";
-import { And, Or } from "./gen_parser";
+import { PosInfo, And, Or } from "./gen_parser";
 import { cat, repeat } from "./liosta";
 import { strcat, strrep } from "./litreacha";
 import { IsQuick, isQuick, MaybeEv as MaybeQuickEv } from "./quickevals";
@@ -27,7 +27,8 @@ export function orBinOp(or: Or): EvalFn {
                 }
                 return y.trm.evalfn(env);
             })
-            , or.head.evalfn(env));
+            , or.head.evalfn(env))
+                .catch(err => Promise.reject(tagErrorLoc(err, or.start, or.end)));
 }
 
 export function andBinOp(and: And): EvalFn {
@@ -42,10 +43,11 @@ export function andBinOp(and: And): EvalFn {
                 }
                 return y.trm.evalfn(env);
             })
-            , and.head.evalfn(env));
+            , and.head.evalfn(env))
+                .catch(err => Promise.reject(tagErrorLoc(err, and.start, and.end)));
 }
 
-export function binOpEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, op: string}[]}): EvalFn {
+export function binOpEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, op: string}[], start: PosInfo, end: PosInfo}): EvalFn {
     if (obj.tail.length === 0) {
         return obj.head.evalfn.bind(obj.head);
     }
@@ -53,7 +55,7 @@ export function binOpEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, op: st
         obj.tail.reduce((x: Promise<Value>, y): Promise<Value> =>
             x.then((a: Value) =>
                 y.trm.evalfn(env).then((b: Value) =>
-                    evalBinOp(a, b, y.op))),
+                    evalBinOp(a, b, y.op, obj.start, obj.end))),
             obj.head.evalfn(env));
 }
 
@@ -115,7 +117,7 @@ export function andQuickBinOp(and: And): MaybeQuickEv {
     };
 }
 
-export function binOpQuickEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, op: string}[]}): MaybeQuickEv {
+export function binOpQuickEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, op: string}[], start: PosInfo, end: PosInfo}): MaybeQuickEv {
     if (obj.tail.length === 0) {
         const childF = obj.head.qeval;
         return childF === null ? null : childF.bind(obj.head);
@@ -139,7 +141,7 @@ export function binOpQuickEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, o
     return (env: Environment) => {
         return ops.reduce((x: Value, y): Value => {
             const b = y.trm.qeval(env);
-            return evalBinOp(x, b, y.op);
+            return evalBinOp(x, b, y.op, obj.start, obj.end);
         }, head.qeval(env));
     };
 }
@@ -234,7 +236,7 @@ const binOpTable: Map<string, BinOpEntry[]> = new Map([
     }]],
 ]);
 
-function evalBinOp(a: Value, b: Value, op: string): Value {
+function evalBinOp(a: Value, b: Value, op: string, start: PosInfo, end: PosInfo): Value {
     const g = binOpTable.get(op);
     if (g) {
         for (const x of g) {
@@ -243,7 +245,7 @@ function evalBinOp(a: Value, b: Value, op: string): Value {
             }
         }
     }
-    throw new RuntimeError(`Ní féidir leat ${goLitreacha(op)} a úsaid le ${goLitreacha(a)} agus ${goLitreacha(b)}`);
+    throw new RuntimeError(`Ní féidir leat ${goLitreacha(op)} a úsaid le ${goLitreacha(a)} agus ${goLitreacha(b)}`, start, end);
 }
 
 type AsgnOp = (ref: Ref, cur: Value, dv: Value) => void;

@@ -48,22 +48,22 @@ BrisStmt    := _ 'bris'
 CCStmt      := _ 'chun-cinn'
 ToradhStmt  := _ 'toradh' &gap exp=Expr?
 Expr        := And
-And         := head=Or tail={_ '\&' trm=Or}*
+And         := start=@ head=Or tail={_ '\&' trm=Or}* end=@
                .evalfn = EvalFn { return andBinOp(this); }
                .qeval = Quick.MaybeEv { return andQuickBinOp(this); }
-Or          := head=Eq tail={_ '\|' trm=Eq}*
+Or          := start=@ head=Eq tail={_ '\|' trm=Eq}* end=@
                .evalfn = EvalFn { return orBinOp(this) }
                .qeval = Quick.MaybeEv { return orQuickBinOp(this); }
-Eq          := head=Comp tail={_ op='[!=]=' trm=Comp}*
+Eq          := start=@ head=Comp tail={_ op='[!=]=' trm=Comp}* end=@
                .evalfn = EvalFn { return binOpEvalFn(this) }
                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
-Comp        := head=Sum tail={_ op=Compare trm=Sum}*
+Comp        := start=@ head=Sum tail={_ op=Compare trm=Sum}* end=@
                .evalfn = EvalFn { return binOpEvalFn(this) }
                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
-Sum         := head=Product tail={_ op=PlusMinus trm=Product}*
+Sum         := start=@ head=Product tail={_ op=PlusMinus trm=Product}* end=@
                .evalfn = EvalFn { return binOpEvalFn(this) }
                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
-Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
+Product     := start=@ head=Prefix tail={_ op=MulDiv trm=Prefix}* end=@
                .evalfn = EvalFn { return binOpEvalFn(this); }
                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
 Prefix      := _ start=@ op='-|!'? pf=Postfix end=@
