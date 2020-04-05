@@ -2,7 +2,7 @@
 import * as readline from "readline";
 import * as Asserts from "./asserts";
 import { RuntimeError } from "./error";
-import { PosInfo, ParseResult, ASTKinds, Parser } from "./gen_parser";
+import { SyntaxErr, PosInfo, ParseResult, ASTKinds, Parser } from "./gen_parser";
 import { Interpreter, STOP } from "./i10r";
 import { goLitreacha, Value } from "./values";
 
@@ -23,6 +23,10 @@ function printError(r: RuntimeError, source: string) {
     } else {
         console.error(`Eisceacht: ${r.msg}`);
     }
+}
+
+function formatSyntaxErr(err: SyntaxErr): string {
+    return `Eisceacht ag suíomh [${err.pos.line}:${err.pos.offset}]: Ag súil le: ${err.expmatches}`;
 }
 
 function getExternals(léighfn: () => Promise<string|null>): [string[], Value][] {
@@ -60,7 +64,7 @@ function getExternals(léighfn: () => Promise<string|null>): [string[], Value][]
 }
 
 async function getFullInput(getLine: () => Promise<string|null>,
-    continuance: () => Promise<string|null>): Promise<string|null> {
+    continuance: () => Promise<string|null>): Promise<string|SyntaxErr> {
     let prev = "";
     while(true) {
         const inpFn = prev === "" ? getLine : continuance;
@@ -73,7 +77,7 @@ async function getFullInput(getLine: () => Promise<string|null>,
         if(res.err === null)
             return line;
         if(res.err.pos.overallPos !== line.length)
-            return null;
+            return res.err;
         prev = line;
     }
 }
@@ -96,8 +100,8 @@ async function repl() {
     let prevPos: PosInfo = {overallPos: 0, line: 1, offset: 0};
     while (true) {
         const input = await getFullInput(getLine, continuance);
-        if(input === null) {
-            // TODO print error
+        if(input instanceof SyntaxErr) {
+            console.error(formatSyntaxErr(input));
             continue;
         }
         soFar += input;
@@ -132,7 +136,7 @@ async function runFile() {
     const parser = new Parser(inFile);
     const res = parser.parse();
     if (res.err) {
-        console.error(res.err);
+        console.error(formatSyntaxErr(res.err));
         process.exitCode = 1;
         return;
     }
