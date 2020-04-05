@@ -21,7 +21,8 @@ export function prefEval(p: Prefix): EvalFn {
         p.pf.evalfn(env).then((pf: Value) =>
             p.op === "-"
             ? -Asserts.assertNumber(pf)
-            : !Checks.isTrue(pf));
+            : !Checks.isTrue(pf))
+                .catch(err => Promise.reject(tagErrorLoc(err, p.start, p.end)));
 }
 
 export function csArgsEval(args: CSArgs): (env: Environment) => Promise<Value[]> {
@@ -43,8 +44,8 @@ export function postfixArgsEval(pf: Postfix): EvalFn {
     return (env: Environment) => {
         const v = (x: Promise<Value>, y: PostOp): Promise<Value> => {
             return x.then((val) => {
-                if ("args" in y) {
-                    if (y.args) {
+                if ("args" in y) { // this op is a function call
+                    if (y.args) { // Are there args?
                         // Can use quick strategy
                         if (y.args.qeval !== null) {
                             const args = y.args.qeval(env);
@@ -54,8 +55,10 @@ export function postfixArgsEval(pf: Postfix): EvalFn {
                             return callFunc(val, args);
                         });
                     }
+                    // No args so supply empty list
                     return callFunc(val, []);
                 }
+                // This op is an array index
                 // Try using quick strategy
                 if (y.expr.qeval !== null) {
                     return qIdxList(val, y.expr.qeval(env));
@@ -63,7 +66,8 @@ export function postfixArgsEval(pf: Postfix): EvalFn {
                 return idxList(val, y.expr.evalfn(env));
             });
         };
-        return pf.ops.reduce(v, pf.at.evalfn(env));
+        return pf.ops.reduce(v, pf.at.evalfn(env))
+            .catch(err => Promise.reject(tagErrorLoc(err, pf.start, pf.end)));
     };
 }
 

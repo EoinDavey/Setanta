@@ -68,7 +68,7 @@
 * Product     := head=Prefix tail={_ op=MulDiv trm=Prefix}*
 *                .evalfn = EvalFn { return binOpEvalFn(this); }
 *                .qeval = Quick.MaybeEv { return binOpQuickEvalFn(this); }
-* Prefix      := _ op='-|!'? pf=Postfix
+* Prefix      := _ start=@ op='-|!'? pf=Postfix end=@
 *                .evalfn = EvalFn { return prefEval(this); }
 *                .qeval = Quick.MaybeEv { return Quick.qPrefEval(this); }
 * Postfix     := start=@ at=ObjLookups ops=PostOp* end=@
@@ -470,13 +470,17 @@ export interface Product_$0 {
 }
 export class Prefix {
     public kind: ASTKinds.Prefix = ASTKinds.Prefix;
+    public start: PosInfo;
     public op: Nullable<string>;
     public pf: Postfix;
+    public end: PosInfo;
     public evalfn: EvalFn;
     public qeval: Quick.MaybeEv;
-    constructor(op: Nullable<string>, pf: Postfix){
+    constructor(start: PosInfo, op: Nullable<string>, pf: Postfix, end: PosInfo){
+        this.start = start;
         this.op = op;
         this.pf = pf;
+        this.end = end;
         this.evalfn = (() => {
         return prefEval(this);
         })();
@@ -1384,15 +1388,19 @@ export class Parser {
                 if (log) {
                     log("Prefix");
                 }
+                let start: Nullable<PosInfo>;
                 let op: Nullable<Nullable<string>>;
                 let pf: Nullable<Postfix>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<Prefix> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
+                    && (start = this.mark()) !== null
                     && ((op = this.regexAccept(String.raw`-|!`, $$dpth + 1, cr)) || true)
                     && (pf = this.matchPostfix($$dpth + 1, cr)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new Prefix(op, pf);
+                    res = new Prefix(start, op, pf, end);
                 }
                 return res;
             }, cr)();

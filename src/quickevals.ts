@@ -122,12 +122,16 @@ export function qPostfixArgsEval(pf: Postfix): MaybeEv {
         const f = (x: Value, y: IsQuick): Value => {
             return qIdxList(x, y.qeval(env));
         };
-        return quickOps.reduce(f, rootVal);
+        try {
+            return quickOps.reduce(f, rootVal);
+        } catch(err) {
+            throw tagErrorLoc(err, pf.start, pf.end);
+        }
     };
 }
 
 export function qPrefEval(p: Prefix): MaybeEv {
-    if (!p.op) {
+    if (!p.op) { // Can be shortcut
         const childF = p.pf.qeval;
         return childF === null ? null : childF.bind(p.pf);
     }
@@ -136,9 +140,13 @@ export function qPrefEval(p: Prefix): MaybeEv {
         return null;
     }
     return (env: Environment) => {
-        const v = pf.qeval(env);
-        return p.op === "-"
-            ? -Asserts.assertNumber(v)
-            : !Checks.isTrue(v);
+        try {
+            const v = pf.qeval(env);
+            return p.op === "-"
+                ? -Asserts.assertNumber(v)
+                : !Checks.isTrue(v);
+        } catch(err) {
+            throw tagErrorLoc(err, p.start, p.end);
+        }
     };
 }
