@@ -72,7 +72,7 @@ Prefix      := _ op='-|!'? pf=Postfix
 Postfix     := start=@ at=ObjLookups ops=PostOp* end=@
                .evalfn = EvalFn { return postfixArgsEval(this); }
                .qeval = Quick.MaybeEv { return Quick.qPostfixArgsEval(this); }
-ObjLookups  := attrs={id=ID '@' !wspace}* root=Atom
+ObjLookups  := start=@ attrs={id=ID '@' !wspace}* root=Atom end=@
                .evalfn = EvalFn { return objLookupsEval(this); }
                .qeval = Quick.MaybeEv { return Quick.qObjLookupsEval(this); }
 PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr _ '\]'
@@ -93,13 +93,13 @@ ListLit     := _ '\[' els=CSArgs? _ '\]'
                    return (env: Environment) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
                }
                .qeval = Quick.MaybeEv { return Quick.qListLitEval(this); }
-CSArgs      := head=Expr tail={_ ',' exp=Expr}*
+CSArgs      := start=@ head=Expr tail={_ ',' exp=Expr}* end=@
                .evalfn = (env:Environment)=>Promise<Value[]> { return csArgsEval(this); }
                .qeval = ((env:Environment)=>Value[])|null { return Quick.qCSArgsEval(this); }
 CSIDs       := head=ID tail={_ ',' id=ID}*
-ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
-               .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id)); }
-               .qeval = Quick.EvalFn { return Quick.qIdEval(this.id); }
+ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ]+' end=@
+               .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id, this.start, this.end)); }
+               .qeval = Quick.EvalFn { return Quick.qIdEval(this.id, this.start, this.end); }
 Bool        := _ bool='f[ií]or|br[eé]ag'
                .evalfn = EvalFn { return qEvalToEval(Quick.qBoolEval(this.bool)); }
                .qeval = Quick.EvalFn { return Quick.qBoolEval(this.bool); }

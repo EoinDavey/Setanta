@@ -130,7 +130,7 @@ export class Interpreter {
         if (o.attrs.length > 0) {
             const attrs: P.ObjLookups_$0[] = o.attrs.slice(1, o.attrs.length);
             const field: string = o.attrs[0].id.id;
-            const subObj: P.ObjLookups = new P.ObjLookups(attrs, o.root);
+            const subObj: P.ObjLookups = new P.ObjLookups(o.start, attrs, o.root, o.end);
             return subObj.evalfn(env).then((obj: Value) => {
                 const val: Obj = Asserts.assertObj(obj);
                 return (v: Value) => {

@@ -1,7 +1,8 @@
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
+import { RuntimeError, tagErrorLoc } from "./error";
 import { Environment } from "./env";
-import { CSArgs, ListLit, ObjLookups, Postfix, PostOp, PostOp_2, Prefix } from "./gen_parser";
+import { PosInfo, CSArgs, ListLit, ObjLookups, Postfix, PostOp, PostOp_2, Prefix } from "./gen_parser";
 import { unescapeChars } from "./litreacha";
 import { callFunc, idxList, qIdxList, Value } from "./values";
 
@@ -33,8 +34,14 @@ export function qBoolEval(lit: string): EvalFn {
     return (env: Environment) => x;
 }
 
-export function qIdEval(id: string): EvalFn {
-    return (env: Environment) => env.get(id);
+export function qIdEval(id: string, start: PosInfo, end: PosInfo): EvalFn {
+    return (env: Environment) =>  {
+        try {
+            return env.get(id);
+        } catch(err) {
+            throw tagErrorLoc(err, start, end);
+        }
+    }
 }
 
 export function qCSArgsEval(args: CSArgs): ((env: Environment) => Value[]) | null {
@@ -49,14 +56,24 @@ export function qCSArgsEval(args: CSArgs): ((env: Environment) => Value[]) | nul
         }
         ops.push(arg.exp);
     }
-    return (env: Environment) => ops.map((x) => x.qeval(env));
+    return (env: Environment) => {
+        try {
+            return ops.map((x) => x.qeval(env));
+        } catch(err) {
+            throw tagErrorLoc(err, args.start, args.end);
+        }
+    }
 }
 
 export function qListLitEval(lit: ListLit): MaybeEv {
-    return lit.els ? qCSArgsEval(lit.els) : () => [] ;
+    return lit.els ? lit.els.qeval : () => [] ;
 }
 
 export function qObjLookupsEval(ol: ObjLookups): MaybeEv {
+    if (ol.attrs.length === 0) {
+        const childf = ol.root.qeval;
+        return childf === null ? null : childf.bind(ol.root);
+    }
     if (!isQuick(ol.root)) {
         return null;
     }
@@ -64,10 +81,14 @@ export function qObjLookupsEval(ol: ObjLookups): MaybeEv {
     const h: IsQuick = ol.root;
     return (env: Environment): Value => {
         const rt: Value = h.qeval(env);
-        return arr.reduce((x: Value, y): Value => {
-            const obj = Asserts.assertObj(x);
-            return obj.getAttr(y.id.id);
-        }, rt);
+        try {
+            return arr.reduce((x: Value, y): Value => {
+                const obj = Asserts.assertObj(x);
+                return obj.getAttr(y.id.id);
+            }, rt);
+        } catch(err) {
+            throw tagErrorLoc(err, ol.start, ol.end);
+        }
     };
 }
 

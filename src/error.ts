@@ -17,3 +17,11 @@ export class RuntimeError extends Error {
 export function undefinedError(id: string): RuntimeError {
     return new RuntimeError(`Níl aon athróg le ainm: ${id}`);
 }
+
+export function tagErrorLoc(r: Error, start: PosInfo, end: PosInfo): Error {
+    if(r instanceof RuntimeError && r.start === null && r.end === null) {
+        r.start = start;
+        r.end = end;
+    }
+    return r;
+}

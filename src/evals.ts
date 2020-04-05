@@ -5,6 +5,7 @@ import { CSArgs, ListLit, ObjLookups, Postfix, PostOp, PostOp_2, Prefix } from "
 import { unescapeChars } from "./litreacha";
 import * as Quick from "./quickevals";
 import { callFunc, idxList, qIdxList, Value } from "./values";
+import { tagErrorLoc } from "./error";
 
 export type EvalFn = (env: Environment) => Promise<Value>;
 
@@ -31,7 +32,8 @@ export function csArgsEval(args: CSArgs): (env: Environment) => Promise<Value[]>
                 return ls.concat([v]);
             });
         });
-    }, args.head.evalfn(env).then((x: Value) => [x]));
+    }, args.head.evalfn(env).then((x: Value) => [x]))
+    .catch(err => Promise.reject(tagErrorLoc(err, args.start, args.end)));
 }
 
 export function postfixArgsEval(pf: Postfix): EvalFn {
@@ -73,5 +75,5 @@ export function objLookupsEval(ol: ObjLookups): EvalFn {
                 const obj = Asserts.assertObj(x);
                 return obj.getAttr(y.id.id);
             }, rt);
-        });
+        }).catch(err => Promise.reject(tagErrorLoc(err, ol.start, ol.end)));
 }

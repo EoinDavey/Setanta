@@ -74,7 +74,7 @@
 * Postfix     := start=@ at=ObjLookups ops=PostOp* end=@
 *                .evalfn = EvalFn { return postfixArgsEval(this); }
 *                .qeval = Quick.MaybeEv { return Quick.qPostfixArgsEval(this); }
-* ObjLookups  := attrs={id=ID '@' !wspace}* root=Atom
+* ObjLookups  := start=@ attrs={id=ID '@' !wspace}* root=Atom end=@
 *                .evalfn = EvalFn { return objLookupsEval(this); }
 *                .qeval = Quick.MaybeEv { return Quick.qObjLookupsEval(this); }
 * PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr _ '\]'
@@ -95,13 +95,13 @@
 *                    return (env: Environment) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
 *                }
 *                .qeval = Quick.MaybeEv { return Quick.qListLitEval(this); }
-* CSArgs      := head=Expr tail={_ ',' exp=Expr}*
+* CSArgs      := start=@ head=Expr tail={_ ',' exp=Expr}* end=@
 *                .evalfn = (env:Environment)=>Promise<Value[]> { return csArgsEval(this); }
 *                .qeval = ((env:Environment)=>Value[])|null { return Quick.qCSArgsEval(this); }
 * CSIDs       := head=ID tail={_ ',' id=ID}*
-* ID          := _ !{Keyword gap} id='[a-zA-Z_áéíóúÁÉÍÓÚ]+'
-*                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id)); }
-*                .qeval = Quick.EvalFn { return Quick.qIdEval(this.id); }
+* ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ]+' end=@
+*                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id, this.start, this.end)); }
+*                .qeval = Quick.EvalFn { return Quick.qIdEval(this.id, this.start, this.end); }
 * Bool        := _ bool='f[ií]or|br[eé]ag'
 *                .evalfn = EvalFn { return qEvalToEval(Quick.qBoolEval(this.bool)); }
 *                .qeval = Quick.EvalFn { return Quick.qBoolEval(this.bool); }
@@ -508,13 +508,17 @@ export class Postfix {
 }
 export class ObjLookups {
     public kind: ASTKinds.ObjLookups = ASTKinds.ObjLookups;
+    public start: PosInfo;
     public attrs: ObjLookups_$0[];
     public root: Atom;
+    public end: PosInfo;
     public evalfn: EvalFn;
     public qeval: Quick.MaybeEv;
-    constructor(attrs: ObjLookups_$0[], root: Atom){
+    constructor(start: PosInfo, attrs: ObjLookups_$0[], root: Atom, end: PosInfo){
+        this.start = start;
         this.attrs = attrs;
         this.root = root;
+        this.end = end;
         this.evalfn = (() => {
         return objLookupsEval(this);
         })();
@@ -576,13 +580,17 @@ export class ListLit {
 }
 export class CSArgs {
     public kind: ASTKinds.CSArgs = ASTKinds.CSArgs;
+    public start: PosInfo;
     public head: Expr;
     public tail: CSArgs_$0[];
+    public end: PosInfo;
     public evalfn: (env:Environment)=>Promise<Value[]>;
     public qeval: ((env:Environment)=>Value[])|null;
-    constructor(head: Expr, tail: CSArgs_$0[]){
+    constructor(start: PosInfo, head: Expr, tail: CSArgs_$0[], end: PosInfo){
+        this.start = start;
         this.head = head;
         this.tail = tail;
+        this.end = end;
         this.evalfn = (() => {
         return csArgsEval(this);
         })();
@@ -606,16 +614,20 @@ export interface CSIDs_$0 {
 }
 export class ID {
     public kind: ASTKinds.ID = ASTKinds.ID;
+    public start: PosInfo;
     public id: string;
+    public end: PosInfo;
     public evalfn: EvalFn;
     public qeval: Quick.EvalFn;
-    constructor(id: string){
+    constructor(start: PosInfo, id: string, end: PosInfo){
+        this.start = start;
         this.id = id;
+        this.end = end;
         this.evalfn = (() => {
-        return qEvalToEval(Quick.qIdEval(this.id));
+        return qEvalToEval(Quick.qIdEval(this.id, this.start, this.end));
         })();
         this.qeval = (() => {
-        return Quick.qIdEval(this.id);
+        return Quick.qIdEval(this.id, this.start, this.end);
         })();
     }
 }
@@ -1413,14 +1425,18 @@ export class Parser {
                 if (log) {
                     log("ObjLookups");
                 }
+                let start: Nullable<PosInfo>;
                 let attrs: Nullable<ObjLookups_$0[]>;
                 let root: Nullable<Atom>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<ObjLookups> = null;
                 if (true
+                    && (start = this.mark()) !== null
                     && (attrs = this.loop<ObjLookups_$0>(() => this.matchObjLookups_$0($$dpth + 1, cr), true)) !== null
                     && (root = this.matchAtom($$dpth + 1, cr)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new ObjLookups(attrs, root);
+                    res = new ObjLookups(start, attrs, root, end);
                 }
                 return res;
             }, cr)();
@@ -1561,14 +1577,18 @@ export class Parser {
                 if (log) {
                     log("CSArgs");
                 }
+                let start: Nullable<PosInfo>;
                 let head: Nullable<Expr>;
                 let tail: Nullable<CSArgs_$0[]>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<CSArgs> = null;
                 if (true
+                    && (start = this.mark()) !== null
                     && (head = this.matchExpr($$dpth + 1, cr)) !== null
                     && (tail = this.loop<CSArgs_$0>(() => this.matchCSArgs_$0($$dpth + 1, cr), true)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new CSArgs(head, tail);
+                    res = new CSArgs(start, head, tail, end);
                 }
                 return res;
             }, cr)();
@@ -1633,14 +1653,18 @@ export class Parser {
                 if (log) {
                     log("ID");
                 }
+                let start: Nullable<PosInfo>;
                 let id: Nullable<string>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<ID> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
                     && this.negate(() => this.matchID_$0($$dpth + 1, cr)) !== null
+                    && (start = this.mark()) !== null
                     && (id = this.regexAccept(String.raw`[a-zA-Z_áéíóúÁÉÍÓÚ]+`, $$dpth + 1, cr)) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new ID(id);
+                    res = new ID(start, id, end);
                 }
                 return res;
             }, cr)();
