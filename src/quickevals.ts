@@ -19,9 +19,17 @@ export function isQuick(a: MaybeQuick): a is IsQuick {
     return a.qeval !== null;
 }
 
-export function qLitreachaEval(lit: string): EvalFn {
-    const x = unescapeChars(lit);
-    return (env: Environment) => x;
+export function qLitreachaEval(lit: string, start: PosInfo, end: PosInfo): EvalFn {
+    let x: null | string = null;
+    return (env: Environment) => {
+        if(x !== null)
+            return x;
+        try {
+            return (x = unescapeChars(lit));
+        } catch(err) {
+            throw tagErrorLoc(err, start, end);
+        }
+    }
 }
 
 export function qIntEval(lit: string): EvalFn {

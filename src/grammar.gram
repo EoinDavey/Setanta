@@ -109,9 +109,9 @@ Neamhni     := _ 'neamhn[ií]'
 Int         := _ int='-?[0-9]+(?:\.[0-9]+)?'
                .evalfn = EvalFn { return qEvalToEval(Quick.qIntEval(this.int)); }
                .qeval = Quick.EvalFn { return Quick.qIntEval(this.int); }
-Litreacha   := _ '\'' val='([^\'\\]|\\.)*' '\''
-               .evalfn = EvalFn { return qEvalToEval(Quick.qLitreachaEval(this.val)); }
-               .qeval = Quick.EvalFn { return Quick.qLitreachaEval(this.val); }
+Litreacha   := _ start=@ '\'' val='([^\'\\]|\\.)*' '\'' end=@
+               .evalfn = EvalFn { return qEvalToEval(Quick.qLitreachaEval(this.val, this.start, this.end)); }
+               .qeval = Quick.EvalFn { return Quick.qLitreachaEval(this.val, this.start, this.end); }
 _           := wspace*
 wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
 gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'

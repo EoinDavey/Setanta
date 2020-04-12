@@ -111,9 +111,9 @@
 * Int         := _ int='-?[0-9]+(?:\.[0-9]+)?'
 *                .evalfn = EvalFn { return qEvalToEval(Quick.qIntEval(this.int)); }
 *                .qeval = Quick.EvalFn { return Quick.qIntEval(this.int); }
-* Litreacha   := _ '\'' val='([^\'\\]|\\.)*' '\''
-*                .evalfn = EvalFn { return qEvalToEval(Quick.qLitreachaEval(this.val)); }
-*                .qeval = Quick.EvalFn { return Quick.qLitreachaEval(this.val); }
+* Litreacha   := _ start=@ '\'' val='([^\'\\]|\\.)*' '\'' end=@
+*                .evalfn = EvalFn { return qEvalToEval(Quick.qLitreachaEval(this.val, this.start, this.end)); }
+*                .qeval = Quick.EvalFn { return Quick.qLitreachaEval(this.val, this.start, this.end); }
 * _           := wspace*
 * wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
 * gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
@@ -707,16 +707,20 @@ export class Int {
 }
 export class Litreacha {
     public kind: ASTKinds.Litreacha = ASTKinds.Litreacha;
+    public start: PosInfo;
     public val: string;
+    public end: PosInfo;
     public evalfn: EvalFn;
     public qeval: Quick.EvalFn;
-    constructor(val: string){
+    constructor(start: PosInfo, val: string, end: PosInfo){
+        this.start = start;
         this.val = val;
+        this.end = end;
         this.evalfn = (() => {
-        return qEvalToEval(Quick.qLitreachaEval(this.val));
+        return qEvalToEval(Quick.qLitreachaEval(this.val, this.start, this.end));
         })();
         this.qeval = (() => {
-        return Quick.qLitreachaEval(this.val);
+        return Quick.qLitreachaEval(this.val, this.start, this.end);
         })();
     }
 }
@@ -1797,15 +1801,19 @@ export class Parser {
                 if (log) {
                     log("Litreacha");
                 }
+                let start: Nullable<PosInfo>;
                 let val: Nullable<string>;
+                let end: Nullable<PosInfo>;
                 let res: Nullable<Litreacha> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
+                    && (start = this.mark()) !== null
                     && this.regexAccept(String.raw`\'`, $$dpth + 1, cr) !== null
                     && (val = this.regexAccept(String.raw`([^\'\\]|\\.)*`, $$dpth + 1, cr)) !== null
                     && this.regexAccept(String.raw`\'`, $$dpth + 1, cr) !== null
+                    && (end = this.mark()) !== null
                 ) {
-                    res = new Litreacha(val);
+                    res = new Litreacha(start, val, end);
                 }
                 return res;
             }, cr)();
