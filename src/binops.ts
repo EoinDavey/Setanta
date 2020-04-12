@@ -241,7 +241,11 @@ function evalBinOp(a: Value, b: Value, op: string, start: PosInfo, end: PosInfo)
     if (g) {
         for (const x of g) {
             if (x.lcheck(a) && x.rcheck(b)) {
-                return x.op(a, b);
+                try {
+                    return x.op(a, b);
+                } catch(err) {
+                    throw tagErrorLoc(err, start, end);
+                }
             }
         }
     }
