@@ -100,9 +100,10 @@ Is féidir leat `+` a úsáid le dhá liosta chun liosta nua dhéanamh.
 
 Má scríobhann tú an siombail `>--` i do ríomhchlár, is trácht é aon rud a scríobhann tú tar éis é sin ar an líne chéanna, agus ní cuid den ríomhchlár é. Mar shampla
 
-<div class="language-python highlighter-rouge">
+<div class="highlighter-rouge">
 <div class="highlight">
-<pre class="highlight"><code><span class="n">scríobh</span>(<span class="s">&#x27;Dia duit&#x27;</span>)</code></pre>
+<pre class="highlight"><code><span class="n">scríobh</span>(<span class="s">&#x27;Dia duit&#x27;</span>) <span class="c">&gt;-- Is féidir liom aon rud a scríobh anseo!
+</span><span class="c">&gt;-- Nó anseo freisin.</span></code></pre>
 </div>
 </div>
 

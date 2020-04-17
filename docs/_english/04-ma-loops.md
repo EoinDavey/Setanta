@@ -17,7 +17,7 @@ You can make choices in your program! We use the word `má` (meaning "if") to ma
 </div>
 </div>
 
-This program checks if `aois` is between 13 and 14. If it's true, it writes 'Is déagóir thú' (You're a teenager). If it's not true it writes 'Ní déagóir thú' (You're not a teenager).
+This program checks if `aois` is between 13 and 19. If it's true, it writes 'Is déagóir thú' (You're a teenager). If it's not true it writes 'Ní déagóir thú' (You're not a teenager).
 
 We can use this structure again and again, like this.
 

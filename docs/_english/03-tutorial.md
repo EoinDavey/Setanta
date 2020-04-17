@@ -99,9 +99,10 @@ You can use `+` with two lists to make a new list:
 
 If you write the symbol `>--` in your program, Anything you write after it on the same line is a comment, and is not part of the program. For example
 
-<div class="language-python highlighter-rouge">
+<div class="highlighter-rouge">
 <div class="highlight">
-<pre class="highlight"><code><span class="n">scríobh</span>(<span class="s">&#x27;Hello&#x27;</span>)</code></pre>
+<pre class="highlight"><code><span class="n">scríobh</span>(<span class="s">&#x27;Hello&#x27;</span>) <span class="c">&gt;-- I can write anything here!
+</span><span class="c">&gt;-- Or here as well</span></code></pre>
 </div>
 </div>
 
@@ -120,7 +121,7 @@ You use **variables** to store numbers, lists or anything. You put something in 
 
 It writes out `20` in the console. The first line put `10` in `x` and the second line used it.
 
-In this program `x` is a **variable**. We can use variables everywhere that we use numbers , litreacha or anything.
+In this program `x` is a **variable**. We can use variables everywhere that we use numbers, litreacha or anything.
 
 We create new variables with `:=`.
 
