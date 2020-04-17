@@ -45,7 +45,7 @@ Chun an gníomh `diaDuit` a úsáid, scríobhaimid `diaDuit()`. Bain triail as �
 
 ![Dia duit](/assets/images/teagaisc/diaduit.gif)
 
-Tugaimid '**corp** an gnímh' ar an cód idir `{` agus `}`, sa gníomh `diaDuit` is é `scríobh('Dia duit')` an corp.
+Tugaimid '**corp** an gnímh' ar an cód idir `{` agus `}`, sa ghníomh `diaDuit` is é `scríobh('Dia duit')` an corp.
 
 ## Sampla
 

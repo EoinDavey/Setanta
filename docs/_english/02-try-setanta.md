@@ -8,6 +8,10 @@ toc: true
 
 When you go to [try-setanta.ie](https://try-setanta.ie), you will see something like this.
 
+![An chéad leathanach](/assets/images/teagaisc/splash.png)
+
+Click on "Open the editor" to open the main page:
+
 ![The first site](/assets/images/teagaisc/teagaisc01.png)
 
 There are three pieces on the site. They are the "stáitse" (stage), the editor and the console.

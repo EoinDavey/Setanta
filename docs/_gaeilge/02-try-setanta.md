@@ -8,7 +8,11 @@ toc: true
 
 Nuair a théann tú go [try-setanta.ie](https://try-setanta.ie), feicfidh tú rud cosúil le seo.
 
-![An chéad suíomh](/assets/images/teagaisc/teagaisc01.png)
+![An chéad leathanach](/assets/images/teagaisc/splash.png)
+
+Cliceáil ar "Oscail an eagarthóir" chun an príomhleathanach a oscailt.
+
+![An eagarthóir](/assets/images/teagaisc/teagaisc01.png)
 
 Tá trí phíosa ar an suíomh. Is iad an stáitse, an eagarthóir, agus an consól.
 
