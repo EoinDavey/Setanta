@@ -137,10 +137,19 @@ test("test mata", async () => {
         { inp : "sin@mata(pi@mata/2)", exp: 1 },
         { inp : "sin@mata(pi@mata)", exp: 0 },
         { inp : "sin@mata(2*pi@mata)", exp: 0 },
+        { inp : "tan@mata(2*pi@mata)", exp: Math.tan(2*Math.PI) },
+        { inp : "tan@mata(pi@mata / 4)", exp: 1 },
         { inp : "logb@mata(4, 2)", exp: 2 },
         { inp : "logb@mata(125, 5)", exp: 3 },
         { inp : "log@mata(1)", exp: 0 },
         { inp : "log@mata(2)", exp: Math.log(2) },
+        { inp : "asin@mata(0)", exp: 0},
+        { inp : "acos@mata(1)", exp: 0},
+        { inp : "atan@mata(1)", exp: Math.PI / 4},
+        { inp : "dearbh@mata(0)", exp: 0 },
+        { inp : "dearbh@mata(-0)", exp: 0 },
+        { inp : "dearbh@mata(-1)", exp: 1 },
+        { inp : "dearbh@mata(1)", exp: 1 },
     ];
     for (const c of cases) {
         const i = new Interpreter();

@@ -186,6 +186,11 @@ export const Builtins: [string, Value][] = [
             ],
             [["cos"],  mathWrap("cos", Math.cos)],
             [["sin"], mathWrap("sin", Math.sin)],
+            [["tan"], mathWrap("tan", Math.tan)],
+            [["acos"],  mathWrap("acos", Math.acos)],
+            [["asin"], mathWrap("asin", Math.asin)],
+            [["atan"], mathWrap("atan", Math.atan)],
+            [["dearbh"], mathWrap("dearbh", Math.abs)],
             [
                 // log function
                 ["log"], mathWrap("log", x => {
