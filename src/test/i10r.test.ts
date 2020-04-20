@@ -161,6 +161,14 @@ test("test assign", async () => {
             res += 'listen'
             `,
         },
+        {
+            exp: "Testing digits in IDs",
+            inp: `
+                x2 := 'Testing digits in IDs'
+                y2_3_0 := x2
+                res := y2_3_0
+            `
+        }
     ];
     for (const c of cases) {
         const i = new Interpreter();

@@ -99,7 +99,7 @@
 *                .evalfn = (env:Environment)=>Promise<Value[]> { return csArgsEval(this); }
 *                .qeval = ((env:Environment)=>Value[])|null { return Quick.qCSArgsEval(this); }
 * CSIDs       := head=ID tail={_ ',' id=ID}*
-* ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ]+' end=@
+* ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*' end=@
 *                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id, this.start, this.end)); }
 *                .qeval = Quick.EvalFn { return Quick.qIdEval(this.id, this.start, this.end); }
 * Bool        := _ bool='f[ií]or|br[eé]ag'
@@ -1727,7 +1727,7 @@ export class Parser {
                     && this.match_($$dpth + 1, cr) !== null
                     && this.negate(() => this.matchID_$0($$dpth + 1, cr)) !== null
                     && (start = this.mark()) !== null
-                    && (id = this.regexAccept(String.raw`[a-zA-Z_áéíóúÁÉÍÓÚ]+`, $$dpth + 1, cr)) !== null
+                    && (id = this.regexAccept(String.raw`[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*`, $$dpth + 1, cr)) !== null
                     && (end = this.mark()) !== null
                 ) {
                     res = new ID(start, id, end);
