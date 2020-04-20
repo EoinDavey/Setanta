@@ -361,7 +361,7 @@ test("test le idir loops", async () => {
             inp : `
             res := ''
             le i idir (10, 0)
-                res = res + go_lit(i)
+                res = res + go_téacs(i)
             `,
         },
         {
@@ -377,7 +377,7 @@ test("test le idir loops", async () => {
             inp : `
             res := ''
             le i idir (10, 0, -3)
-                res = res + go_lit(i)
+                res = res + go_téacs(i)
             `,
         },
     ];
@@ -991,7 +991,7 @@ test("test constructor", async () => {
                     aois@seo = aois
                 }
                 gníomh caint() {
-                    toradh 'Is mise ' + ainm@seo + ' agus táim ' + go_lit(aois@seo) + ' bliana d\\'aois'
+                    toradh 'Is mise ' + ainm@seo + ' agus táim ' + go_téacs(aois@seo) + ' bliana d\\'aois'
                 }
             }
             mise := Duine('Eoin', 21)

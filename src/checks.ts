@@ -13,11 +13,11 @@ export function isEqual(a: Value, b: Value): boolean {
 }
 
 export function isCallable(v: Value): v is Callable {
-    return !(v === null || isNumber(v) || isBool(v) || isLitreacha(v) || isLiosta(v)) && "call" in v;
+    return !(v === null || isNumber(v) || isBool(v) || isTéacs(v) || isLiosta(v)) && "call" in v;
 }
 
 export function isObj(v: Value): v is Obj {
-    return !(v === null || isNumber(v) || isBool(v) || isLitreacha(v) || isLiosta(v)) && "getAttr" in v;
+    return !(v === null || isNumber(v) || isBool(v) || isTéacs(v) || isLiosta(v)) && "getAttr" in v;
 }
 
 export function isNumber(v: Value): v is number {
@@ -28,12 +28,12 @@ export function isBool(v: Value): v is boolean {
     return typeof v === "boolean";
 }
 
-export function isLitreacha(v: Value): v is string {
+export function isTéacs(v: Value): v is string {
     return typeof v === "string";
 }
 
 export function isComparable(v: Value): v is Comparable {
-    return isBool(v) || isNumber(v) || isLitreacha(v);
+    return isBool(v) || isNumber(v) || isTéacs(v);
 }
 
 export function isLiosta(v: Value): v is Value[] {
@@ -41,5 +41,5 @@ export function isLiosta(v: Value): v is Value[] {
 }
 
 export function isCreatlach(v: Value): v is Creatlach {
-    return v !== null && !(isBool(v) || isNumber(v) || isLitreacha(v) || isLiosta(v)) && "aimsighGníomh" in v;
+    return v !== null && !(isBool(v) || isNumber(v) || isTéacs(v) || isLiosta(v)) && "aimsighGníomh" in v;
 }

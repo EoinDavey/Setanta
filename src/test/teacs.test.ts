@@ -1,4 +1,4 @@
-import { athchuir, unescapeChars } from "../../src/litreacha";
+import { athchuir, unescapeChars } from "../../src/teacs";
 test("test unescapeChars", () => {
     interface TC { inp: string; exp: string; }
     const cases: TC[] = [

@@ -3,7 +3,7 @@
 * ---
 * import { Environment } from "./env";
 * import { callFunc, idxList, Value } from "./values";
-* import { unescapeChars } from "./litreacha";
+* import { unescapeChars } from "./teacs";
 * import * as Asserts from "./asserts";
 * import * as Checks from "./checks";
 * import { orBinOp, orQuickBinOp, andBinOp, andQuickBinOp,
@@ -85,7 +85,7 @@
 *                     return childF === null ? null : childF.bind(this.trm);
 *                }
 *              | ID
-*              | Litreacha
+*              | Teacs
 *              | Int
 *              | Bool
 *              | Neamhni
@@ -111,9 +111,9 @@
 * Int         := _ int='-?[0-9]+(?:\.[0-9]+)?'
 *                .evalfn = EvalFn { return qEvalToEval(Quick.qIntEval(this.int)); }
 *                .qeval = Quick.EvalFn { return Quick.qIntEval(this.int); }
-* Litreacha   := _ start=@ '\'' val='([^\'\\]|\\.)*' '\'' end=@
-*                .evalfn = EvalFn { return qEvalToEval(Quick.qLitreachaEval(this.val, this.start, this.end)); }
-*                .qeval = Quick.EvalFn { return Quick.qLitreachaEval(this.val, this.start, this.end); }
+* Teacs       := _ start=@ '\'' val='([^\'\\]|\\.)*' '\'' end=@
+*                .evalfn = EvalFn { return qEvalToEval(Quick.qTéacsEval(this.val, this.start, this.end)); }
+*                .qeval = Quick.EvalFn { return Quick.qTéacsEval(this.val, this.start, this.end); }
 * _           := wspace*
 * wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
 * gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
@@ -127,7 +127,7 @@
 
 import { Environment } from "./env";
 import { callFunc, idxList, Value } from "./values";
-import { unescapeChars } from "./litreacha";
+import { unescapeChars } from "./teacs";
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { orBinOp, orQuickBinOp, andBinOp, andQuickBinOp,
@@ -217,7 +217,7 @@ export enum ASTKinds {
     Bool,
     Neamhni,
     Int,
-    Litreacha,
+    Teacs,
     _,
     wspace,
     gap_1,
@@ -586,7 +586,7 @@ export class Atom_1 {
     }
 }
 export type Atom_2 = ID;
-export type Atom_3 = Litreacha;
+export type Atom_3 = Teacs;
 export type Atom_4 = Int;
 export type Atom_5 = Bool;
 export type Atom_6 = Neamhni;
@@ -705,8 +705,8 @@ export class Int {
         })();
     }
 }
-export class Litreacha {
-    public kind: ASTKinds.Litreacha = ASTKinds.Litreacha;
+export class Teacs {
+    public kind: ASTKinds.Teacs = ASTKinds.Teacs;
     public start: PosInfo;
     public val: string;
     public end: PosInfo;
@@ -717,10 +717,10 @@ export class Litreacha {
         this.val = val;
         this.end = end;
         this.evalfn = (() => {
-        return qEvalToEval(Quick.qLitreachaEval(this.val, this.start, this.end));
+        return qEvalToEval(Quick.qTéacsEval(this.val, this.start, this.end));
         })();
         this.qeval = (() => {
-        return Quick.qLitreachaEval(this.val, this.start, this.end);
+        return Quick.qTéacsEval(this.val, this.start, this.end);
         })();
     }
 }
@@ -1597,7 +1597,7 @@ export class Parser {
         return this.matchID($$dpth + 1, cr);
     }
     public matchAtom_3($$dpth: number, cr?: ContextRecorder): Nullable<Atom_3> {
-        return this.matchLitreacha($$dpth + 1, cr);
+        return this.matchTeacs($$dpth + 1, cr);
     }
     public matchAtom_4($$dpth: number, cr?: ContextRecorder): Nullable<Atom_4> {
         return this.matchInt($$dpth + 1, cr);
@@ -1795,16 +1795,16 @@ export class Parser {
                 return res;
             }, cr)();
     }
-    public matchLitreacha($$dpth: number, cr?: ContextRecorder): Nullable<Litreacha> {
-        return this.runner<Litreacha>($$dpth,
+    public matchTeacs($$dpth: number, cr?: ContextRecorder): Nullable<Teacs> {
+        return this.runner<Teacs>($$dpth,
             (log) => {
                 if (log) {
-                    log("Litreacha");
+                    log("Teacs");
                 }
                 let start: Nullable<PosInfo>;
                 let val: Nullable<string>;
                 let end: Nullable<PosInfo>;
-                let res: Nullable<Litreacha> = null;
+                let res: Nullable<Teacs> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
                     && (start = this.mark()) !== null
@@ -1813,7 +1813,7 @@ export class Parser {
                     && this.regexAccept(String.raw`\'`, $$dpth + 1, cr) !== null
                     && (end = this.mark()) !== null
                 ) {
-                    res = new Litreacha(start, val, end);
+                    res = new Teacs(start, val, end);
                 }
                 return res;
             }, cr)();

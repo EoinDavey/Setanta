@@ -37,16 +37,17 @@ Tá sé seo sa chonsól.
 
 Go háirithe, tabhair faoi deara gur déanann `==` agus `!=` comparáid idir uimhreacha (agus rudaí eile).
 
-## Litreacha
+REMOVEME*
+## Téacs
 
-Is féidir leat frasaí a scríobh freisin, chonaiceamar é seo roimhe seo leis an ríomhchlár simplí
+Is féidir leat téacs a scríobh i do ríomchláir freisin, chonaiceamar é seo roimhe seo leis an ríomhchlár simplí
 <div class="language-python highlighter-rouge">
 <div class="highlight">
 <pre class="highlight"><code><span class="n">scríobh</span>(<span class="s">&#x27;Dia duit&#x27;</span>)</code></pre>
 </div>
 </div>
 
-Tugaimid "litreacha" ar na frasaí sin. Cruthaíonn tú litreacha le dhá `'`. Mar shampla
+Cruthaíonn tú téacs le dhá `'`. Mar shampla
 <div class="language-python highlighter-rouge">
 <div class="highlight">
 <pre class="highlight"><code><span class="s">&#x27;Dia duit&#x27;</span>
@@ -54,7 +55,7 @@ Tugaimid "litreacha" ar na frasaí sin. Cruthaíonn tú litreacha le dhá `'`. M
 </div>
 </div>
 
-Is féidir leat `+` a úsáid chun litreacha a cheangail le chéile
+Is féidir leat `+` a úsáid chun téacs a chuir le chéile
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -122,7 +123,7 @@ Tá tráchtanna an úsáideach mar ceadaíonn sé dúinn nótaí a scríobh iná
 
 Scríobhann sé `20` amach sa chonsól. Chuir an chéad líne `10` isteach i `x` agus d'úsáid an dara líne é.
 
-Sá ríomhchlár seo is **athróg** é `x`. Is féidir linn athróga a úsáid i ngach áit a úsáidimid uimhreacha, litreacha nó aon rud.
+Sá ríomhchlár seo is **athróg** é `x`. Is féidir linn athróga a úsáid i ngach áit a úsáidimid uimhreacha, téacs nó aon rud.
 
 Cruthaímid athróg nua le `:=`
 

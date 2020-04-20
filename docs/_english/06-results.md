@@ -6,7 +6,7 @@ toc: true
 
 ## Actions with results
 
-To explain results, we will look at some actions that come with Setanta. For example, Setanta comes with the action `fad`. You use `fad` to get the length of a list or `letters`. "fad" translates as length in English.
+To explain results, we will look at some actions that come with Setanta. For example, Setanta comes with the action `fad`. You use `fad` to get the length of a list or text. "fad" translates as length in English.
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -18,9 +18,9 @@ To explain results, we will look at some actions that come with Setanta. For exa
 </div>
 </div>
 
-When you use `fad` you get a result back, specifically the length of the list or the length of the letters.
+When you use `fad` you get a result back, specifically the length of the list or the length of the text.
 
-In the same way, the action `go_uimh` has a result. You use `go_uimh` to convert letters to a number. For example:
+In the same way, the action `go_uimh` has a result. You use `go_uimh` to convert text to a number. For example:
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">

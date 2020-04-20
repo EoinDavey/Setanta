@@ -32,7 +32,7 @@ export function callFunc(x: Value, args: Value[]): Promise<Value> {
     x = Asserts.assertCallable(x);
     const ar = x.arity();
     if (ar !== -1 && args.length !== x.arity()) {
-        throw new RuntimeError(`Teastaíonn ${ar} argóint ag ${goLitreacha(x)}, ach fuair sé ${args.length}`);
+        throw new RuntimeError(`Teastaíonn ${ar} argóint ag ${goTéacs(x)}, ach fuair sé ${args.length}`);
     }
     return x.call(args);
 }
@@ -42,7 +42,7 @@ export function idxList(x: Value, idx: Promise<Value>): Promise<Value> {
     return idx.then((v) => {
         v = Asserts.assertNumber(v);
         if (v < 0 || v >= ls.length) {
-            throw new RuntimeError(`Tá ${goLitreacha(v)} thar teorainn an liosta`);
+            throw new RuntimeError(`Tá ${goTéacs(v)} thar teorainn an liosta`);
         }
         return ls[v];
     });
@@ -53,7 +53,7 @@ export function qIdxList(x: Value, idx: Value): Value {
     const ls = Asserts.assertIndexable(x);
     const v = Asserts.assertNumber(idx);
     if (v < 0 || v >= ls.length) {
-        throw new RuntimeError(`Tá ${goLitreacha(v)} thar teorainn an liosta`);
+        throw new RuntimeError(`Tá ${goTéacs(v)} thar teorainn an liosta`);
     }
     return ls[v];
 }
@@ -74,12 +74,12 @@ export class ObjWrap implements Obj {
         return this.attrs.get(id) || null;
     }
     public setAttr(id: string, v: Value) {
-        throw new RuntimeError(`Ní feidir leat ${goLitreacha(this)} a athrú`);
+        throw new RuntimeError(`Ní feidir leat ${goTéacs(this)} a athrú`);
     }
 }
 
-export function goLitreacha(v: Value): string {
-    if (Checks.isLitreacha(v)) {
+export function goTéacs(v: Value): string {
+    if (Checks.isTéacs(v)) {
         return v;
     }
     if (Checks.isNumber(v)) {
@@ -92,7 +92,7 @@ export function goLitreacha(v: Value): string {
         return "neamhní";
     }
     if (Checks.isLiosta(v)) {
-        return `[${v.map(goLitreacha).join(", ")}]`;
+        return `[${v.map(goTéacs).join(", ")}]`;
     }
     if (Checks.isCallable(v)) {
         return `< gníomh ${v.ainm} >`;

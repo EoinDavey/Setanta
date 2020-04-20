@@ -3,13 +3,13 @@ import * as Checks from "./checks";
 import { CreatlachImpl } from "./creatlach";
 import { RuntimeError } from "./error";
 import { GníomhWrap } from "./gniomh";
-import { athchuir } from "./litreacha";
+import { athchuir } from "./teacs";
 import { Rud } from "./rud";
-import { callFunc, goLitreacha, ObjWrap, Value } from "./values";
+import { callFunc, goTéacs, ObjWrap, Value } from "./values";
 
 export const Builtins: [string, Value][] = [
     [
-        // Fad returns length of liosta / litreacha
+        // Fad returns length of liosta / téacs
         "fad", {
             ainm: "fad",
             arity : () => 1,
@@ -31,7 +31,7 @@ export const Builtins: [string, Value][] = [
         },
     ],
     [
-        // args[0]: (liosta | litreacha); args[1]: number; args[2]: number
+        // args[0]: (liosta | téacs); args[1]: number; args[2]: number
         // Cuid returns a sublist of args[0] from args[1] to args[2]
         "cuid", {
             ainm: "cuid",
@@ -42,66 +42,80 @@ export const Builtins: [string, Value][] = [
                 if (Checks.isLiosta(args[0])) {
                     const ls = Asserts.assertLiosta(args[0]);
                     return ls.slice(l, r);
-                } else if (Checks.isLitreacha(args[0])) {
-                    const s = Asserts.assertLitreacha(args[0]);
+                } else if (Checks.isTéacs(args[0])) {
+                    const s = Asserts.assertTéacs(args[0]);
                     return s.substr(l, r);
                 }
-                throw new RuntimeError(`Níl liosta nó litreacha é ${goLitreacha(args[0])}`);
+                throw new RuntimeError(`Níl liosta nó téacs é ${goTéacs(args[0])}`);
             },
         },
     ],
     [
-        // args[0]: litreacha, args[1]: litreacha
+        // args[0]: téacs, args[1]: téacs
         // roinn calls split on args[0] with args[1] as divider
         "roinn", {
             ainm: "roinn",
             arity : () => 2,
             call : async (args: Value[]): Promise<Value> => {
-                const a = Asserts.assertLitreacha(args[0]);
-                const b = Asserts.assertLitreacha(args[1]);
+                const a = Asserts.assertTéacs(args[0]);
+                const b = Asserts.assertTéacs(args[1]);
                 return a.split(b);
             },
         },
     ],
     [
-        // args[0]: litreacha, args[1]: litreacha, args[2]: litreacha
+        // args[0]: téacs, args[1]: téacs, args[2]: téacs
         // replace all occurrences of args[1] in args[0] with args[2]
         "athchuir", {
             ainm: "athchuir",
             arity : () => 3,
             call : async (args: Value[]): Promise<Value> => {
-                const a = Asserts.assertLitreacha(args[0]);
-                const b = Asserts.assertLitreacha(args[1]);
-                const c = Asserts.assertLitreacha(args[2]);
+                const a = Asserts.assertTéacs(args[0]);
+                const b = Asserts.assertTéacs(args[1]);
+                const c = Asserts.assertTéacs(args[2]);
                 return athchuir(a, b, c);
             },
         },
     ],
     [
-        // args[0]: (litreacha | bool | uimhir)
+        // args[0]: (téacs | bool | uimhir)
         // go_uimh casts args[0] to a number
         "go_uimh", {
             ainm : "go_uimh",
             arity : () => 1,
             call : (args: Value[]): Promise<number> => {
-                if (Checks.isLitreacha(args[0]) || Checks.isBool(args[0]) || Checks.isNumber(args[0])) {
+                if (Checks.isTéacs(args[0]) || Checks.isBool(args[0]) || Checks.isNumber(args[0])) {
                     return Promise.resolve(Number(args[0]));
                 }
-                throw new RuntimeError(`Níl uimhir, litreacha nó bool é ${goLitreacha(args[0])}`);
+                throw new RuntimeError(`Níl uimhir, téacs nó bool é ${goTéacs(args[0])}`);
             },
         },
     ],
     [
         // args[0]: any
-        // go_uimh casts args[0] to a number
-        "go_lit", {
-            ainm : "go_lit",
+        // go_téacs casts args[0] to a string
+        "go_téacs", {
+            ainm : "go_téacs",
             arity : () => 1,
             call : (args: Value[]): Promise<string> => {
-                if (Checks.isLitreacha(args[0])) {
+                if (Checks.isTéacs(args[0])) {
                     return Promise.resolve(args[0]);
                 }
-                return Promise.resolve(goLitreacha(args[0]));
+                return Promise.resolve(goTéacs(args[0]));
+            },
+        },
+    ],
+    [
+        // args[0]: any
+        // go_téacs casts args[0] to a string
+        "go_teacs", {
+            ainm : "go_téacs",
+            arity : () => 1,
+            call : (args: Value[]): Promise<string> => {
+                if (Checks.isTéacs(args[0])) {
+                    return Promise.resolve(args[0]);
+                }
+                return Promise.resolve(goTéacs(args[0]));
             },
         },
     ],

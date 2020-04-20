@@ -3,7 +3,7 @@ import * as Checks from "./checks";
 import { RuntimeError, tagErrorLoc } from "./error";
 import { Environment } from "./env";
 import { PosInfo, CSArgs, ListLit, ObjLookups, Postfix, PostOp, PostOp_2, Prefix } from "./gen_parser";
-import { unescapeChars } from "./litreacha";
+import { unescapeChars } from "./teacs";
 import { callFunc, idxList, qIdxList, Value } from "./values";
 
 export type EvalFn = (env: Environment) => Value;
@@ -19,7 +19,7 @@ export function isQuick(a: MaybeQuick): a is IsQuick {
     return a.qeval !== null;
 }
 
-export function qLitreachaEval(lit: string, start: PosInfo, end: PosInfo): EvalFn {
+export function qTéacsEval(lit: string, start: PosInfo, end: PosInfo): EvalFn {
     let x: null | string = null;
     return (env: Environment) => {
         if(x !== null)

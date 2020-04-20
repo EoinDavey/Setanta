@@ -6,7 +6,7 @@ toc: true
 
 ## Gníomhartha le torthaí
 
-Chun torthaí a mhínigh, féachfaimid ar cúpla gníomhartha a thagann le Setanta. Mar shampla, tagann Setanta leis an gníomh `fad`. Úsáideann tú `fad` chun fad liosta nó litreacha a fháil.
+Chun torthaí a mhínigh, féachfaimid ar cúpla gníomhartha a thagann le Setanta. Mar shampla, tagann Setanta leis an gníomh `fad`. Úsáideann tú `fad` chun fad liosta nó téacs a fháil.
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -18,9 +18,9 @@ Chun torthaí a mhínigh, féachfaimid ar cúpla gníomhartha a thagann le Setan
 </div>
 </div>
 
-Nuair a úsáideann tú `fad` faigheann tú toradh ar ais, go háirithe fad an liosta nó fad an `litreacha`.
+Nuair a úsáideann tú `fad` faigheann tú toradh ar ais, go háirithe fad an liosta nó fad an téacs.
 
-Mar an gcéanna, tá toradh ag an gníomh `go_uimh`. Úsáideann tú `go_uimh` chun litreacha a aistriú go huimhir. Mar shampla:
+Mar an gcéanna, tá toradh ag an gníomh `go_uimh`. Úsáideann tú `go_uimh` chun téacs a aistriú go huimhir. Mar shampla:
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">

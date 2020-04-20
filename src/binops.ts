@@ -5,9 +5,9 @@ import { RuntimeError, tagErrorLoc } from "./error";
 import { EvalFn } from "./evals";
 import { PosInfo, And, Or } from "./gen_parser";
 import { cat, repeat } from "./liosta";
-import { strcat, strrep } from "./litreacha";
+import { strcat, strrep } from "./teacs";
 import { IsQuick, isQuick, MaybeEv as MaybeQuickEv } from "./quickevals";
-import { Comparable, goLitreacha, Ref, TypeCheck, Value } from "./values";
+import { Comparable, goTéacs, Ref, TypeCheck, Value } from "./values";
 
 interface IEvalable {evalfn: EvalFn; qeval: MaybeQuickEv; }
 
@@ -178,9 +178,9 @@ const binOpTable: Map<string, BinOpEntry[]> = new Map([
             rcheck : Checks.isLiosta,
         },
         {
-            lcheck : Checks.isLitreacha,
-            op : makeBinOp(Asserts.assertLitreacha, Asserts.assertLitreacha, strcat),
-            rcheck : Checks.isLitreacha,
+            lcheck : Checks.isTéacs,
+            op : makeBinOp(Asserts.assertTéacs, Asserts.assertTéacs, strcat),
+            rcheck : Checks.isTéacs,
         },
     ]],
     ["-", [numBinOpEntry((a, b) => a - b)]],
@@ -192,8 +192,8 @@ const binOpTable: Map<string, BinOpEntry[]> = new Map([
             rcheck : Checks.isNumber,
         },
         {
-            lcheck : Checks.isLitreacha,
-            op : makeBinOp(Asserts.assertLitreacha, Asserts.assertNumber, strrep),
+            lcheck : Checks.isTéacs,
+            op : makeBinOp(Asserts.assertTéacs, Asserts.assertNumber, strrep),
             rcheck : Checks.isNumber,
         },
     ]],
@@ -249,7 +249,7 @@ function evalBinOp(a: Value, b: Value, op: string, start: PosInfo, end: PosInfo)
             }
         }
     }
-    throw new RuntimeError(`Ní féidir leat ${goLitreacha(op)} a úsaid le ${goLitreacha(a)} agus ${goLitreacha(b)}`, start, end);
+    throw new RuntimeError(`Ní féidir leat ${goTéacs(op)} a úsaid le ${goTéacs(a)} agus ${goTéacs(b)}`, start, end);
 }
 
 type AsgnOp = (ref: Ref, cur: Value, dv: Value) => void;
@@ -285,9 +285,9 @@ const asgnOpTable: Map<string, AsgnOpEntry[]> = new Map([
             rcheck: Checks.isLiosta,
         },
         {
-            lcheck: Checks.isLitreacha,
-            op: makeAsgnOp(Asserts.assertLitreacha, Asserts.assertLitreacha, strcat),
-            rcheck: Checks.isLitreacha,
+            lcheck: Checks.isTéacs,
+            op: makeAsgnOp(Asserts.assertTéacs, Asserts.assertTéacs, strcat),
+            rcheck: Checks.isTéacs,
         },
     ]],
     ["-=", [numAsgnOpEntry((a, b) => a - b)]],
@@ -307,8 +307,8 @@ const asgnOpTable: Map<string, AsgnOpEntry[]> = new Map([
             rcheck: Checks.isNumber,
         },
         {
-            lcheck: Checks.isLitreacha,
-            op: makeAsgnOp(Asserts.assertLitreacha, Asserts.assertNumber, strrep),
+            lcheck: Checks.isTéacs,
+            op: makeAsgnOp(Asserts.assertTéacs, Asserts.assertNumber, strrep),
             rcheck: Checks.isNumber,
         },
     ]],
@@ -323,5 +323,5 @@ export function evalAsgnOp(ref: Ref, cur: Value, dv: Value, op: string) {
             }
         }
     }
-    throw new RuntimeError(`Ní féidir leat ${goLitreacha(op)} a úsáid le ${goLitreacha(cur)} agus ${goLitreacha(dv)}`);
+    throw new RuntimeError(`Ní féidir leat ${goTéacs(op)} a úsáid le ${goTéacs(cur)} agus ${goTéacs(dv)}`);
 }

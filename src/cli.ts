@@ -4,7 +4,7 @@ import * as Asserts from "./asserts";
 import { RuntimeError } from "./error";
 import { SyntaxErr, PosInfo, ParseResult, ASTKinds, Parser } from "./gen_parser";
 import { Interpreter, STOP } from "./i10r";
-import { goLitreacha, Value } from "./values";
+import { goTéacs, Value } from "./values";
 
 import * as fs from "fs";
 
@@ -36,7 +36,7 @@ function getExternals(léighfn: () => Promise<string|null>): [string[], Value][]
                 ainm: "scríobh",
                 arity : () => -1,
                 call : async (args: Value[]): Promise<string|null> => {
-                    console.log(...args.map(goLitreacha));
+                    console.log(...args.map(goTéacs));
                     return null;
                 },
             },
@@ -46,7 +46,7 @@ function getExternals(léighfn: () => Promise<string|null>): [string[], Value][]
                 ainm: "ceist",
                 arity : () => 1,
                 call : (args: Value[]): Promise<string|null> => {
-                    process.stdout.write(Asserts.assertLitreacha(args[0]));
+                    process.stdout.write(Asserts.assertTéacs(args[0]));
                     return léighfn();
                 },
             },
@@ -116,7 +116,7 @@ async function repl() {
         try {
             // This is an expression, we can print the result
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
-                    console.log(goLitreacha(await ast.stmts[0].evalfn(i.global)));
+                    console.log(goTéacs(await ast.stmts[0].evalfn(i.global)));
                     continue;
             }
             await i.interpret(ast);

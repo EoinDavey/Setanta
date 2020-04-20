@@ -8,9 +8,9 @@ import { RuntimeError, undefinedError } from "./error";
 import * as P from "./gen_parser";
 import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
-import { strcat, strrep, unescapeChars } from "./litreacha";
+import { strcat, strrep, unescapeChars } from "./teacs";
 import { Callable, callFunc, Comparable,
-    goLitreacha, idxList, Obj, Ref, TypeCheck, Value } from "./values";
+    goTéacs, idxList, Obj, Ref, TypeCheck, Value } from "./values";
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
@@ -145,7 +145,7 @@ export class Interpreter {
             return a.evalfn(env).then((v: Value) => {
                 return Promise.reject(
                     new RuntimeError("Ní féidir leat luach a thabhairt do " +
-                        goLitreacha(v)));
+                        goTéacs(v)));
             });
         }
         return Promise.resolve((v: Value) => {

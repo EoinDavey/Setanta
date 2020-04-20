@@ -1,7 +1,7 @@
 ---
 import { Environment } from "./env";
 import { callFunc, idxList, Value } from "./values";
-import { unescapeChars } from "./litreacha";
+import { unescapeChars } from "./teacs";
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { orBinOp, orQuickBinOp, andBinOp, andQuickBinOp,
@@ -83,7 +83,7 @@ Atom        :=  _ '\(' trm=Expr '\)'
                     return childF === null ? null : childF.bind(this.trm);
                }
              | ID
-             | Litreacha
+             | Teacs
              | Int
              | Bool
              | Neamhni
@@ -109,9 +109,9 @@ Neamhni     := _ 'neamhn[ií]'
 Int         := _ int='-?[0-9]+(?:\.[0-9]+)?'
                .evalfn = EvalFn { return qEvalToEval(Quick.qIntEval(this.int)); }
                .qeval = Quick.EvalFn { return Quick.qIntEval(this.int); }
-Litreacha   := _ start=@ '\'' val='([^\'\\]|\\.)*' '\'' end=@
-               .evalfn = EvalFn { return qEvalToEval(Quick.qLitreachaEval(this.val, this.start, this.end)); }
-               .qeval = Quick.EvalFn { return Quick.qLitreachaEval(this.val, this.start, this.end); }
+Teacs       := _ start=@ '\'' val='([^\'\\]|\\.)*' '\'' end=@
+               .evalfn = EvalFn { return qEvalToEval(Quick.qTéacsEval(this.val, this.start, this.end)); }
+               .qeval = Quick.EvalFn { return Quick.qTéacsEval(this.val, this.start, this.end); }
 _           := wspace*
 wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
 gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'

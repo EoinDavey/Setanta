@@ -80,14 +80,14 @@ test("test go_uimh", async () => {
     }
 });
 
-test("test go_lit", async () => {
+test("test go_téacs", async () => {
     interface TC { inp: string; exp: string; }
     const cases: TC[] = [
-        { inp : "go_lit(123)", exp : "123" },
-        { inp : "go_lit(fíor)", exp : "fíor" },
-        { inp : "go_lit(breag)", exp : "bréag" },
-        { inp : "go_lit('1234')", exp : "1234" },
-        { inp : "go_lit(go_lit)", exp : "< gníomh go_lit >" },
+        { inp : "go_téacs(123)", exp : "123" },
+        { inp : "go_teacs(fíor)", exp : "fíor" },
+        { inp : "go_téacs(breag)", exp : "bréag" },
+        { inp : "go_téacs('1234')", exp : "1234" },
+        { inp : "go_teacs(go_téacs)", exp : "< gníomh go_téacs >" },
     ];
     for (const c of cases) {
         const i = new Interpreter();

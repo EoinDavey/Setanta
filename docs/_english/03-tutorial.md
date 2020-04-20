@@ -36,16 +36,16 @@ This is in the console.
 
 Specifically, notice that `==` and `!=` compare numbers (and other things).
 
-## Letters (Litreacha)
+## Text
 
-You can write phrases too, we saw this earlier with the simple program:
+You can write text in your programs too, we saw this earlier with the simple program:
 <div class="language-python highlighter-rouge">
 <div class="highlight">
 <pre class="highlight"><code><span class="n">scríobh</span>(<span class="s">&#x27;Dia duit&#x27;</span>)</code></pre>
 </div>
 </div>
 
-We call these phrases "litreacha". You create *litreacha* with two `'`s. For example:
+You create text with two `'`s. For example:
 <div class="highlighter-rouge">
 <div class="highlight">
 <pre class="highlight"><code><span class="s">&#x27;Hello&#x27;</span>
@@ -53,7 +53,7 @@ We call these phrases "litreacha". You create *litreacha* with two `'`s. For exa
 </div>
 </div>
 
-You can use `+` to join litreacha together.
+You can use `+` to join two text together.
 
 <div class="language-python highlighter-rouge">
 <div class="highlight">
@@ -121,7 +121,7 @@ You use **variables** to store numbers, lists or anything. You put something in 
 
 It writes out `20` in the console. The first line put `10` in `x` and the second line used it.
 
-In this program `x` is a **variable**. We can use variables everywhere that we use numbers, litreacha or anything.
+In this program `x` is a **variable**. We can use variables everywhere that we use numbers, text or anything.
 
 We create new variables with `:=`.
 

@@ -1,6 +1,6 @@
-import { goLitreacha, Value } from "../../src/values";
+import { goTéacs, Value } from "../../src/values";
 
-test("test goLitreacha", () => {
+test("test goTéacs", () => {
     interface TC { v: Value; exp: string; }
     const cases: TC[] = [
         { v : 123, exp : "123" },
@@ -28,6 +28,6 @@ test("test goLitreacha", () => {
         },
     ];
     for (const c of cases) {
-        expect(goLitreacha(c.v)).toEqual(c.exp);
+        expect(goTéacs(c.v)).toEqual(c.exp);
     }
 });
