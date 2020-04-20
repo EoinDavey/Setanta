@@ -4,7 +4,7 @@ import { Builtins } from "./builtins";
 import * as Checks from "./checks";
 import { Creatlach, CreatlachImpl } from "./creatlach";
 import { Environment } from "./env";
-import { RuntimeError, undefinedError } from "./error";
+import { tagErrorLoc, RuntimeError, undefinedError } from "./error";
 import * as P from "./gen_parser";
 import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
@@ -270,37 +270,42 @@ export class Interpreter {
             // Try quick evaluation of expression
             if (t.expr.qeval !== null) {
                 const val = t.expr.qeval(env);
-                return this.refPostfix(t.lhs, env).then((ref: Ref) => ref(val));
+                return this.refPostfix(t.lhs, env).then((ref: Ref) => ref(val))
+                    .catch(err => Promise.reject(tagErrorLoc(err, t.lstart, t.lend)));
             }
             return t.expr.evalfn(env).then((val: Value) => {
                 return this.refPostfix(t.lhs, env).then((ref: Ref) => ref(val));
-            });
+            }) .catch(err => Promise.reject(tagErrorLoc(err, t.lstart, t.lend)));
         }
         // If both lhs and rhs are quick
         if (t.expr.qeval !== null && t.lhs.qeval !== null) {
             const dv = t.expr.qeval(env);
             const cur = t.lhs.qeval(env);
             return this.refPostfix(t.lhs, env).then((ref: Ref) =>
-                evalAsgnOp(ref, cur, dv, t.op));
+                evalAsgnOp(ref, cur, dv, t.op))
+                .catch(err => Promise.reject(tagErrorLoc(err, t.lstart, t.lend)));
 
         }
         // If only rhs is quick
         if (t.expr.qeval !== null) {
             const dv = t.expr.qeval(env);
             return this.refPostfix(t.lhs, env).then((ref: Ref) =>
-                t.lhs.evalfn(env).then((cur: Value) => evalAsgnOp(ref, cur, dv, t.op)));
+                t.lhs.evalfn(env).then((cur: Value) => evalAsgnOp(ref, cur, dv, t.op)))
+                .catch(err => Promise.reject(tagErrorLoc(err, t.lstart, t.lend)));
         }
         // If only lhs is quick
         if (t.lhs.qeval !== null) {
             const cur = t.lhs.qeval(env);
             return t.expr.evalfn(env).then((dv: Value) =>
                 this.refPostfix(t.lhs, env).then((ref: Ref) =>
-                    evalAsgnOp(ref, cur, dv, t.op)));
+                    evalAsgnOp(ref, cur, dv, t.op)))
+                    .catch(err => Promise.reject(tagErrorLoc(err, t.lstart, t.lend)));
         }
         // Neither are quick
         return t.expr.evalfn(env).then((dv: Value) =>
             this.refPostfix(t.lhs, env).then((ref: Ref) =>
-                t.lhs.evalfn(env).then((cur: Value) => evalAsgnOp(ref, cur, dv, t.op))));
+                t.lhs.evalfn(env).then((cur: Value) => evalAsgnOp(ref, cur, dv, t.op))))
+            .catch(err => Promise.reject(tagErrorLoc(err, t.lstart, t.lend)));
     }
     public evalCSIDs(ids: P.CSIDs): string[] {
         return [ids.head.id].concat(ids.tail.map((x) => x.id.id));

@@ -37,7 +37,7 @@ BlockStmt   := _ '{' blk=AsgnStmt* _ '}'
 NuairStmt   := _ 'nuair-a' expr=Expr &gap stmt=NonAsgnStmt
 LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr step={_ ',' step=Expr}? _ '\)' stmt=NonAsgnStmt
 DefnStmt    := _ idstart=@ id=ID idend=@ _ ':=' _ expr=Expr
-AssgnStmt   := _ lhs=Postfix _ op=AsgnOp _ expr=Expr
+AssgnStmt   := _ lstart=@ lhs=Postfix lend=@ _ op=AsgnOp _ expr=Expr
 GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
     stmts=AsgnStmt*
 _ '}'
