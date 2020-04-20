@@ -5,7 +5,19 @@ import { RuntimeError } from "./error";
 import { GníomhWrap } from "./gniomh";
 import { athchuir } from "./teacs";
 import { Rud } from "./rud";
-import { callFunc, goTéacs, ObjWrap, Value } from "./values";
+import { Callable, callFunc, goTéacs, ObjWrap, Value } from "./values";
+
+// Take a 1-ary mathematical function and return a Callable
+function mathWrap(ainm: string, fn: (x: number) => number): Callable {
+    return {
+        ainm,
+        arity: () => 1,
+        call: (args: Value[]) => {
+            const x = Asserts.assertNumber(args[0]);
+            return Promise.resolve(fn(x));
+        }
+    }
+}
 
 export const Builtins: [string, Value][] = [
     [
@@ -166,61 +178,22 @@ export const Builtins: [string, Value][] = [
             [["e"], Math.E],
             [
                 // Square function
-                ["cearn"], {
-                    ainm : "cearn",
-                    arity: () => 1,
-                    call: (args: Value[]): Promise<number> => {
-                        const x = Asserts.assertNumber(args[0]);
-                        return Promise.resolve(x * x);
-                    },
-                },
+                ["cearn"], mathWrap("cearn", x => x*x)
             ],
             [
                 // Sqrt function
-                ["fréamh", "freamh"], {
-                    ainm : "fréamh",
-                    arity: () => 1,
-                    call: (args: Value[]): Promise<number> => {
-                        const x = Asserts.assertNumber(args[0]);
-                        return Promise.resolve(Math.sqrt(x));
-                    },
-                },
+                ["fréamh", "freamh"], mathWrap("fréamh", Math.sqrt)
             ],
-            [
-                // cos function
-                ["cos"], {
-                    ainm : "cos",
-                    arity: () => 1,
-                    call: (args: Value[]): Promise<number> => {
-                        const x = Asserts.assertNumber(args[0]);
-                        return Promise.resolve(Math.cos(x));
-                    },
-                },
-            ],
-            [
-                // cos function
-                ["sin"], {
-                    ainm : "sin",
-                    arity: () => 1,
-                    call: (args: Value[]): Promise<number> => {
-                        const x = Asserts.assertNumber(args[0]);
-                        return Promise.resolve(Math.sin(x));
-                    },
-                },
-            ],
+            [["cos"],  mathWrap("cos", Math.cos)],
+            [["sin"], mathWrap("sin", Math.sin)],
             [
                 // log function
-                ["log"], {
-                    ainm : "log",
-                    arity: () => 1,
-                    call: (args: Value[]): Promise<number> => {
-                        const x = Asserts.assertNumber(args[0]);
-                        if (x <= 0) {
-                            return Promise.reject(new RuntimeError(`Níl log(0) sainmhínithe`));
-                        }
-                        return Promise.resolve(Math.log(x));
-                    },
-                },
+                ["log"], mathWrap("log", x => {
+                    if (x <= 0) {
+                        throw new RuntimeError(`Níl log(0) sainmhínithe`);
+                    }
+                    return Math.log(x);
+                })
             ],
             [
                 // logB function
