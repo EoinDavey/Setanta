@@ -111,9 +111,10 @@
 * Int         := _ int='-?[0-9]+(?:\.[0-9]+)?'
 *                .evalfn = EvalFn { return qEvalToEval(Quick.qIntEval(this.int)); }
 *                .qeval = Quick.EvalFn { return Quick.qIntEval(this.int); }
-* Teacs       := _ start=@ '\'' val='([^\'\\]|\\.)*' '\'' end=@
-*                .evalfn = EvalFn { return qEvalToEval(Quick.qTéacsEval(this.val, this.start, this.end)); }
-*                .qeval = Quick.EvalFn { return Quick.qTéacsEval(this.val, this.start, this.end); }
+* Teacs       := _ lit={ start=@ '\'' val='([^\'\\]|\\.)*' '\'' end=@ |
+*                        start=@ '"' val='([^"\\]|\\.)*' '"' end=@ }
+*                .evalfn = EvalFn { return qEvalToEval(Quick.qTéacsEval(this.lit.val, this.lit.start, this.lit.end)); }
+*                .qeval = Quick.EvalFn { return Quick.qTéacsEval(this.lit.val, this.lit.start, this.lit.end); }
 * _           := wspace*
 * wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
 * gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
@@ -218,6 +219,8 @@ export enum ASTKinds {
     Neamhni,
     Int,
     Teacs,
+    Teacs_$0_1,
+    Teacs_$0_2,
     _,
     wspace,
     gap_1,
@@ -709,22 +712,31 @@ export class Int {
 }
 export class Teacs {
     public kind: ASTKinds.Teacs = ASTKinds.Teacs;
-    public start: PosInfo;
-    public val: string;
-    public end: PosInfo;
+    public lit: Teacs_$0;
     public evalfn: EvalFn;
     public qeval: Quick.EvalFn;
-    constructor(start: PosInfo, val: string, end: PosInfo){
-        this.start = start;
-        this.val = val;
-        this.end = end;
+    constructor(lit: Teacs_$0){
+        this.lit = lit;
         this.evalfn = (() => {
-        return qEvalToEval(Quick.qTéacsEval(this.val, this.start, this.end));
+        return qEvalToEval(Quick.qTéacsEval(this.lit.val, this.lit.start, this.lit.end));
         })();
         this.qeval = (() => {
-        return Quick.qTéacsEval(this.val, this.start, this.end);
+        return Quick.qTéacsEval(this.lit.val, this.lit.start, this.lit.end);
         })();
     }
+}
+export type Teacs_$0 = Teacs_$0_1 | Teacs_$0_2;
+export interface Teacs_$0_1 {
+    kind: ASTKinds.Teacs_$0_1;
+    start: PosInfo;
+    val: string;
+    end: PosInfo;
+}
+export interface Teacs_$0_2 {
+    kind: ASTKinds.Teacs_$0_2;
+    start: PosInfo;
+    val: string;
+    end: PosInfo;
 }
 export type _ = wspace[];
 export type wspace = string;
@@ -1807,19 +1819,63 @@ export class Parser {
                 if (log) {
                     log("Teacs");
                 }
-                let start: Nullable<PosInfo>;
-                let val: Nullable<string>;
-                let end: Nullable<PosInfo>;
+                let lit: Nullable<Teacs_$0>;
                 let res: Nullable<Teacs> = null;
                 if (true
                     && this.match_($$dpth + 1, cr) !== null
+                    && (lit = this.matchTeacs_$0($$dpth + 1, cr)) !== null
+                ) {
+                    res = new Teacs(lit);
+                }
+                return res;
+            }, cr)();
+    }
+    public matchTeacs_$0($$dpth: number, cr?: ContextRecorder): Nullable<Teacs_$0> {
+        return this.choice<Teacs_$0>([
+            () => this.matchTeacs_$0_1($$dpth + 1, cr),
+            () => this.matchTeacs_$0_2($$dpth + 1, cr),
+        ]);
+    }
+    public matchTeacs_$0_1($$dpth: number, cr?: ContextRecorder): Nullable<Teacs_$0_1> {
+        return this.runner<Teacs_$0_1>($$dpth,
+            (log) => {
+                if (log) {
+                    log("Teacs_$0_1");
+                }
+                let start: Nullable<PosInfo>;
+                let val: Nullable<string>;
+                let end: Nullable<PosInfo>;
+                let res: Nullable<Teacs_$0_1> = null;
+                if (true
                     && (start = this.mark()) !== null
                     && this.regexAccept(String.raw`\'`, $$dpth + 1, cr) !== null
                     && (val = this.regexAccept(String.raw`([^\'\\]|\\.)*`, $$dpth + 1, cr)) !== null
                     && this.regexAccept(String.raw`\'`, $$dpth + 1, cr) !== null
                     && (end = this.mark()) !== null
                 ) {
-                    res = new Teacs(start, val, end);
+                    res = {kind: ASTKinds.Teacs_$0_1, start, val, end};
+                }
+                return res;
+            }, cr)();
+    }
+    public matchTeacs_$0_2($$dpth: number, cr?: ContextRecorder): Nullable<Teacs_$0_2> {
+        return this.runner<Teacs_$0_2>($$dpth,
+            (log) => {
+                if (log) {
+                    log("Teacs_$0_2");
+                }
+                let start: Nullable<PosInfo>;
+                let val: Nullable<string>;
+                let end: Nullable<PosInfo>;
+                let res: Nullable<Teacs_$0_2> = null;
+                if (true
+                    && (start = this.mark()) !== null
+                    && this.regexAccept(String.raw`"`, $$dpth + 1, cr) !== null
+                    && (val = this.regexAccept(String.raw`([^"\\]|\\.)*`, $$dpth + 1, cr)) !== null
+                    && this.regexAccept(String.raw`"`, $$dpth + 1, cr) !== null
+                    && (end = this.mark()) !== null
+                ) {
+                    res = {kind: ASTKinds.Teacs_$0_2, start, val, end};
                 }
                 return res;
             }, cr)();

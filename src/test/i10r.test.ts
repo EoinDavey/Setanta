@@ -69,6 +69,8 @@ test("test expressions", async () => {
         {inp : "!fíor", exp: false},
         {inp : "!breag", exp: true},
         {inp : "'abc'[0]", exp: "a"},
+        {inp : "\"abc\"[0]", exp: "a"},
+        {inp : "\"a\\\"bc\"[0]", exp: "a"},
     ];
     for (const c of cases) {
         const i = new Interpreter();
