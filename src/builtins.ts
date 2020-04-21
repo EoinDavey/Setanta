@@ -191,6 +191,7 @@ export const Builtins: [string, Value][] = [
             [["asin"], mathWrap("asin", Math.asin)],
             [["atan"], mathWrap("atan", Math.atan)],
             [["dearbh"], mathWrap("dearbh", Math.abs)],
+            [["eas"], mathWrap("eas", Math.exp)],
             [
                 // log function
                 ["log"], mathWrap("log", x => {
@@ -215,6 +216,18 @@ export const Builtins: [string, Value][] = [
                             return Promise.reject(new RuntimeError(`Níl log i mbun ${b} sainmhínithe`));
                         }
                         return Promise.resolve(Math.log(x) / Math.log(b));
+                    },
+                },
+            ],
+            [
+                // power function
+                ["cmhcht"], {
+                    ainm : "cmhcht",
+                    arity: () => 2,
+                    call: (args: Value[]): Promise<number> => {
+                        const x = Asserts.assertNumber(args[0]);
+                        const y = Asserts.assertNumber(args[1]);
+                        return Promise.resolve(Math.pow(x, y));
                     },
                 },
             ],

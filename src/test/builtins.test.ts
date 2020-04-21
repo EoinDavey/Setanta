@@ -150,6 +150,11 @@ test("test mata", async () => {
         { inp : "dearbh@mata(-0)", exp: 0 },
         { inp : "dearbh@mata(-1)", exp: 1 },
         { inp : "dearbh@mata(1)", exp: 1 },
+        { inp : "cmhcht@mata(2, 2)", exp: 4 },
+        { inp : "cmhcht@mata(2, 4)", exp: 16 },
+        { inp : "eas@mata(0)", exp: 1 },
+        { inp : "eas@mata(1)", exp: Math.E },
+        { inp : "eas@mata(2)", exp: Math.exp(2) },
     ];
     for (const c of cases) {
         const i = new Interpreter();
