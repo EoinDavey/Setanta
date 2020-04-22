@@ -5,8 +5,7 @@ import { RuntimeError } from "./error";
 import { AsgnStmt, ID, NonAsgnStmt } from "./gen_parser";
 import { Interpreter } from "./i10r";
 
-export type Value = number | boolean | Callable | null | ValLs | string | Obj;
-interface ValLs extends Array<Value> {}
+export type Value = number | boolean | Callable | null | Value[] | string | Obj;
 
 export type TypeCheck = (v: Value) => boolean;
 
