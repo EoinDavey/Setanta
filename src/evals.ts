@@ -5,6 +5,7 @@ import { CSArgs, ListLit, ObjLookups, Postfix, PostOp, PostOp_2, Prefix } from "
 import * as Quick from "./quickevals";
 import { callFunc, idxList, qIdxList, Value } from "./values";
 import { tagErrorLoc } from "./error";
+import { getAttr } from "./obj";
 
 export type EvalFn = (env: Environment) => Promise<Value>;
 
@@ -76,7 +77,7 @@ export function objLookupsEval(ol: ObjLookups): EvalFn {
         ol.root.evalfn(env).then((rt: Value) => {
             return arr.reduce((x: Value, y): Value => {
                 const obj = Asserts.assertObj(x);
-                return obj.getAttr(y.id.id);
+                return getAttr(obj, y.id.id);
             }, rt);
         }).catch(err => Promise.reject(tagErrorLoc(err, ol.start, ol.end)));
 }

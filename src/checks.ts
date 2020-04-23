@@ -1,5 +1,5 @@
 import { Creatlach } from "./creatlach";
-import { Callable, Comparable, Obj, Value } from "./values";
+import { Obj, Callable, Comparable, ObjIntf, Value } from "./values";
 
 export function isTrue(v: Value) {
     return v !== 0 && v !== false && v !== null;
@@ -17,6 +17,10 @@ export function isCallable(v: Value): v is Callable {
 }
 
 export function isObj(v: Value): v is Obj {
+    return isObjIntf(v) || isLiosta(v) || isTéacs(v);
+}
+
+export function isObjIntf(v: Value): v is ObjIntf {
     return !(v === null || isNumber(v) || isBool(v) || isTéacs(v) || isLiosta(v)) && "getAttr" in v;
 }
 

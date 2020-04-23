@@ -1,6 +1,6 @@
 import * as Asserts from "./asserts";
 import { evalAsgnOp } from "./binops";
-import { Builtins } from "./builtins";
+import { GlobalBuiltins } from "./builtins";
 import * as Checks from "./checks";
 import { Creatlach, CreatlachImpl } from "./creatlach";
 import { Environment } from "./env";
@@ -10,7 +10,7 @@ import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
 import { strcat, strrep, unescapeChars } from "./teacs";
 import { Callable, callFunc, Comparable,
-    goTéacs, idxList, Obj, Ref, TypeCheck, Value } from "./values";
+    goTéacs, idxList, ObjIntf, Ref, TypeCheck, Value } from "./values";
 
 type Stmt = P.AsgnStmt | P.NonAsgnStmt;
 
@@ -31,7 +31,7 @@ export class Interpreter {
     private skipCnt: number = 0;
     private stopped: boolean = false;
     constructor(externals?: [string[], Value][]) {
-        this.global = Environment.from(Builtins);
+        this.global = Environment.from(GlobalBuiltins);
         if (externals) {
             for (const ext of externals) {
                 for (const a of ext[0]) {
@@ -132,7 +132,7 @@ export class Interpreter {
             const field: string = o.attrs[0].id.id;
             const subObj: P.ObjLookups = new P.ObjLookups(o.start, attrs, o.root, o.end);
             return subObj.evalfn(env).then((obj: Value) => {
-                const val: Obj = Asserts.assertObj(obj);
+                const val: ObjIntf = Asserts.assertObjIntf(obj);
                 return (v: Value) => {
                     val.setAttr(field, v);
                 };

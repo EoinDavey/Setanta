@@ -14,7 +14,7 @@ gníomh ams(ls, k){
 
 grph := []
 le i idir (0, fad(línte))
-    grph = grph + [roinn(athchuir(athchuir(línte[i], ',', ''), '=> ', ''), ' ')]
+    grph = grph + [roinn@(athchuir@(athchuir@(línte[i])(',', ''))('=> ', ''))(' ')]
 
 >-- Eochracha --<
 ecrcha := []

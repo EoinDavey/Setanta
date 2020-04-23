@@ -1,8 +1,8 @@
 import { Creatlach } from "./creatlach";
 import { RuntimeError } from "./error";
-import { Callable, goTéacs, Obj, Value } from "./values";
+import { Callable, goTéacs, ObjIntf, Value } from "./values";
 
-export class Rud implements Obj {
+export class Rud implements ObjIntf {
     public ainm: string;
     public readonly tuis: TuisWrap | null = null;
     private creatlach: Creatlach;
@@ -30,7 +30,7 @@ export class Rud implements Obj {
     }
 }
 
-class TuisWrap implements Obj {
+class TuisWrap implements ObjIntf {
     public readonly ainm: string = "tuis";
     private rud: Rud;
     private cr: Creatlach;

@@ -5,7 +5,7 @@ import { RuntimeError } from "./error";
 import { GníomhWrap } from "./gniomh";
 import { athchuir } from "./teacs";
 import { Rud } from "./rud";
-import { Callable, callFunc, goTéacs, ObjWrap, Value } from "./values";
+import { ObjIntfWrap, Callable, callFunc, goTéacs, Value } from "./values";
 
 // Take a 1-ary mathematical function and return a Callable
 function mathWrap(ainm: string, fn: (x: number) => number): Callable {
@@ -19,9 +19,10 @@ function mathWrap(ainm: string, fn: (x: number) => number): Callable {
     }
 }
 
-export const Builtins: [string, Value][] = [
+export const GlobalBuiltins: [string, Value][] = [
     [
         // Fad returns length of liosta / téacs
+        // Available as a separate function for legacy reasons
         "fad", {
             ainm: "fad",
             arity : () => 1,
@@ -39,53 +40,6 @@ export const Builtins: [string, Value][] = [
                 const f = Asserts.assertCallable(args[0]);
                 const ls = Asserts.assertLiosta(args[1]);
                 return Promise.all(ls.map((x) => callFunc(f, [x])));
-            },
-        },
-    ],
-    [
-        // args[0]: (liosta | téacs); args[1]: number; args[2]: number
-        // Cuid returns a sublist of args[0] from args[1] to args[2]
-        "cuid", {
-            ainm: "cuid",
-            arity : () => 3,
-            call : async (args: Value[]): Promise<Value> => {
-                const l = Asserts.assertNumber(args[1]);
-                const r = Asserts.assertNumber(args[2]);
-                if (Checks.isLiosta(args[0])) {
-                    const ls = Asserts.assertLiosta(args[0]);
-                    return ls.slice(l, r);
-                } else if (Checks.isTéacs(args[0])) {
-                    const s = Asserts.assertTéacs(args[0]);
-                    return s.substr(l, r);
-                }
-                throw new RuntimeError(`Níl liosta nó téacs é ${goTéacs(args[0])}`);
-            },
-        },
-    ],
-    [
-        // args[0]: téacs, args[1]: téacs
-        // roinn calls split on args[0] with args[1] as divider
-        "roinn", {
-            ainm: "roinn",
-            arity : () => 2,
-            call : async (args: Value[]): Promise<Value> => {
-                const a = Asserts.assertTéacs(args[0]);
-                const b = Asserts.assertTéacs(args[1]);
-                return a.split(b);
-            },
-        },
-    ],
-    [
-        // args[0]: téacs, args[1]: téacs, args[2]: téacs
-        // replace all occurrences of args[1] in args[0] with args[2]
-        "athchuir", {
-            ainm: "athchuir",
-            arity : () => 3,
-            call : async (args: Value[]): Promise<Value> => {
-                const a = Asserts.assertTéacs(args[0]);
-                const b = Asserts.assertTéacs(args[1]);
-                const c = Asserts.assertTéacs(args[2]);
-                return athchuir(a, b, c);
             },
         },
     ],
@@ -172,7 +126,7 @@ export const Builtins: [string, Value][] = [
     ],
     [
         // Built in maths object
-        "mata", new ObjWrap("mata", [
+        "mata", new ObjIntfWrap("mata", [
             // constants
             [["pi"], Math.PI],
             [["e"], Math.E],
@@ -255,3 +209,118 @@ export const Builtins: [string, Value][] = [
         ]),
     ],
 ];
+
+const téacsOpsList: [string, (s: string) => Value][] = [
+    [
+        "fad", s => s.length
+    ],
+    [
+        "athchuir",
+        (s: string) => {
+            return {
+                ainm: "athchuir",
+                arity : () => 2,
+                call : async (args: Value[]) => {
+                    const b = Asserts.assertTéacs(args[0]);
+                    const c = Asserts.assertTéacs(args[1]);
+                    return athchuir(s, b, c);
+                },
+            }
+        },
+    ],
+    [
+        // args[1]: téacs
+        // roinn calls split on s with args[0] as divider
+        "roinn", s => {
+            return {
+                ainm: "roinn",
+                arity : () => 1,
+                call : async (args: Value[]): Promise<Value> => {
+                    const b = Asserts.assertTéacs(args[0]);
+                    return s.split(b);
+                },
+            }
+        },
+    ],
+    [
+        // args[1]: number; args[2]: number
+        // Cuid returns a sublist of s from args[0] to args[1]
+        "cuid", s => {
+            return {
+                ainm: "cuid",
+                arity : () => 2,
+                call : async (args: Value[]): Promise<Value> => {
+                    const l = Asserts.assertNumber(args[0]);
+                    const r = Asserts.assertNumber(args[1]);
+                    return s.substr(l, r);
+                },
+            }
+        },
+    ],
+    [
+        // go_liosta returns a list of the elements of s
+        "go_liosta", s => {
+            return {
+                ainm: "go_liosta",
+                arity : () => 0,
+                call : async (args: Value[]): Promise<Value> => s.split("")
+            }
+        },
+    ],
+];
+export const téacsBuiltins = new Map(téacsOpsList);
+
+const liostaOpsList: [string, (ls: Value[]) => Value][] = [
+    [
+        "fad", ls => ls.length
+    ],
+    [
+        "sortáil", ls => {
+            return {
+                ainm: "sortáil",
+                arity : () => 0,
+                call : async (args: Value[]) => ls.sort()
+            }
+        },
+    ],
+    [
+        "sortail", ls => {
+            return {
+                ainm: "sortáil",
+                arity : () => 0,
+                call : async (args: Value[]) => ls.sort()
+            }
+        },
+    ],
+    [
+        // args[0]: number; args[1]: number
+        // Cuid returns a sublist of ls from args[0] to args[1]
+        "cuid", ls => {
+            return {
+                ainm: "cuid",
+                arity : () => 2,
+                call : async (args: Value[]): Promise<Value> => {
+                    const l = Asserts.assertNumber(args[0]);
+                    const r = Asserts.assertNumber(args[1]);
+                    return ls.slice(l, r);
+                },
+            }
+        },
+    ],
+    [
+        // args[0]: téacs;
+        // nasc joins the elements of ls with the args[0] between each element
+        // it first casts everything to téacs with go_téacs
+        "nasc", ls => {
+            return {
+                ainm: "nasc",
+                arity : () => 1,
+                call : async (args: Value[]): Promise<Value> => {
+                    const a = Asserts.assertTéacs(args[0]);
+                    return ls.map(goTéacs).join(a);
+                },
+            }
+        },
+    ],
+];
+export const liostaBuiltins = new Map(liostaOpsList);

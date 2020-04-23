@@ -5,6 +5,7 @@ import { Environment } from "./env";
 import { PosInfo, CSArgs, ListLit, ObjLookups, Postfix, PostOp, PostOp_2, Prefix } from "./gen_parser";
 import { unescapeChars } from "./teacs";
 import { callFunc, idxList, qIdxList, Value } from "./values";
+import { getAttr } from "./obj";
 
 export type EvalFn = (env: Environment) => Value;
 export type MaybeEv = EvalFn | null;
@@ -90,10 +91,7 @@ export function qObjLookupsEval(ol: ObjLookups): MaybeEv {
     return (env: Environment): Value => {
         const rt: Value = h.qeval(env);
         try {
-            return arr.reduce((x: Value, y): Value => {
-                const obj = Asserts.assertObj(x);
-                return obj.getAttr(y.id.id);
-            }, rt);
+            return arr.reduce((x, y) => getAttr(Asserts.assertObj(x), y.id.id), rt);
         } catch(err) {
             throw tagErrorLoc(err, ol.start, ol.end);
         }

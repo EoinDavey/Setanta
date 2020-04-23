@@ -1,6 +1,6 @@
 import * as Checks from "./checks";
 import { RuntimeError } from "./error";
-import { Callable, Comparable, goTéacs, Obj, Value } from "./values";
+import { Obj, Callable, Comparable, goTéacs, ObjIntf, Value } from "./values";
 
 export function assertNumber(x: Value): number {
     if (Checks.isNumber(x)) {
@@ -39,6 +39,13 @@ export function assertCallable(x: Value): Callable {
 
 export function assertObj(x: Value): Obj {
     if (Checks.isObj(x)) {
+        return x;
+    }
+    throw new RuntimeError(`Ní rud é ${goTéacs(x)}`);
+}
+
+export function assertObjIntf(x: Value): ObjIntf {
+    if (Checks.isObjIntf(x)) {
         return x;
     }
     throw new RuntimeError(`Ní rud é ${goTéacs(x)}`);

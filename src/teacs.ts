@@ -8,6 +8,8 @@ export function strcat(a: string, b: string): string {
     return a.concat(b);
 }
 
+// We don't use .replace directly because .replace only replaces first value
+// unless you use RegEx, which would require us escaping special regex characters.
 export function athchuir(a: string, b: string, c: string): string {
     return a.split(b).join(c);
 }

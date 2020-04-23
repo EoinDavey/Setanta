@@ -4,7 +4,7 @@ nuair-a fíor {
     líne := léigh_líne()
     má !líne 
         bris
-    mvs = mvs + [roinn(líne, ' ')]
+    mvs += [roinn@líne(' ')]
 }
 
 gníomh iol(x, y, N) {

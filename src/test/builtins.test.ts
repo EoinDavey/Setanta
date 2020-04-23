@@ -10,6 +10,14 @@ test("test fad", async () => {
         { inp: "fad([])", exp : 0},
         { inp: "fad([1])", exp : 1},
         { inp: "fad([1,2,3,4,5])", exp : 5},
+        { inp: "fad('')", exp : 0},
+        { inp: "fad('hey')", exp : 3},
+        { inp: "fad([1,2,3,4,5])", exp : 5},
+        { inp: "fad@[]", exp : 0},
+        { inp: "fad@[1]", exp : 1},
+        { inp: "fad@[1,2,3,4,5]", exp : 5},
+        { inp: "fad@''", exp : 0},
+        { inp: "fad@'hey'", exp : 3},
     ];
     for (const c of cases) {
         const i = new Interpreter();
@@ -21,14 +29,21 @@ test("test fad", async () => {
     }
 });
 
-test("test roinn", async () => {
+test("test téacs fns", async () => {
     interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
-        { inp: "roinn('a b c', ' ')", exp : ["a", "b", "c"]},
-        { inp: "roinn('a,b,c', ' ')", exp : ["a,b,c"]},
-        { inp: "roinn('a,b,c' ,',')", exp : ["a", "b", "c"]},
-        { inp: "roinn('a', '')", exp : ["a"]},
-        { inp: "roinn('', ' ')", exp : [""]},
+        { inp: "roinn@'a b c'(' ')", exp : ["a", "b", "c"]},
+        { inp: "roinn@'a,b,c'(' ')", exp : ["a,b,c"]},
+        { inp: "roinn@'a,b,c'(',')", exp : ["a", "b", "c"]},
+        { inp: "roinn@'a'('')", exp : ["a"]},
+        { inp: "roinn@''(' ')", exp : [""]},
+        { inp: "cuid@'abc'(0, 2)", exp : "ab"},
+        { inp: "cuid@'abc'(0, 3)", exp : "abc"},
+        { inp: "athchuir@'test string'('s', 'e')", exp: "teet etring" },
+        {
+            inp: "go_liosta@'test string'()",
+            exp: ["t", "e", "s", "t", " ", "s", "t", "r", "i", "n", "g"]
+        },
     ];
     for (const c of cases) {
         const i = new Interpreter();
@@ -40,15 +55,18 @@ test("test roinn", async () => {
     }
 });
 
-test("test cuid", async () => {
+test("test liosta fns", async () => {
     interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
-        { inp: "cuid('abc', 0, 2)", exp : "ab"},
-        { inp: "cuid([1,2,3], 0, 2)", exp : [1, 2]},
-        { inp: "cuid([1,2,3], 0, 0)", exp : []},
-        { inp: "cuid([1,2,3], 0, -1)", exp : [1, 2]},
-        { inp: "cuid([1,2,3], 0, 3)", exp : [1, 2, 3]},
-        { inp: "cuid([1,2,3], 0, 4)", exp : [1, 2, 3]},
+        { inp: "cuid@[1,2,3](0, 2)", exp : [1, 2]},
+        { inp: "cuid@[1,2,3](0, 0)", exp : []},
+        { inp: "cuid@[1,2,3](0, -1)", exp : [1, 2]},
+        { inp: "cuid@[1,2,3](0, 3)", exp : [1, 2, 3]},
+        { inp: "cuid@[1,2,3](0, 4)", exp : [1, 2, 3]},
+        { inp: "sortail@[3,1,2]()", exp : [1, 2, 3]},
+        { inp: "sortáil@[2,3,1]()", exp : [1, 2, 3]},
+        { inp: "nasc@[1,2,3,4](', ')", exp :  "1, 2, 3, 4"},
+        { inp: "nasc@[neamhní, 'hey', 3, fior]('')", exp :  "neamhníhey3fíor"},
     ];
     for (const c of cases) {
         const i = new Interpreter();

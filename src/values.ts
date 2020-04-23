@@ -5,7 +5,7 @@ import { RuntimeError } from "./error";
 import { AsgnStmt, ID, NonAsgnStmt } from "./gen_parser";
 import { Interpreter } from "./i10r";
 
-export type Value = number | boolean | Callable | null | Value[] | string | Obj;
+export type Value = number | boolean | Callable | null | Value[] | string | ObjIntf;
 
 export type TypeCheck = (v: Value) => boolean;
 
@@ -21,7 +21,9 @@ export interface Callable {
     call: (args: Value[]) => Promise<Value>;
 }
 
-export interface Obj {
+export type Obj = string | Value[] | ObjIntf;
+
+export interface ObjIntf {
     ainm: string;
     getAttr: (id: string) => Value;
     setAttr: (id: string, v: Value) => void;
@@ -57,7 +59,7 @@ export function qIdxList(x: Value, idx: Value): Value {
     return ls[v];
 }
 
-export class ObjWrap implements Obj {
+export class ObjIntfWrap implements ObjIntf {
     public ainm: string;
     public attrs: Map<string, Value>;
     constructor(ainm: string, attrs: [string[], Value][]) {

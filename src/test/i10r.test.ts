@@ -6,7 +6,7 @@ import { Parser } from "../../src/gen_parser";
 import { GníomhWrap } from "../../src/gniomh";
 import { Interpreter } from "../../src/i10r";
 import { Rud } from "../../src/rud";
-import { Callable, ObjWrap, Value } from "../../src/values";
+import { Callable, Value } from "../../src/values";
 
 test("test isEqual", () => {
     interface TC { a: Value; b: Value; eq: boolean; }
