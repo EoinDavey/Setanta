@@ -9,13 +9,9 @@ import { Gníomh, GníomhImpl } from "./gniomh";
 import { Stmt, Callable, callFunc, Comparable,
     goTéacs, idxList, ObjIntf, Ref, TypeCheck, Value } from "./values";
 import { Context } from "./ctx";
+import { BrisException, CCException, SKIP_COUNT_LIM, STOP } from "./consts";
 
-const BrisException = "BRIS";
-const CCException = "CC";
-export const STOP = "STOP";
-const SKIP_COUNT_LIM = 5000;
-
-class Toradh {
+export class Toradh {
     public luach: Value;
     constructor(v: Value) {
         this.luach = v;
@@ -289,22 +285,7 @@ function execAssgn(t: P.AssgnStmt, ctx: Context): Promise<void> {
         .catch(err => Promise.reject(tagErrorLoc(err, t.lstart, t.lend)));
 }
 
-function evalCSIDs(ids: P.CSIDs): string[] {
-    return [ids.head.id].concat(ids.tail.map((x) => x.id.id));
-}
-
 function makeGníomh(fn: P.GniomhStmt, ctx: Context): Gníomh {
-    const execFn = (body: Stmt[], innerCtx: Context): Promise<Value> => {
-        return execStmts(body, innerCtx).then((e) => null).catch((e) => {
-            if (e instanceof Toradh) {
-                return e.luach;
-            }
-            if (e !== BrisException) {
-                throw e;
-            }
-            return null;
-        });
-    };
-    const args = fn.args ? evalCSIDs(fn.args) : [];
-    return new GníomhImpl(fn.id.id, fn.stmts, args, ctx, execFn);
+    const args = fn.args ? fn.args.ids : [];
+    return new GníomhImpl(fn.id.id, fn.stmts, args, ctx);
 }

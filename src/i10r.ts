@@ -3,7 +3,8 @@ import { Environment } from "./env";
 import { Value } from "./values";
 import { Context } from "./ctx";
 import { Program } from "./gen_parser";
-import { execStmts, STOP } from "./execs";
+import { execStmts } from "./execs";
+import { STOP } from "./consts";
 
 export class Interpreter {
     public global: Context;

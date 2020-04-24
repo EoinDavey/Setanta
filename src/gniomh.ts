@@ -3,6 +3,8 @@ import { Context } from "./ctx";
 import { RuntimeError } from "./error";
 import { Rud } from "./rud";
 import { Callable, Stmt, Value } from "./values";
+import { execStmts, Toradh } from "./execs";
+import { BrisException } from "./consts";
 
 export interface Gníomh extends Callable {
     bind(seo: Rud): Gníomh;
@@ -13,14 +15,11 @@ export class GníomhImpl implements Callable {
     private defn: Stmt[];
     private args: string[];
     private ctx: Context;
-    private execFn: (body: Stmt[], ctx: Context) => Promise<Value>;
-    constructor(ainm: string, defn: Stmt[], args: string[], ctx: Context,
-                execFn: (body: Stmt[], ctx: Context) => Promise<Value>) {
+    constructor(ainm: string, defn: Stmt[], args: string[], ctx: Context) {
         this.ainm = ainm;
         this.defn = defn;
         this.args = args;
         this.ctx = ctx;
-        this.execFn = execFn;
     }
     public bind(seo: Rud): Gníomh {
         const ctx = new Context(this.ctx);
@@ -29,7 +28,7 @@ export class GníomhImpl implements Callable {
             ctx.env.define("tuis", seo.tuis);
         }
         return new GníomhImpl(this.ainm, this.defn, this.args,
-            ctx, this.execFn);
+            ctx);
     }
     public arity() {
         return this.args.length;
@@ -39,7 +38,15 @@ export class GníomhImpl implements Callable {
         for (let i = 0; i < args.length; ++i) {
             ctx.env.define(this.args[i], args[i]);
         }
-        return this.execFn(this.defn, ctx);
+        return execStmts(this.defn, ctx).then((e) => null).catch((e) => {
+            if (e instanceof Toradh) {
+                return e.luach;
+            }
+            if (e !== BrisException) {
+                return Promise.reject(e);
+            }
+            return null;
+        });
     }
 }
 

@@ -1113,3 +1113,46 @@ test("test comments", async () => {
         expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
+
+test("test anonymous functions", async () => {
+    interface TC { inp: string; exp: Value; env?: Environment; }
+    const cases: TC[] = [
+        {
+            exp : 4,
+            inp : `
+            fn := gníomh (x) { toradh x + 2 }
+            res := fn(2)
+            `,
+        },
+        {
+            exp : 4,
+            inp : `
+            res := gníomh (x) { toradh x + 2 }(2)
+            `,
+        },
+        {
+            exp : 13,
+            inp : `
+            gníomh adder(x) {
+                toradh gníomh (y) {
+                    toradh x + y
+                }
+            }
+            add3 := adder(3)
+            res := add3(10)
+            `,
+        },
+    ];
+    for (const c of cases) {
+        const i = new Interpreter();
+        if (c.env) {
+            i.global.env = c.env;
+        }
+        const p = new Parser(c.inp);
+        const res = p.parse();
+        expect(res.err).toBeNull();
+        expect(res.ast).not.toBeNull();
+        await i.interpret(res.ast!);
+        expect(i.global.env.get("res")).toEqual(c.exp);
+    }
+});

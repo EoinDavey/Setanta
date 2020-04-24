@@ -2,10 +2,11 @@ import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { RuntimeError, tagErrorLoc } from "./error";
 import { Context } from "./ctx";
-import { PosInfo, CSArgs, ListLit, ObjLookups, Postfix, PostOp, PostOp_2, Prefix } from "./gen_parser";
+import { PosInfo, CSArgs, ListLit, GniomhExpr, ObjLookups, Postfix, PostOp, PostOp_2, Prefix } from "./gen_parser";
 import { unescapeChars } from "./teacs";
 import { callFunc, idxList, qIdxList, Value } from "./values";
 import { getAttr } from "./obj";
+import { GníomhImpl } from "./gniomh";
 
 export type EvalFn = (ctx: Context) => Value;
 export type MaybeEv = EvalFn | null;
@@ -18,6 +19,13 @@ export interface IsQuick {
 
 export function isQuick(a: MaybeQuick): a is IsQuick {
     return a.qeval !== null;
+}
+
+export function qGníomhEval(gn: GniomhExpr): EvalFn {
+    return (ctx: Context) => {
+        const args = gn.args ? gn.args.ids : [];
+        return new GníomhImpl("gan ainm", gn.stmts, args, ctx);
+    }
 }
 
 export function qTéacsEval(lit: string, start: PosInfo, end: PosInfo): EvalFn {

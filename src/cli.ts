@@ -5,7 +5,7 @@ import { RuntimeError } from "./error";
 import { SyntaxErr, PosInfo, ParseResult, ASTKinds, Parser } from "./gen_parser";
 import { Interpreter } from "./i10r";
 import { goTéacs, Value } from "./values";
-import { STOP } from "./execs";
+import { STOP } from "./consts";
 
 import * as fs from "fs";
 

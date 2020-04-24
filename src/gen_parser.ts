@@ -90,6 +90,12 @@
 *              | Bool
 *              | Neamhni
 *              | ListLit
+*              | GniomhExpr
+* GniomhExpr  := _ 'gn[íi]omh' _ '\(' args=CSIDs? _ '\)' _ '{'
+*     stmts=AsgnStmt*
+* _ '}'
+*                .evalfn = EvalFn { return qEvalToEval(Quick.qGníomhEval(this)); }
+*                .qeval = Quick.EvalFn { return Quick.qGníomhEval(this); }
 * ListLit     := _ '\[' els=CSArgs? _ '\]'
 *                .evalfn = EvalFn {
 *                    return (env: Context) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
@@ -99,6 +105,7 @@
 *                .evalfn = (env:Context)=>Promise<Value[]> { return csArgsEval(this); }
 *                .qeval = ((env:Context)=>Value[])|null { return Quick.qCSArgsEval(this); }
 * CSIDs       := head=ID tail={_ ',' id=ID}*
+*                .ids = string[] { return [this.head.id].concat(this.tail.map((x) => x.id.id)); }
 * ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*' end=@
 *                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id, this.start, this.end)); }
 *                .qeval = Quick.EvalFn { return Quick.qIdEval(this.id, this.start, this.end); }
@@ -208,6 +215,8 @@ export enum ASTKinds {
     Atom_5,
     Atom_6,
     Atom_7,
+    Atom_8,
+    GniomhExpr,
     ListLit,
     CSArgs,
     CSArgs_$0,
@@ -573,7 +582,7 @@ export interface PostOp_2 {
     kind: ASTKinds.PostOp_2;
     expr: Expr;
 }
-export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4 | Atom_5 | Atom_6 | Atom_7;
+export type Atom = Atom_1 | Atom_2 | Atom_3 | Atom_4 | Atom_5 | Atom_6 | Atom_7 | Atom_8;
 export class Atom_1 {
     public kind: ASTKinds.Atom_1 = ASTKinds.Atom_1;
     public trm: Expr;
@@ -596,6 +605,24 @@ export type Atom_4 = Int;
 export type Atom_5 = Bool;
 export type Atom_6 = Neamhni;
 export type Atom_7 = ListLit;
+export type Atom_8 = GniomhExpr;
+export class GniomhExpr {
+    public kind: ASTKinds.GniomhExpr = ASTKinds.GniomhExpr;
+    public args: Nullable<CSIDs>;
+    public stmts: AsgnStmt[];
+    public evalfn: EvalFn;
+    public qeval: Quick.EvalFn;
+    constructor(args: Nullable<CSIDs>, stmts: AsgnStmt[]){
+        this.args = args;
+        this.stmts = stmts;
+        this.evalfn = (() => {
+        return qEvalToEval(Quick.qGníomhEval(this));
+        })();
+        this.qeval = (() => {
+        return Quick.qGníomhEval(this);
+        })();
+    }
+}
 export class ListLit {
     public kind: ASTKinds.ListLit = ASTKinds.ListLit;
     public els: Nullable<CSArgs>;
@@ -636,10 +663,18 @@ export interface CSArgs_$0 {
     kind: ASTKinds.CSArgs_$0;
     exp: Expr;
 }
-export interface CSIDs {
-    kind: ASTKinds.CSIDs;
-    head: ID;
-    tail: CSIDs_$0[];
+export class CSIDs {
+    public kind: ASTKinds.CSIDs = ASTKinds.CSIDs;
+    public head: ID;
+    public tail: CSIDs_$0[];
+    public ids: string[];
+    constructor(head: ID, tail: CSIDs_$0[]){
+        this.head = head;
+        this.tail = tail;
+        this.ids = (() => {
+        return [this.head.id].concat(this.tail.map((x) => x.id.id));
+        })();
+    }
 }
 export interface CSIDs_$0 {
     kind: ASTKinds.CSIDs_$0;
@@ -1590,6 +1625,7 @@ export class Parser {
             () => this.matchAtom_5($$dpth + 1, cr),
             () => this.matchAtom_6($$dpth + 1, cr),
             () => this.matchAtom_7($$dpth + 1, cr),
+            () => this.matchAtom_8($$dpth + 1, cr),
         ]);
     }
     public matchAtom_1($$dpth: number, cr?: ContextRecorder): Nullable<Atom_1> {
@@ -1628,6 +1664,37 @@ export class Parser {
     }
     public matchAtom_7($$dpth: number, cr?: ContextRecorder): Nullable<Atom_7> {
         return this.matchListLit($$dpth + 1, cr);
+    }
+    public matchAtom_8($$dpth: number, cr?: ContextRecorder): Nullable<Atom_8> {
+        return this.matchGniomhExpr($$dpth + 1, cr);
+    }
+    public matchGniomhExpr($$dpth: number, cr?: ContextRecorder): Nullable<GniomhExpr> {
+        return this.runner<GniomhExpr>($$dpth,
+            (log) => {
+                if (log) {
+                    log("GniomhExpr");
+                }
+                let args: Nullable<Nullable<CSIDs>>;
+                let stmts: Nullable<AsgnStmt[]>;
+                let res: Nullable<GniomhExpr> = null;
+                if (true
+                    && this.match_($$dpth + 1, cr) !== null
+                    && this.regexAccept(String.raw`gn[íi]omh`, $$dpth + 1, cr) !== null
+                    && this.match_($$dpth + 1, cr) !== null
+                    && this.regexAccept(String.raw`\(`, $$dpth + 1, cr) !== null
+                    && ((args = this.matchCSIDs($$dpth + 1, cr)) || true)
+                    && this.match_($$dpth + 1, cr) !== null
+                    && this.regexAccept(String.raw`\)`, $$dpth + 1, cr) !== null
+                    && this.match_($$dpth + 1, cr) !== null
+                    && this.regexAccept(String.raw`{`, $$dpth + 1, cr) !== null
+                    && (stmts = this.loop<AsgnStmt>(() => this.matchAsgnStmt($$dpth + 1, cr), true)) !== null
+                    && this.match_($$dpth + 1, cr) !== null
+                    && this.regexAccept(String.raw`}`, $$dpth + 1, cr) !== null
+                ) {
+                    res = new GniomhExpr(args, stmts);
+                }
+                return res;
+            }, cr)();
     }
     public matchListLit($$dpth: number, cr?: ContextRecorder): Nullable<ListLit> {
         return this.runner<ListLit>($$dpth,
@@ -1702,7 +1769,7 @@ export class Parser {
                     && (head = this.matchID($$dpth + 1, cr)) !== null
                     && (tail = this.loop<CSIDs_$0>(() => this.matchCSIDs_$0($$dpth + 1, cr), true)) !== null
                 ) {
-                    res = {kind: ASTKinds.CSIDs, head, tail};
+                    res = new CSIDs(head, tail);
                 }
                 return res;
             }, cr)();

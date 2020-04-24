@@ -88,6 +88,12 @@ Atom        :=  _ '\(' trm=Expr '\)'
              | Bool
              | Neamhni
              | ListLit
+             | GniomhExpr
+GniomhExpr  := _ 'gn[íi]omh' _ '\(' args=CSIDs? _ '\)' _ '{'
+    stmts=AsgnStmt*
+_ '}'
+               .evalfn = EvalFn { return qEvalToEval(Quick.qGníomhEval(this)); }
+               .qeval = Quick.EvalFn { return Quick.qGníomhEval(this); }
 ListLit     := _ '\[' els=CSArgs? _ '\]'
                .evalfn = EvalFn {
                    return (env: Context) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
@@ -97,6 +103,7 @@ CSArgs      := start=@ head=Expr tail={_ ',' exp=Expr}* end=@
                .evalfn = (env:Context)=>Promise<Value[]> { return csArgsEval(this); }
                .qeval = ((env:Context)=>Value[])|null { return Quick.qCSArgsEval(this); }
 CSIDs       := head=ID tail={_ ',' id=ID}*
+               .ids = string[] { return [this.head.id].concat(this.tail.map((x) => x.id.id)); }
 ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*' end=@
                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id, this.start, this.end)); }
                .qeval = Quick.EvalFn { return Quick.qIdEval(this.id, this.start, this.end); }
