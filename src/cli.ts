@@ -3,8 +3,9 @@ import * as readline from "readline";
 import * as Asserts from "./asserts";
 import { RuntimeError } from "./error";
 import { SyntaxErr, PosInfo, ParseResult, ASTKinds, Parser } from "./gen_parser";
-import { Interpreter, STOP } from "./i10r";
+import { Interpreter } from "./i10r";
 import { goTéacs, Value } from "./values";
+import { STOP } from "./execs";
 
 import * as fs from "fs";
 
