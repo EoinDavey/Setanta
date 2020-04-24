@@ -75,7 +75,7 @@ test("test expressions", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
@@ -175,14 +175,14 @@ test("test assign", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -228,7 +228,7 @@ test("test if stmt", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
@@ -238,7 +238,7 @@ test("test if stmt", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -294,14 +294,14 @@ test("test nuair-a loops", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -394,14 +394,14 @@ test("test le idir loops", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -445,14 +445,14 @@ test("test function calls", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -502,14 +502,14 @@ test("test function definitions", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -552,14 +552,14 @@ test("test toradh", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -595,14 +595,14 @@ test("test postfix ops", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -676,14 +676,14 @@ test("test arrays", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -739,14 +739,14 @@ test("test obj lookups", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -899,14 +899,14 @@ test("test creatlach stmt", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -966,14 +966,14 @@ test("test object assignment", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -1048,14 +1048,14 @@ test("test constructor", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });
 
@@ -1103,13 +1103,13 @@ test("test comments", async () => {
     for (const c of cases) {
         const i = new Interpreter();
         if (c.env) {
-            i.global = c.env;
+            i.global.env = c.env;
         }
         const p = new Parser(c.inp);
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.get("res")).toEqual(c.exp);
+        expect(i.global.env.get("res")).toEqual(c.exp);
     }
 });

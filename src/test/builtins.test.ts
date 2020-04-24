@@ -1,5 +1,4 @@
 import { isNumber } from "../../src/checks";
-import { Environment } from "../../src/env";
 import { Parser } from "../../src/gen_parser";
 import { Interpreter } from "../../src/i10r";
 import { Value } from "../../src/values";

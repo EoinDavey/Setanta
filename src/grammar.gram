@@ -1,5 +1,5 @@
 ---
-import { Environment } from "./env";
+import { Context } from "./ctx";
 import { callFunc, idxList, Value } from "./values";
 import { unescapeChars } from "./teacs";
 import * as Asserts from "./asserts";
@@ -77,7 +77,7 @@ ObjLookups  := start=@ attrs={id=ID '@' !wspace}* root=Atom end=@
                .qeval = Quick.MaybeEv { return Quick.qObjLookupsEval(this); }
 PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr _ '\]'
 Atom        :=  _ '\(' trm=Expr '\)'
-               .evalfn = EvalFn { return (env: Environment) => this.trm.evalfn(env); }
+               .evalfn = EvalFn { return (env: Context) => this.trm.evalfn(env); }
                .qeval = Quick.MaybeEv {
                     const childF = this.trm.qeval;
                     return childF === null ? null : childF.bind(this.trm);
@@ -90,12 +90,12 @@ Atom        :=  _ '\(' trm=Expr '\)'
              | ListLit
 ListLit     := _ '\[' els=CSArgs? _ '\]'
                .evalfn = EvalFn {
-                   return (env: Environment) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
+                   return (env: Context) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
                }
                .qeval = Quick.MaybeEv { return Quick.qListLitEval(this); }
 CSArgs      := start=@ head=Expr tail={_ ',' exp=Expr}* end=@
-               .evalfn = (env:Environment)=>Promise<Value[]> { return csArgsEval(this); }
-               .qeval = ((env:Environment)=>Value[])|null { return Quick.qCSArgsEval(this); }
+               .evalfn = (env:Context)=>Promise<Value[]> { return csArgsEval(this); }
+               .qeval = ((env:Context)=>Value[])|null { return Quick.qCSArgsEval(this); }
 CSIDs       := head=ID tail={_ ',' id=ID}*
 ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*' end=@
                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id, this.start, this.end)); }

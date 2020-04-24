@@ -1,6 +1,5 @@
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
-import { Environment } from "./env";
 import { RuntimeError } from "./error";
 import { AsgnStmt, ID, NonAsgnStmt } from "./gen_parser";
 import { Interpreter } from "./i10r";

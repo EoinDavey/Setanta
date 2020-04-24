@@ -1,4 +1,5 @@
 import { Environment } from "./env";
+import { Context } from "./ctx";
 import { RuntimeError } from "./error";
 import { Rud } from "./rud";
 import { Callable, Stmt, Value } from "./values";
@@ -11,33 +12,34 @@ export class GníomhImpl implements Callable {
     public ainm: string;
     private defn: Stmt[];
     private args: string[];
-    private env: Environment;
-    private execFn: (body: Stmt[], env: Environment) => Promise<Value>;
-    constructor(ainm: string, defn: Stmt[], args: string[], env: Environment,
-                execFn: (body: Stmt[], env: Environment) => Promise<Value>) {
+    private ctx: Context;
+    private execFn: (body: Stmt[], ctx: Context) => Promise<Value>;
+    constructor(ainm: string, defn: Stmt[], args: string[], ctx: Context,
+                execFn: (body: Stmt[], ctx: Context) => Promise<Value>) {
         this.ainm = ainm;
         this.defn = defn;
         this.args = args;
-        this.env = env;
+        this.ctx = ctx;
         this.execFn = execFn;
     }
     public bind(seo: Rud): Gníomh {
-        const env = new Environment(this.env);
+        const env = new Environment(this.ctx.env);
         env.define("seo", seo);
         if (seo.tuis) {
             env.define("tuis", seo.tuis);
         }
-        return new GníomhImpl(this.ainm, this.defn, this.args, env, this.execFn);
+        return new GníomhImpl(this.ainm, this.defn, this.args,
+            new Context(env), this.execFn);
     }
     public arity() {
         return this.args.length;
     }
     public call(args: Value[]): Promise<Value> {
-        const env: Environment = new Environment(this.env);
+        const ctx: Context = Context.from(this.ctx);
         for (let i = 0; i < args.length; ++i) {
-            env.define(this.args[i], args[i]);
+            ctx.env.define(this.args[i], args[i]);
         }
-        return this.execFn(this.defn, env);
+        return this.execFn(this.defn, ctx);
     }
 }
 

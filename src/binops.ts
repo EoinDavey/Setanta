@@ -1,6 +1,6 @@
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
-import { Environment } from "./env";
+import { Context } from "./ctx";
 import { RuntimeError, tagErrorLoc } from "./error";
 import { EvalFn } from "./evals";
 import { PosInfo, And, Or } from "./gen_parser";
@@ -19,15 +19,15 @@ export function orBinOp(or: Or): EvalFn {
     if (or.tail.length === 0) {
         return or.head.evalfn.bind(or.head);
     }
-    return (env: Environment) =>
+    return (ctx: Context) =>
         or.tail.reduce((x: Promise<Value>, y): Promise<Value> =>
             x.then((val) => {
                 if (Checks.isTrue(val)) {
                     return val;
                 }
-                return y.trm.evalfn(env);
+                return y.trm.evalfn(ctx);
             })
-            , or.head.evalfn(env))
+            , or.head.evalfn(ctx))
                 .catch(err => Promise.reject(tagErrorLoc(err, or.start, or.end)));
 }
 
@@ -35,15 +35,15 @@ export function andBinOp(and: And): EvalFn {
     if (and.tail.length === 0) {
         return and.head.evalfn.bind(and.head);
     }
-    return (env: Environment) =>
+    return (ctx: Context) =>
         and.tail.reduce((x: Promise<Value>, y): Promise<Value> =>
             x.then((val) => {
                 if (!Checks.isTrue(val)) {
                     return val;
                 }
-                return y.trm.evalfn(env);
+                return y.trm.evalfn(ctx);
             })
-            , and.head.evalfn(env))
+            , and.head.evalfn(ctx))
                 .catch(err => Promise.reject(tagErrorLoc(err, and.start, and.end)));
 }
 
@@ -51,12 +51,12 @@ export function binOpEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, op: st
     if (obj.tail.length === 0) {
         return obj.head.evalfn.bind(obj.head);
     }
-    return (env: Environment) =>
+    return (ctx: Context) =>
         obj.tail.reduce((x: Promise<Value>, y): Promise<Value> =>
             x.then((a: Value) =>
-                y.trm.evalfn(env).then((b: Value) =>
+                y.trm.evalfn(ctx).then((b: Value) =>
                     evalBinOp(a, b, y.op, obj.start, obj.end))),
-            obj.head.evalfn(env));
+            obj.head.evalfn(ctx));
 }
 
 export function orQuickBinOp(or: Or): MaybeQuickEv {
@@ -76,13 +76,13 @@ export function orQuickBinOp(or: Or): MaybeQuickEv {
         }
         tail.push(trm);
     }
-    return (env: Environment) => {
-        let acc = head.qeval(env);
+    return (ctx: Context) => {
+        let acc = head.qeval(ctx);
         for (const op of tail) {
             if (Checks.isTrue(acc)) {
                 return acc;
             }
-            acc = op.qeval(env);
+            acc = op.qeval(ctx);
         }
         return acc;
     };
@@ -105,13 +105,13 @@ export function andQuickBinOp(and: And): MaybeQuickEv {
         }
         tail.push(trm);
     }
-    return (env: Environment) => {
-        let acc = head.qeval(env);
+    return (ctx: Context) => {
+        let acc = head.qeval(ctx);
         for (const op of tail) {
             if (!Checks.isTrue(acc)) {
                 return acc;
             }
-            acc = op.qeval(env);
+            acc = op.qeval(ctx);
         }
         return acc;
     };
@@ -138,11 +138,11 @@ export function binOpQuickEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, o
         }
         ops.push(op as QuickOp); // Safe as checked non-null in isQuick check
     }
-    return (env: Environment) => {
+    return (ctx: Context) => {
         return ops.reduce((x: Value, y): Value => {
-            const b = y.trm.qeval(env);
+            const b = y.trm.qeval(ctx);
             return evalBinOp(x, b, y.op, obj.start, obj.end);
-        }, head.qeval(env));
+        }, head.qeval(ctx));
     };
 }
 

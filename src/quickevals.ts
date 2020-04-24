@@ -1,13 +1,13 @@
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { RuntimeError, tagErrorLoc } from "./error";
-import { Environment } from "./env";
+import { Context } from "./ctx";
 import { PosInfo, CSArgs, ListLit, ObjLookups, Postfix, PostOp, PostOp_2, Prefix } from "./gen_parser";
 import { unescapeChars } from "./teacs";
 import { callFunc, idxList, qIdxList, Value } from "./values";
 import { getAttr } from "./obj";
 
-export type EvalFn = (env: Environment) => Value;
+export type EvalFn = (ctx: Context) => Value;
 export type MaybeEv = EvalFn | null;
 interface MaybeQuick {
     qeval: MaybeEv;
@@ -22,7 +22,7 @@ export function isQuick(a: MaybeQuick): a is IsQuick {
 
 export function qTéacsEval(lit: string, start: PosInfo, end: PosInfo): EvalFn {
     let x: null | string = null;
-    return (env: Environment) => {
+    return (ctx: Context) => {
         if(x !== null)
             return x;
         try {
@@ -35,25 +35,25 @@ export function qTéacsEval(lit: string, start: PosInfo, end: PosInfo): EvalFn {
 
 export function qIntEval(lit: string): EvalFn {
     const x = parseFloat(lit);
-    return (env: Environment) => x;
+    return (ctx: Context) => x;
 }
 
 export function qBoolEval(lit: string): EvalFn {
     const x = lit === "fior" || lit === "fíor";
-    return (env: Environment) => x;
+    return (ctx: Context) => x;
 }
 
 export function qIdEval(id: string, start: PosInfo, end: PosInfo): EvalFn {
-    return (env: Environment) =>  {
+    return (ctx: Context) =>  {
         try {
-            return env.get(id);
+            return ctx.env.get(id);
         } catch(err) {
             throw tagErrorLoc(err, start, end);
         }
     }
 }
 
-export function qCSArgsEval(args: CSArgs): ((env: Environment) => Value[]) | null {
+export function qCSArgsEval(args: CSArgs): ((ctx: Context) => Value[]) | null {
     const head = args.head;
     if (!isQuick(head)) {
         return null;
@@ -65,9 +65,9 @@ export function qCSArgsEval(args: CSArgs): ((env: Environment) => Value[]) | nul
         }
         ops.push(arg.exp);
     }
-    return (env: Environment) => {
+    return (ctx: Context) => {
         try {
-            return ops.map((x) => x.qeval(env));
+            return ops.map((x) => x.qeval(ctx));
         } catch(err) {
             throw tagErrorLoc(err, args.start, args.end);
         }
@@ -88,8 +88,8 @@ export function qObjLookupsEval(ol: ObjLookups): MaybeEv {
     }
     const arr = ol.attrs.slice().reverse();
     const h: IsQuick = ol.root;
-    return (env: Environment): Value => {
-        const rt: Value = h.qeval(env);
+    return (ctx: Context): Value => {
+        const rt: Value = h.qeval(ctx);
         try {
             return arr.reduce((x, y) => getAttr(Asserts.assertObj(x), y.id.id), rt);
         } catch(err) {
@@ -123,10 +123,10 @@ export function qPostfixArgsEval(pf: Postfix): MaybeEv {
         quickOps.push(idx);
     }
     // Now all ops are quick, perform computation
-    return (env: Environment) => {
-        const rootVal = root.qeval(env);
+    return (ctx: Context) => {
+        const rootVal = root.qeval(ctx);
         const f = (x: Value, y: IsQuick): Value => {
-            return qIdxList(x, y.qeval(env));
+            return qIdxList(x, y.qeval(ctx));
         };
         try {
             return quickOps.reduce(f, rootVal);
@@ -145,9 +145,9 @@ export function qPrefEval(p: Prefix): MaybeEv {
     if (!isQuick(pf)) {
         return null;
     }
-    return (env: Environment) => {
+    return (ctx: Context) => {
         try {
-            const v = pf.qeval(env);
+            const v = pf.qeval(ctx);
             return p.op === "-"
                 ? -Asserts.assertNumber(v)
                 : !Checks.isTrue(v);
