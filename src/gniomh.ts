@@ -23,19 +23,19 @@ export class GníomhImpl implements Callable {
         this.execFn = execFn;
     }
     public bind(seo: Rud): Gníomh {
-        const env = new Environment(this.ctx.env);
-        env.define("seo", seo);
+        const ctx = new Context(this.ctx);
+        ctx.env.define("seo", seo);
         if (seo.tuis) {
-            env.define("tuis", seo.tuis);
+            ctx.env.define("tuis", seo.tuis);
         }
         return new GníomhImpl(this.ainm, this.defn, this.args,
-            new Context(env), this.execFn);
+            ctx, this.execFn);
     }
     public arity() {
         return this.args.length;
     }
     public call(args: Value[]): Promise<Value> {
-        const ctx: Context = Context.from(this.ctx);
+        const ctx: Context = new Context(this.ctx);
         for (let i = 0; i < args.length; ++i) {
             ctx.env.define(this.args[i], args[i]);
         }

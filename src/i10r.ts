@@ -29,8 +29,6 @@ class Toradh {
 
 export class Interpreter {
     public global: Context;
-    private skipCnt: number = 0;
-    private stopped: boolean = false;
     constructor(externals?: [string[], Value][]) {
         const globalEnv = Environment.from(GlobalBuiltins);
         if (externals) {
@@ -40,10 +38,11 @@ export class Interpreter {
                 }
             }
         }
-        this.global = new Context(globalEnv);
+        this.global = new Context();
+        this.global.env = globalEnv;
     }
     public stop() {
-        this.stopped = true;
+        this.global.stop();
     }
     public interpret(p: P.Program): Promise<void> {
         return this.execStmts(p.stmts, this.global).catch((err) => {
@@ -60,19 +59,19 @@ export class Interpreter {
         return stmts.reduce(f, Promise.resolve());
     }
     public execStmtBlock(blk: P.BlockStmt, ctx: Context): Promise<void> {
-        ctx = Context.from(ctx);
+        ctx = new Context(ctx);
         return this.execStmts(blk.blk, ctx);
     }
     public execStmt(st: Stmt, ctx: Context): Promise<void> {
-        if (this.stopped) {
+        if (ctx.stopped === true) {
             return Promise.reject(STOP);
         }
         // Every SKIP_COUNT_LIM statements put the next execution on the macrotask queue.
-        if (this.skipCnt >= SKIP_COUNT_LIM) {
-            this.skipCnt = 0;
+        if (ctx.skipCnt >= SKIP_COUNT_LIM) {
+            ctx.skipCnt = 0;
             return new Promise((resolve) => setTimeout(resolve)).then(() => this.execStmt(st, ctx));
         }
-        ++this.skipCnt;
+        ++ctx.skipCnt;
         switch (st.kind) {
             case ASTKinds.IfStmt:
                 return this.execMá(st, ctx);
@@ -215,7 +214,7 @@ export class Interpreter {
         }
     }
     public async execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
-        ctx = Context.from(ctx);
+        ctx = new Context(ctx);
         const s = Asserts.assertNumber(await n.strt.evalfn(ctx));
         const e = Asserts.assertNumber(await n.end.evalfn(ctx));
         let stp = e >= s ? 1 : -1;
