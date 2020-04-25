@@ -6,6 +6,8 @@ export function isTrue(v: Value) {
 }
 
 export function isEqual(a: Value, b: Value): boolean {
+    if (a === b)
+        return true;
     if (isLiosta(a) && isLiosta(b) && a.length === b.length) {
         return a.map((x, i) => [x, b[i]]).every((x) => isEqual(x[0], x[1]));
     }

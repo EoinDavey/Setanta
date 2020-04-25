@@ -41,10 +41,11 @@ export function idxList(x: Value, idx: Promise<Value>): Promise<Value> {
     const ls = Asserts.assertIndexable(x);
     return idx.then((v) => {
         v = Asserts.assertNumber(v);
-        if (v < 0 || v >= ls.length) {
+        const adjustedIdx = v < 0 ? v + ls.length : v;
+        if (adjustedIdx < 0 || adjustedIdx >= ls.length) {
             throw new RuntimeError(`Tá ${goTéacs(v)} thar teorainn an liosta`);
         }
-        return ls[v];
+        return ls[adjustedIdx];
     });
 }
 
@@ -52,10 +53,11 @@ export function idxList(x: Value, idx: Promise<Value>): Promise<Value> {
 export function qIdxList(x: Value, idx: Value): Value {
     const ls = Asserts.assertIndexable(x);
     const v = Asserts.assertNumber(idx);
-    if (v < 0 || v >= ls.length) {
+    const adjustedIdx = v < 0 ? v + ls.length : v;
+    if (adjustedIdx < 0 || adjustedIdx >= ls.length) {
         throw new RuntimeError(`Tá ${goTéacs(v)} thar teorainn an liosta`);
     }
-    return ls[v];
+    return ls[adjustedIdx];
 }
 
 export class ObjIntfWrap implements ObjIntf {
