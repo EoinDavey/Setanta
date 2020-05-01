@@ -11,6 +11,12 @@ logo: "/assets/images/logo50x50.png"
 masthead_title: "Setanta Doiciméadacht"
 timezone: "Europe/Dublin"
 collections:
+    en-docs:
+        output: true
+        permalink: /:collection/:path
+    ga-docs:
+        output: true
+        permalink: /:collection/:path
     english:
         output: true
         permalink: /:collection/:path
@@ -33,5 +39,20 @@ defaults:
         sidebar:
             nav: "english"
 
+    # _ga-docs
+    - scope:
+        path: ""
+        type: "ga-docs"
+      values:
+        sidebar:
+            nav: "ga-docs"
+
+    # _en-docs
+    - scope:
+        path: ""
+        type: "en-docs"
+      values:
+        sidebar:
+            nav: "en-docs"
 
 include: ["_pages"]

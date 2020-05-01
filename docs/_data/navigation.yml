@@ -2,12 +2,38 @@ main:
     - title: "Samplaí - Demos"
       url: /samplaí/
 
+ga-docs:
+    - title: "Doiciméadacht"
+      children:
+          - title: "An Stáitse"
+            url: /ga-docs/stáitse
+          - title: "Matamaitic"
+            url: /ga-docs/mata
+          - title: "Téacs"
+            url: /ga-docs/téacs
+          - title: "Liostaí"
+            url: /ga-docs/liosta
+          - title: "Ag léamh & ag scríobh"
+            url: /ga-docs/léigh-scríobh
+en-docs:
+    - title: "Documentation"
+      children:
+          - title: "The Stage"
+            url: /en-docs/stage
+          - title: "Maths"
+            url: /en-docs/maths
+          - title: "Text"
+            url: /en-docs/text
+          - title: "Lists"
+            url: /en-docs/list
+          - title: "Reading and writing"
+            url: /en-docs/read-write
 gaeilge:
     - title: "Teagaisc"
       children:
           - title: "Tosaigh Anseo"
             url: /gaeilge/01-tosaigh
-          - title: "Ag úsaid try-setanta.ie"
+          - title: "Ag úsáid try-setanta.ie"
             url: /gaeilge/02-try-setanta
           - title: "Setanta 101"
             url: /gaeilge/03-teagaisc
