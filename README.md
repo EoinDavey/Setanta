@@ -28,7 +28,7 @@ npm i -g setanta
 
 Féach ar an doiciméadacht Setanta ar [docs.try-setanta.ie](http://docs.try-setanta.ie).
 
-NB: Níl mo chuid Gailge foirfe, má tá botún nó earráid éigin ar an suíomh sin, le do thoil seol ríomhphost dom ar `eoind@vey.ie`, no seol PR dom ar GitHub.
+NB: Níl mo chuid Gailge foirfe, má tá botún nó earráid éigin ar an suíomh sin, le do thoil seol ríomhphost dom ar `eoind@vey.ie`, nó seol PR dom ar GitHub.
 
 ## *Documentation*
 
