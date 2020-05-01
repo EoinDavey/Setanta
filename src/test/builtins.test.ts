@@ -1,5 +1,5 @@
 import { isNumber } from "../../src/checks";
-import { Parser } from "../../src/gen_parser";
+import { parse, Parser } from "../../src/gen_parser";
 import { Interpreter } from "../../src/i10r";
 import { Value } from "../../src/values";
 
@@ -63,7 +63,7 @@ test("test liosta fns", async () => {
         { inp: "cuid@[1,2,3](0, 3)", exp : [1, 2, 3]},
         { inp: "cuid@[1,2,3](0, 4)", exp : [1, 2, 3]},
         { inp: "sortail@[3,1,2]()", exp : [1, 2, 3]},
-        { inp: "sortáil@[2,3,1]()", exp : [1, 2, 3]},
+        { inp: "sórtáil@[2,3,1]()", exp : [1, 2, 3]},
         { inp: "nasc@[1,2,3,4](', ')", exp :  "1, 2, 3, 4"},
         { inp: "nasc@[neamhní, 'hey', 3, fior]('')", exp :  "neamhníhey3fíor"},
     ];
@@ -186,3 +186,17 @@ test("test mata", async () => {
         }
     }
 });
+
+test("test coladh", async () => {
+    const res = parse(`coladh(1000)`)
+    expect(res.err).toBeNull();
+    expect(res.ast).not.toBeNull();
+    const i = new Interpreter();
+    const start = Date.now();
+    let nonBlocked = false;
+    setTimeout(() => { nonBlocked = true; });
+    await i.interpret(res.ast!);
+    const end = Date.now();
+    expect(nonBlocked).toEqual(true);
+    expect(end-start).toBeGreaterThan(500);
+})

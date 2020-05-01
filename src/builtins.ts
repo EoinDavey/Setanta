@@ -125,10 +125,22 @@ export const GlobalBuiltins: [string, Value][] = [
         },
     ],
     [
+        "coladh",
+        {
+            ainm: "coladh",
+            arity: () => 1,
+            call: (args: Value[]): Promise<Value> => {
+                return new Promise<null>((r) => {
+                    setTimeout(() => r(), Asserts.assertNumber(args[0]));
+                });
+            },
+        },
+    ],
+    [
         // Built in maths object
         "mata", new ObjIntfWrap("mata", [
             // constants
-            [["pi"], Math.PI],
+            [["pí", "pi"], Math.PI],
             [["e"], Math.E],
             [
                 // Square function
@@ -275,9 +287,9 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
         "fad", ls => ls.length
     ],
     [
-        "sortáil", ls => {
+        "sórtáil", ls => {
             return {
-                ainm: "sortáil",
+                ainm: "sórtáil",
                 arity : () => 0,
                 call : async (args: Value[]) => ls.sort()
             }
@@ -286,7 +298,7 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
     [
         "sortail", ls => {
             return {
-                ainm: "sortáil",
+                ainm: "sórtáil",
                 arity : () => 0,
                 call : async (args: Value[]) => ls.sort()
             }
