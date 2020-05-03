@@ -8,7 +8,7 @@ Seo é *Setanta*, an teanga ríomhchlárúcháin nua-aimseartha, simplí agus ca
 
 *This is *Setanta*, the modern, simple and friendly programming language that's 100% in Irish.*
 
-![Example slide](docs/assets/images/example_slide)
+![Example slide](docs/assets/images/example_slide.png)
 
 ## Conas Setanta a fháil
 
