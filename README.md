@@ -8,9 +8,11 @@ Seo é *Setanta*, an teanga ríomhchlárúcháin nua-aimseartha, simplí agus ca
 
 *This is *Setanta*, the modern, simple and friendly programming language that's 100% in Irish.*
 
+![Example slide](docs/assets/images/example_slide)
+
 ## Conas Setanta a fháil
 
-Ban triail as Setanta ar [try-setanta.ie](https://try-setanta.ie) nó íoslodáil é ó NPM le
+Ban triail as Setanta ar [try-setanta.ie](https://try-setanta.ie) nó íoslódáil é ó NPM le
 
 ```
 npm i -g setanta
@@ -28,7 +30,7 @@ npm i -g setanta
 
 Féach ar an doiciméadacht Setanta ar [docs.try-setanta.ie](http://docs.try-setanta.ie).
 
-NB: Níl mo chuid Gailge foirfe, má tá botún nó earráid éigin ar an suíomh sin, le do thoil seol ríomhphost dom ar `eoind@vey.ie`, nó seol PR dom ar GitHub.
+NB: Níl mo chuid Gaeilge foirfe, má tá botún nó earráid éigin ar an suíomh sin, le do thoil seol ríomhphost dom ar `eoind@vey.ie`, nó seol PR dom ar GitHub.
 
 ## *Documentation*
 
@@ -38,20 +40,20 @@ NB: Níl mo chuid Gailge foirfe, má tá botún nó earráid éigin ar an suíom
 
 ## Stair Setanta
 
-D'fhorbair mé Setanta mar chuid de mo tionscadal an bliana deiridh ar Ollscoil Mhá Nuad. Beidh mo tráchtas le fheiceail níos deanaí sa bhliain.
+D'fhorbair mé Setanta mar chuid de mo tionscadal an bliana deiridh ar Ollscoil Mhá Nuad. Tá mo thráchtas le fheiceáil [anseo](https://github.com/EoinDavey/Setanta-site/raw/master/notes/out/final-report.pdf).
 
-Rinne mé Setanta mar thug mé faoi deara go raibh beagnach gach teanga ríomhchláruchain forbartha as Béarla. Theastaigh uaim tenga ríomchláruchain a cruthú a bhí go hiomlan as Gaeilge ar feadh chúpla cúis.
+Rinne mé Setanta mar thug mé faoi deara go raibh beagnach gach teanga ríomhchláruchain forbartha as Béarla. Theastaigh uaim teanga ríomchlárucháin a cruthú a bhí go hiomlán as Gaeilge ar feadh chúpla cúis.
 
-- Chun doras a oscailt do dhaoine chun foghlaim conas a ríomchlárú trí mhéan na Gaeilge.
-- Chun an nasc idir Béarla agus na gnáth-teanga ríomhchláruchain a taiscéaladh. B'fhéidir go bhfuil naisc ann nach bhfuil soiléir.
-- Chun feabhas a chur ar mo chuid Gaeilge. Ní cainteoir dúchais mé, thóg me an deis seo chun mo Gaeilge a cleactadh, agus a neartú.
+- Chun doras a oscailt do dhaoine chun conas a ríomhchlárú a fhoghlaim trí mheán na Gaeilge.
+- Chun an nasc idir Béarla agus na gnáth-theanga ríomhchláruchain a taiscéaladh. B'fhéidir go bhfuil naisc ann nach bhfuil soiléir.
+- Chun feabhas a chur ar mo chuid Gaeilge. Ní cainteoir dúchais mé, thóg mé an deis seo chun mo Gaeilge a cleachtadh, agus a neartú.
 
 ## *History of Setanta*
 
-*I developed Setanta as part of my final year project at Maynooth University. My thesis will be available to see later in the year.*
+*I developed Setanta as part of my final year project at Maynooth University. My thesis can be seen [here](https://github.com/EoinDavey/Setanta-site/raw/master/notes/out/final-report.pdf).*
 
 *I made Setanta because I noticed that nearly all programming languages were developed in English. I wanted to create a programming language that was entirely in Irish for a few reasons.*
 
 - *To open a door for people to learn how to program through Irish.*
 - *To explore the connection between English and the usual programming languages. Maybe there are connections that are not very obvious.*
-- *To improve my own Irish. I'm not a native speaker, I took this opportunity to practice and strengthen, my Irish.*
+- *To improve my own Irish. I'm not a native speaker, I took this opportunity to practice and strengthen my Irish.*
