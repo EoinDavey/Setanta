@@ -175,9 +175,9 @@ async function runFile() {
 }
 
 function main(): Promise<void> {
-    if (pargs.length == 1) {
+    if (pargs.length === 1) {
         return runFile();
-    } else if (pargs.length == 0) {
+    } else if (pargs.length === 0) {
         return repl();
     }
     console.error(usage);
