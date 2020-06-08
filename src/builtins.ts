@@ -160,7 +160,11 @@ export const GlobalBuiltins: [string, Value][] = [
             ],
             [
                 // Sqrt function
-                ["fréamh", "freamh"], mathWrap("fréamh", Math.sqrt)
+                ["fréamh", "freamh"], mathWrap("fréamh", x => {
+                    if (x < 0)
+                        throw new RuntimeError("Níl fréamh sainmhínithe le uimhir diúltach");
+                    return Math.sqrt(x);
+                })
             ],
             [["cos"],  mathWrap("cos", Math.cos)],
             [["sin"], mathWrap("sin", Math.sin)],
