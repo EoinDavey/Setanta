@@ -11,6 +11,9 @@ import * as fs from "fs";
 
 const [, , ...pargs] = process.argv;
 
+const usage = `Úsáid: setanta [comhad foinseach]
+Usage: setanta [source file]`;
+
 function printError(r: RuntimeError, source: string) {
     if(r.start && r.end && r.end.line - r.start.line <= 3) {
         const sourceLines = source.split('\n');
@@ -172,10 +175,13 @@ async function runFile() {
 }
 
 function main(): Promise<void> {
-    if (pargs.length > 0) {
+    if (pargs.length == 1) {
         return runFile();
+    } else if (pargs.length == 0) {
+        return repl();
     }
-    return repl();
+    console.error(usage);
+    return Promise.resolve();
 }
 
 main().catch((err) => {
