@@ -174,7 +174,25 @@ async function runFile() {
     }
 }
 
+// return true if we should exit
+function parseCommands(): boolean {
+    for(const arg of pargs) {
+        if(arg.length >= 2 && arg.slice(0, 2) === "--") {
+            const com = arg.slice(2, arg.length);
+            if (com === "help" || com === "cabhair") {
+                console.log(usage);
+            } else {
+                console.error(`Ní thuigtear an brat "${com}"`);
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
 function main(): Promise<void> {
+    if(parseCommands())
+        return Promise.resolve();
     if (pargs.length === 1) {
         return runFile();
     } else if (pargs.length === 0) {
