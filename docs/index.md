@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Setanta Doiciméadacht - Setanta Documentation
+title: Doiciméadacht Setanta - Setanta Documentation
 classes: wide
 ---
 

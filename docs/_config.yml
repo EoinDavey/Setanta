@@ -4,11 +4,11 @@ plugins:
     - jekyll-include-cache
 title: "Setanta"
 name: "Eoin Davey"
-site.description: "Doiciméadacht do Setanta"
+site.description: "Doiciméadacht Setanta"
 locale: "ga"
-url: "https://vey.ie/Setanta"
+url: "docs.try-setanta.ie"
 logo: "/assets/images/logo50x50.png"
-masthead_title: "Setanta Doiciméadacht"
+masthead_title: "Doiciméadacht Setanta"
 timezone: "Europe/Dublin"
 collections:
     en-docs:
