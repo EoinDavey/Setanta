@@ -125,9 +125,21 @@ export const GlobalBuiltins: [string, Value][] = [
         },
     ],
     [
-        "coladh",
+        "codladh",
         {
-            ainm: "coladh",
+            ainm: "codladh",
+            arity: () => 1,
+            call: (args: Value[]): Promise<Value> => {
+                return new Promise<null>((r) => {
+                    setTimeout(() => r(), Asserts.assertNumber(args[0]));
+                });
+            },
+        },
+    ],
+    [
+        "coladh", // DEPRECATED - Left in for legacy reasons only, real spelling is "codladh"
+        {
+            ainm: "codladh",
             arity: () => 1,
             call: (args: Value[]): Promise<Value> => {
                 return new Promise<null>((r) => {

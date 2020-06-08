@@ -187,8 +187,8 @@ test("test mata", async () => {
     }
 });
 
-test("test coladh", async () => {
-    const res = parse(`coladh(1000)`)
+test("test codladh", async () => {
+    const res = parse(`codladh(1000)`)
     expect(res.err).toBeNull();
     expect(res.ast).not.toBeNull();
     const i = new Interpreter();
