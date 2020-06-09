@@ -11,3 +11,4 @@ Get more information about the actions and values that come with Setanta:
 - [Text](./text)
 - [Lists](./list)
 - [Reading and writing](./read-write)
+- [Other](./other)
