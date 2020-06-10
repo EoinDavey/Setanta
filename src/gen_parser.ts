@@ -78,7 +78,7 @@
 *                .evalfn = EvalFn { return objLookupsEval(this); }
 *                .qeval = Quick.MaybeEv { return Quick.qObjLookupsEval(this); }
 * PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr _ '\]'
-* Atom        :=  _ '\(' trm=Expr '\)'
+* Atom        :=  _ '\(' trm=Expr _ '\)'
 *                .evalfn = EvalFn { return (env: Context) => this.trm.evalfn(env); }
 *                .qeval = Quick.MaybeEv {
 *                     const childF = this.trm.qeval;
@@ -1640,6 +1640,7 @@ export class Parser {
                     && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`\(`, $$dpth + 1, cr) !== null
                     && (trm = this.matchExpr($$dpth + 1, cr)) !== null
+                    && this.match_($$dpth + 1, cr) !== null
                     && this.regexAccept(String.raw`\)`, $$dpth + 1, cr) !== null
                 ) {
                     res = new Atom_1(trm);

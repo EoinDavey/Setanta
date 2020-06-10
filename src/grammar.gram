@@ -76,7 +76,7 @@ ObjLookups  := start=@ attrs={id=ID '@' !wspace}* root=Atom end=@
                .evalfn = EvalFn { return objLookupsEval(this); }
                .qeval = Quick.MaybeEv { return Quick.qObjLookupsEval(this); }
 PostOp      := '\(' args=CSArgs? _ '\)' | '\[' expr=Expr _ '\]'
-Atom        :=  _ '\(' trm=Expr '\)'
+Atom        :=  _ '\(' trm=Expr _ '\)'
                .evalfn = EvalFn { return (env: Context) => this.trm.evalfn(env); }
                .qeval = Quick.MaybeEv {
                     const childF = this.trm.qeval;

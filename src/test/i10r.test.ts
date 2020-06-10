@@ -45,6 +45,8 @@ test("test expressions", async () => {
         {inp : "12 // 12", exp : 1},
         {inp : "1 <= 0", exp : false},
         {inp : "1 >= 0", exp : true},
+        {inp : "(1)", exp : 1},
+        {inp : "( 1 )", exp : 1},
         {inp : "big > small", exp : true, env: Environment.from([["big", 100], ["small", 1]])},
         {inp : "x*x + y*y - z*z", exp : 0, env: Environment.from([["x", 3], ["y", 4], ["z", 5]])},
         {inp : "fíor == fíor", exp: true},
