@@ -124,7 +124,7 @@
 *                .qeval = Quick.EvalFn { return Quick.qTéacsEval(this.lit.val, this.lit.start, this.lit.end); }
 * _           := wspace*
 * wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
-* gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
+* gap         := wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' | '$'
 * PlusMinus   := '\+|-'
 * AsgnOp      := '=|\+=|\*=|-=|%=|\/='
 * MulDiv      := '\*|\/\/|%|\/'
@@ -234,8 +234,7 @@ export enum ASTKinds {
     wspace,
     gap_1,
     gap_2,
-    gap_$0_1,
-    gap_$0_2,
+    gap_3,
     PlusMinus,
     AsgnOp,
     MulDiv,
@@ -775,12 +774,10 @@ export interface Teacs_$0_2 {
 }
 export type _ = wspace[];
 export type wspace = string;
-export type gap = gap_1 | gap_2;
-export type gap_1 = gap_$0[];
+export type gap = gap_1 | gap_2 | gap_3;
+export type gap_1 = wspace;
 export type gap_2 = string;
-export type gap_$0 = gap_$0_1 | gap_$0_2;
-export type gap_$0_1 = wspace;
-export type gap_$0_2 = string;
+export type gap_3 = string;
 export type PlusMinus = string;
 export type AsgnOp = string;
 export type MulDiv = string;
@@ -1958,25 +1955,17 @@ export class Parser {
         return this.choice<gap>([
             () => this.matchgap_1($$dpth + 1, cr),
             () => this.matchgap_2($$dpth + 1, cr),
+            () => this.matchgap_3($$dpth + 1, cr),
         ]);
     }
     public matchgap_1($$dpth: number, cr?: ContextRecorder): Nullable<gap_1> {
-        return this.loop<gap_$0>(() => this.matchgap_$0($$dpth + 1, cr), false);
-    }
-    public matchgap_2($$dpth: number, cr?: ContextRecorder): Nullable<gap_2> {
-        return this.regexAccept(String.raw`$`, $$dpth + 1, cr);
-    }
-    public matchgap_$0($$dpth: number, cr?: ContextRecorder): Nullable<gap_$0> {
-        return this.choice<gap_$0>([
-            () => this.matchgap_$0_1($$dpth + 1, cr),
-            () => this.matchgap_$0_2($$dpth + 1, cr),
-        ]);
-    }
-    public matchgap_$0_1($$dpth: number, cr?: ContextRecorder): Nullable<gap_$0_1> {
         return this.matchwspace($$dpth + 1, cr);
     }
-    public matchgap_$0_2($$dpth: number, cr?: ContextRecorder): Nullable<gap_$0_2> {
+    public matchgap_2($$dpth: number, cr?: ContextRecorder): Nullable<gap_2> {
         return this.regexAccept(String.raw`[^a-zA-Z0-9áéíóúÁÉÍÓÚ]`, $$dpth + 1, cr);
+    }
+    public matchgap_3($$dpth: number, cr?: ContextRecorder): Nullable<gap_3> {
+        return this.regexAccept(String.raw`$`, $$dpth + 1, cr);
     }
     public matchPlusMinus($$dpth: number, cr?: ContextRecorder): Nullable<PlusMinus> {
         return this.regexAccept(String.raw`\+|-`, $$dpth + 1, cr);

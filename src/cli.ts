@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as readline from "readline";
 import * as Asserts from "./asserts";
-import { RuntimeError } from "./error";
+import { syntaxErrString, RuntimeError } from "./error";
 import { SyntaxErr, PosInfo, ParseResult, ASTKinds, Parser } from "./gen_parser";
 import { Interpreter } from "./i10r";
 import { goTéacs, Value } from "./values";
@@ -27,10 +27,6 @@ function printError(r: RuntimeError, source: string) {
     } else {
         console.error(`Eisceacht: ${r.msg}`);
     }
-}
-
-function formatSyntaxErr(err: SyntaxErr): string {
-    return `Eisceacht ag suíomh [${err.pos.line}:${err.pos.offset}]: Ag súil le: ${err.expmatches}`;
 }
 
 function getExternals(léighfn: () => Promise<string|null>): [string[], Value][] {
@@ -105,7 +101,7 @@ async function repl() {
     while (true) {
         const input = await getFullInput(getLine, continuance);
         if(input instanceof SyntaxErr) {
-            console.error(formatSyntaxErr(input));
+            console.error(syntaxErrString(input));
             continue;
         }
         soFar += input;
@@ -140,7 +136,7 @@ async function runFile() {
     const parser = new Parser(inFile);
     const res = parser.parse();
     if (res.err) {
-        console.error(formatSyntaxErr(res.err));
+        console.error(syntaxErrString(res.err));
         process.exitCode = 1;
         return;
     }

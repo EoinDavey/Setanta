@@ -122,7 +122,7 @@ Teacs       := _ lit={ start=@ '\'' val='([^\'\\]|\\.)*' '\'' end=@ |
                .qeval = Quick.EvalFn { return Quick.qTéacsEval(this.lit.val, this.lit.start, this.lit.end); }
 _           := wspace*
 wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
-gap         := { wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' }+ | '$'
+gap         := wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' | '$'
 PlusMinus   := '\+|-'
 AsgnOp      := '=|\+=|\*=|-=|%=|\/='
 MulDiv      := '\*|\/\/|%|\/'
