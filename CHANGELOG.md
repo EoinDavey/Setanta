@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.5.0 - 2020/06/10
+
+### Added
+- Grammar corrections.
+- Fix grammar issue with grouping whitespace.
+- Add syntax error formatting information, big improvement over previous method
+  of just dumping tsPEG output to the user.
+
+## 0.4.1 - 2020/06/08
+
+### Added
+- `--help` and `--cabhair` CLI flags.
+- Added simple usage message.
+- Add `codladh` function.
+- Documentation updates.
+- Negative sqrt (`fréamh`) error catch.
+- Various grammar fixes etc.
+
 ## 0.4.0 - 2020/04/25
 
 ### Added
