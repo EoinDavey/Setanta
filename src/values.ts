@@ -32,7 +32,7 @@ export function callFunc(x: Value, args: Value[]): Promise<Value> {
     x = Asserts.assertCallable(x);
     const ar = x.arity();
     if (ar !== -1 && args.length !== x.arity()) {
-        throw new RuntimeError(`Teastaíonn ${ar} argóint ag ${goTéacs(x)}, ach fuair sé ${args.length}`);
+        throw new RuntimeError(`Teastaíonn ${ar} argóint ó ${goTéacs(x)}, ach fuair sé ${args.length}`);
     }
     return x.call(args);
 }
