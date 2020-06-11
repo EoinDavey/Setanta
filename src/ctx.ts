@@ -40,11 +40,15 @@ export class Context {
     }
     public stop() {
         this._stopped[0] = true;
-        for(const fn of this._rejectPool[0]) {
+        for(const fn of this.rejectPool) {
             fn(STOP);
         }
+        this.rejectPool.clear();
     }
 
+    public get rejectPool() {
+        return this._rejectPool[0];
+    }
     public addRejectFn(fn: () => void) {
         this._rejectPool[0].add(fn);
     }
