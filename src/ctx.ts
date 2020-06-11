@@ -49,10 +49,10 @@ export class Context {
     public get rejectPool() {
         return this._rejectPool[0];
     }
-    public addRejectFn(fn: () => void) {
+    public addRejectFn(fn: (s: STOPType) => void) {
         this._rejectPool[0].add(fn);
     }
-    public removeRejectFn(fn: () => void) {
+    public removeRejectFn(fn: (s: STOPType) => void) {
         this._rejectPool[0].delete(fn);
     }
 }

@@ -7,6 +7,7 @@ import { athchuir } from "./teacs";
 import { Rud } from "./rud";
 import { ObjIntfWrap, Callable, callFunc, goTéacs, Value } from "./values";
 import { Context } from "./ctx";
+import { STOPType } from "./consts";
 
 // Take a 1-ary mathematical function and return a Callable
 function mathWrap(ainm: string, fn: (x: number) => number): Callable {
@@ -18,6 +19,26 @@ function mathWrap(ainm: string, fn: (x: number) => number): Callable {
             return Promise.resolve(fn(x));
         }
     }
+}
+
+function sleepPromise(ctx: Context, time: number): Promise<null> {
+    return new Promise((accept, reject) => {
+        let id = 0; // Id of timer, unknown intially, we capture it into the closure
+
+        // rfn is a rejection function. Clear the timer and reject the promise
+        const rfn = (s: STOPType) => {
+            clearTimeout(id);
+            reject(s);
+        }
+
+        // We have to cast to any here as Node doesn't use a number as a timeout id
+        id = (setTimeout(() => {
+            accept(null)
+            ctx.removeRejectFn(rfn);
+        }, time) as any);
+
+        ctx.addRejectFn(rfn);
+    });
 }
 
 export function getGlobalBuiltins(ctx: Context): [string, Value][] {
@@ -132,13 +153,7 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
                 ainm: "codladh",
                 arity: () => 1,
                 call: (args: Value[]): Promise<Value> => {
-                    return new Promise((accept, reject) => {
-                        setTimeout(() => {
-                            accept(null)
-                            ctx.removeRejectFn(reject);
-                        }, Asserts.assertNumber(args[0]));
-                        ctx.addRejectFn(reject);
-                    });
+                    return sleepPromise(ctx, Asserts.assertNumber(args[0]));
                 },
             },
         ],
@@ -148,13 +163,7 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
                 ainm: "codladh",
                 arity: () => 1,
                 call: (args: Value[]): Promise<Value> => {
-                    return new Promise((accept, reject) => {
-                        setTimeout(() => {
-                            accept()
-                            ctx.removeRejectFn(reject);
-                        }, Asserts.assertNumber(args[0]));
-                        ctx.addRejectFn(reject);
-                    });
+                    return sleepPromise(ctx, Asserts.assertNumber(args[0]));
                 },
             },
         ],
