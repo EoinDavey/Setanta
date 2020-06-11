@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 - 2020/06/11
+
+### Added
+- Add `stop` action
+
+### Fixes
+- Large improvements to stopping the interpreter.
+- Interpreter now stops correctly even if asked to stop while waiting
+  on input or sleeping.
+
 ## 0.5.0 - 2020/06/10
 
 ### Added
