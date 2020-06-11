@@ -1076,9 +1076,8 @@ test("stop test", async () => {
     const i = new Interpreter();
     expect(res.err).toBeNull();
     expect(res.ast).not.toBeNull();
-    i.interpret(res.ast!);
-    const stop = new Promise((resolve) => setTimeout(() => resolve(i.stop())));
-    await stop;
+    setTimeout(() => i.stop());
+    await i.interpret(res.ast!);
 });
 
 test("test comments", async () => {
@@ -1160,4 +1159,17 @@ test("test anonymous functions", async () => {
         await i.interpret(res.ast!);
         expect(i.global.env.get("res")).toEqual(c.exp);
     }
+});
+
+test("stop codladh test", async () => {
+    const prog = `
+        codladh(1000000)
+    `;
+    const p = new Parser(prog);
+    const res = p.parse();
+    const i = new Interpreter();
+    expect(res.err).toBeNull();
+    expect(res.ast).not.toBeNull();
+    setTimeout(() => i.stop());
+    await i.interpret(res.ast!);
 });

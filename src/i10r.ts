@@ -1,4 +1,4 @@
-import { GlobalBuiltins } from "./builtins";
+import { getGlobalBuiltins } from "./builtins";
 import { Environment } from "./env";
 import { Value } from "./values";
 import { Context } from "./ctx";
@@ -9,7 +9,8 @@ import { STOP } from "./consts";
 export class Interpreter {
     public global: Context;
     constructor(externals?: [string[], Value][]) {
-        const globalEnv = Environment.from(GlobalBuiltins);
+        this.global = new Context();
+        const globalEnv = Environment.from(getGlobalBuiltins(this.global));
         if (externals) {
             for (const ext of externals) {
                 for (const a of ext[0]) {
@@ -17,7 +18,6 @@ export class Interpreter {
                 }
             }
         }
-        this.global = new Context();
         this.global.env = globalEnv;
     }
     public stop() {
@@ -33,4 +33,3 @@ export class Interpreter {
         });
     }
 }
-
