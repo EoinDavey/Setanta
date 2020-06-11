@@ -8,17 +8,13 @@ import { STOP } from "./consts";
 
 export class Interpreter {
     public global: Context;
-    constructor(externals?: [string[], Value][]) {
+    constructor(externals?: (ctx: Context) => [string[], Value][]) {
         this.global = new Context();
-        const globalEnv = Environment.from(getGlobalBuiltins(this.global));
-        if (externals) {
-            for (const ext of externals) {
-                for (const a of ext[0]) {
-                    globalEnv.define(a, ext[1]);
-                }
-            }
-        }
-        this.global.env = globalEnv;
+        getGlobalBuiltins(this.global)
+            .forEach(x => this.global.env.define(x[0], x[1]));
+        if (externals)
+            externals(this.global).forEach(ext =>
+                ext[0].forEach(a => this.global.env.define(a, ext[1])));
     }
     public stop() {
         this.global.stop();

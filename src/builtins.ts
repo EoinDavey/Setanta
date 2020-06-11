@@ -159,6 +159,17 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             },
         ],
         [
+            "stop",
+            {
+                ainm: "stop",
+                arity: () => 0,
+                call: (): Promise<null> => {
+                    ctx.stop();
+                    return Promise.resolve(null);
+                }
+            }
+        ],
+        [
             // Built in maths object
             "mata", new ObjIntfWrap("mata", [
                 // constants

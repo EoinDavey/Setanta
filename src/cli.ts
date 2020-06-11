@@ -6,6 +6,7 @@ import { SyntaxErr, PosInfo, ParseResult, ASTKinds, Parser } from "./gen_parser"
 import { Interpreter } from "./i10r";
 import { goTéacs, Value } from "./values";
 import { STOP } from "./consts";
+import { Context } from "./ctx";
 
 import * as fs from "fs";
 
@@ -29,8 +30,8 @@ function printError(r: RuntimeError, source: string) {
     }
 }
 
-function getExternals(léighfn: () => Promise<string|null>): [string[], Value][] {
-    return [
+function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: Context) => [string[], Value][] {
+    return (ctx: Context) => [
         [
             ["scríobh", "scriobh"], {
                 ainm: "scríobh",
@@ -47,7 +48,7 @@ function getExternals(léighfn: () => Promise<string|null>): [string[], Value][]
                 arity : () => 1,
                 call : (args: Value[]): Promise<string|null> => {
                     process.stdout.write(Asserts.assertTéacs(args[0]));
-                    return léighfn();
+                    return léighfn(ctx);
                 },
             },
         ],
@@ -56,7 +57,7 @@ function getExternals(léighfn: () => Promise<string|null>): [string[], Value][]
                 ainm: "léigh_líne",
                 arity : () => 0,
                 call : (args: Value[]): Promise<Value> => {
-                    return léighfn();
+                    return léighfn(ctx);
                 },
             },
         ],
@@ -87,6 +88,15 @@ async function repl() {
         input: process.stdin,
         output: process.stdout,
     });
+    const léighLíne = (ctx: Context) : Promise<string|null> =>  {
+        return new Promise((acc, rej) => {
+            ctx.addRejectFn(rej);
+            rl.question("", (resp) => {
+                ctx.removeRejectFn(rej);
+                acc(resp)
+            });
+        })
+    }
     const getLine = (): Promise<string|null> => {
         return new Promise((r) => {
             rl.question("᚛ ", (resp) => r(resp));
@@ -95,10 +105,12 @@ async function repl() {
     const continuance = (): Promise<string|null> => {
         return new Promise((r) => rl.question("...", r));
     }
-    const i = new Interpreter(getExternals(getLine));
+    const i = new Interpreter(getExternals(léighLíne));
     let soFar = "";
     let prevPos: PosInfo = {overallPos: 0, line: 1, offset: 0};
     while (true) {
+        if(i.global.stopped)
+            break;
         const input = await getFullInput(getLine, continuance);
         if(input instanceof SyntaxErr) {
             console.error(syntaxErrString(input));
@@ -146,12 +158,13 @@ async function runFile() {
         terminal : false,
     });
     const it: AsyncIterableIterator<string> = rl[Symbol.asyncIterator]();
-    const léigh = (): Promise<string|null> => {
-        return it.next().then((next) => {
-            if (next.done) {
-                return null;
-            }
-            return next.value;
+    const léigh = (ctx: Context): Promise<string|null> => {
+        return new Promise((acc, rej) => {
+            ctx.addRejectFn(rej);
+            it.next().then(next => {
+                ctx.removeRejectFn(rej);
+                return next.done ? acc(null) : acc(next.value)
+            })
         });
     };
     const i = new Interpreter(getExternals(léigh));

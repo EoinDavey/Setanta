@@ -1064,7 +1064,7 @@ test("test constructor", async () => {
     }
 });
 
-test("stop test", async () => {
+test("context stop test", async () => {
     const prog = `
         x := 0
         nuair-a fíor {
@@ -1172,4 +1172,33 @@ test("stop codladh test", async () => {
     expect(res.ast).not.toBeNull();
     setTimeout(() => i.stop());
     await i.interpret(res.ast!);
+});
+
+test("stop action test", async () => {
+    let wasRan = false;
+    const i = new Interpreter(
+        () => [
+            [
+                ["dontrunme"],
+                {
+                    ainm: "dontrunme",
+                    arity: () => 0,
+                    call: (args: Value[]) => {
+                        wasRan = true;
+                        return Promise.resolve(null)
+                    }
+                }
+            ]
+        ]
+    );
+    const prog = `
+    stop()
+    dontrunme()
+    `;
+    const p = new Parser(prog);
+    const res = p.parse();
+    expect(res.err).toBeNull();
+    expect(res.ast).not.toBeNull();
+    await i.interpret(res.ast!);
+    expect(wasRan).toEqual(false);
 });
