@@ -8,7 +8,7 @@ classes: wide
 
 Seo é an doiciméadacht Setanta. Is teanga ríomhchlárúcháin nua-aimseartha, simplí agus cumhachtach é Setanta, agus tá sé 100% as Gaeilge.
 
-- [Teagaisc](/gaeilge/01-tosaigh)
+- [Teagasc](/gaeilge/01-tosaigh)
 - [Doiciméadacht](/ga-docs/00-tosaigh)
 
 ## *Welcome!*
