@@ -37,6 +37,7 @@ test("test téacs fns", async () => {
         { inp: "roinn@'a'('')", exp : ["a"]},
         { inp: "roinn@''(' ')", exp : [""]},
         { inp: "cuid@'abc'(0, 2)", exp : "ab"},
+        { inp: "cuid@'abc'(1, 2)", exp : "b"},
         { inp: "cuid@'abc'(0, 3)", exp : "abc"},
         { inp: "athchuir@'test string'('s', 'e')", exp: "teet etring" },
         {

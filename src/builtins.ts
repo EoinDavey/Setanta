@@ -311,7 +311,7 @@ const téacsOpsList: [string, (s: string) => Value][] = [
                 call : async (args: Value[]): Promise<Value> => {
                     const l = Asserts.assertNumber(args[0]);
                     const r = Asserts.assertNumber(args[1]);
-                    return s.substr(l, r);
+                    return s.substring(l, r);
                 },
             }
         },
