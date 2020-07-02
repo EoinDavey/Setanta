@@ -6,14 +6,14 @@ title: Samplaí - *Demos*
 
 # Samplaí
 
-- [Cluiche *Nathair*](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgICgxt6JCg)
+- [Cluiche *Nathair*](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgICA_PaOCg)
 - [Triantán Sierpinksi](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgIDgycODCg)
-- [Cearnóg Sierpinksi](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgIDAjL2TCg)
-- [Cearnóg ag preabadh](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgICAr4aICg)
+- [Cearnóg Sierpinksi](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgICQ8PGXCg)
+- [Cearnóg ag preabadh](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgIDgmpSNCg)
 
 # Demos
 
-- [*Snake* Game](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgICgxt6JCg)
+- [*Snake* Game](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgICA_PaOCg)
 - [Sierpinski Triangle](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgIDgycODCg)
-- [Sierpinksi Square](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgIDAjL2TCg)
-- [Bouncing square](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgICAr4aICg)
+- [Sierpinksi Square](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgICQ8PGXCg)
+- [Bouncing square](https://try-setanta.ie/editor/EhEKBlNjcmlwdBCAgIDgmpSNCg)
