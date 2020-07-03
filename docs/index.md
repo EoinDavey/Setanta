@@ -8,12 +8,14 @@ classes: wide
 
 Seo é an doiciméadacht Setanta. Is teanga ríomhchlárúcháin nua-aimseartha, simplí agus cumhachtach é Setanta, agus tá sé 100% as Gaeilge.
 
-- [Teagasc](/gaeilge/01-tosaigh)
-- [Doiciméadacht](/ga-docs/00-tosaigh)
+- [Oscail an teagasc nua (Foghlaim Setanta + roinnt Gaeilge)](https://try-setanta.ie/tut/intro.html)
+- [Oscail an sean teagasc (as Gaeilge)](/gaeilge/01-tosaigh)
+- [Léigh an doiciméadacht](/ga-docs/00-tosaigh)
 
 ## *Welcome!*
 
 *This is the documentation for Setanta. Setanta is a modern, simple and powerful programming language, and it's 100% in Irish*.
 
-- [Tutorial](/english/01-start)
-- [Documentation](/en-docs/00-start)
+- [Open the new tutorial (learn Setanta + some Irish)](https://try-setanta.ie/tut/intro.html)
+- [Open the old tutorial](/english/01-start)
+- [Read the documentation](/en-docs/00-start)
