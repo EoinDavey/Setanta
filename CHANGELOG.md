@@ -1,6 +1,12 @@
 # Changelog
 
-## 0.5.0 - 2020/06/11
+## 0.6.1 - 2020/07/03
+
+## Fixes
+
+- Fixed `cuid` action not working as intended.
+
+## 0.6.0 - 2020/06/11
 
 ### Added
 - Add `stop` action
