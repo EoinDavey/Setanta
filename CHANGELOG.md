@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2 - 2020/07/03
+
+- Updated to tsPEG v1.3.2 to fix Safari/iOS/WebKit issues
+
 ## 0.6.1 - 2020/07/03
 
 ## Fixes
