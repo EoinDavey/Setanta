@@ -253,14 +253,28 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
                 ],
                 [
                     // arity: 2; args[0]: number, args[1]: number;
-                    // Returns random integer in the range [args[0], args[1])
+                    // Returns random integer in the range [args[0], args[1]) (exclusive of end)
+                    // DEPRECATED
                     ["randUimh"], {
-                        ainm: "rand",
+                        ainm: "randUimh",
                         arity: () => 2,
                         call: (args: Value[]): Promise<number> => {
                             const l = Asserts.assertNumber(args[0]);
                             const r = Asserts.assertNumber(args[1]);
                             return Promise.resolve(Math.floor(Math.random() * (r - l) + l));
+                        },
+                    },
+                ],
+                [
+                    // arity: 2; args[0]: number, args[1]: number;
+                    // Returns random integer in the range [args[0], args[1]] (inclusive)
+                    ["slánuimh_rand", "slanuimh_rand"], {
+                        ainm: "slánuimh_rand",
+                        arity: () => 2,
+                        call: (args: Value[]): Promise<number> => {
+                            const l = Asserts.assertNumber(args[0]);
+                            const r = Asserts.assertNumber(args[1]);
+                            return Promise.resolve(Math.floor(Math.random() * (r - l + 1) + l));
                         },
                     },
                 ],

@@ -148,6 +148,8 @@ test("test mata", async () => {
         { inp : "rand@mata() > 0", exp: true },
         { inp : "randUimh@mata(100, 200) >= 100", exp: true },
         { inp : "randUimh@mata(100, 200) < 200", exp: true },
+        { inp : "slánuimh_rand@mata(10, 20) >= 10", exp: true },
+        { inp : "slánuimh_rand@mata(10, 20) <= 20", exp: true },
         { inp : "cos@mata(0)", exp: 1 },
         { inp : "cos@mata(pi@mata)", exp: -1 },
         { inp : "cos@mata(2*pi@mata)", exp: 1 },
