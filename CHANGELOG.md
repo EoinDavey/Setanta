@@ -1,12 +1,24 @@
 # Changelog
 
+## 0.7.0 - 2020/07/22
+
+### Fixes
+
+- lodash security patch
+
+### Added
+
+- Added `slánuimh_rand` action for a random integer in a range. Replaces `randUimh` which is now
+  deprecated.
+  - NOTE: `slánuimh_rand` is inclusive of the end of the range, `randUimh` was not.
+
 ## 0.6.2 - 2020/07/03
 
 - Updated to tsPEG v1.3.2 to fix Safari/iOS/WebKit issues
 
 ## 0.6.1 - 2020/07/03
 
-## Fixes
+### Fixes
 
 - Fixed `cuid` action not working as intended.
 
