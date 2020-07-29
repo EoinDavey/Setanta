@@ -22,10 +22,10 @@ _**Only available on try-setanta.ie**_
 | `dron` | Draw a rectangle  | `dron@stáitse(suíomh_x, suíomh_y, leithead, airde)` |
 | `líne` | Draw a line  | `líne@stáitse(x_1, y_1, x_2, y_2)` |
 | `ciorcal` | Draw a circle | `ciorcal@stáitse(x, y, ga)` |
-| `ciorcalLán` | Draw a filled circle | `ciorcalLán@stáitse(x, y, ga)` |
+| `ciorcal_lán` | Draw a filled circle | `ciorcal_lán@stáitse(x, y, ga)` |
 | `cruth` | Draw a shape from a list of points | `cruth@stáitse([[0, 0], [0, 100], [100, 0], [100, 100]])` |
-| `cruthLán` | Draw a filled shape from a list of points | `cruthLán@stáitse([[0, 0], [0, 100], [100, 0], [100, 100]])` |
-| `píosaCiorcal` | Draw a piece of a circle (arc) | `píosaCiorcal@stáitse(x, y, ga, uillinn_tosaigh, uillinn_deiridh, deisil)` |
-| `píosaCiorcalLán` | Draw a filled piece of a circle (arc) | `píosaCiorcalLán@stáitse(x, y, ga, uillinn_tosaigh, uillinn_deiridh, deisil)` |
-| `glanDron` | Clear a rectangle | `glanDron@stáitse(x_1, x_2, leithead, airde)` |
+| `cruth_lán` | Draw a filled shape from a list of points | `cruth_lán@stáitse([[0, 0], [0, 100], [100, 0], [100, 100]])` |
+| `píosa_ciorcal` | Draw a piece of a circle (arc) | `píosa_ciorcal@stáitse(x, y, ga, uillinn_tosaigh, uillinn_deiridh, deisil)` |
+| `píosa_ciorcal_lán` | Draw a filled piece of a circle (arc) | `píosa_ciorcal_lán@stáitse(x, y, ga, uillinn_tosaigh, uillinn_deiridh, deisil)` |
+| `glan_dron` | Clear a rectangle | `glan_dron@stáitse(x_1, x_2, leithead, airde)` |
 | `glan` | Clear the whole stage | `glan@stáitse()` |

@@ -22,10 +22,10 @@ _**Ar fáil ar try-setanta.ie amháin**_
 | `dron` | Tarraing dronuilleog  | `dron@stáitse(suíomh_x, suíomh_y, leithead, airde)` |
 | `líne` | Tarraing líne  | `líne@stáitse(x_1, y_1, x_2, y_2)` |
 | `ciorcal` | Tarraing ciorcal | `ciorcal@stáitse(x, y, ga)` |
-| `ciorcalLán` | Tarraing ciorcal lán | `ciorcalLán@stáitse(x, y, ga)` |
+| `ciorcal_lán` | Tarraing ciorcal lán | `ciorcal_lán@stáitse(x, y, ga)` |
 | `cruth` | Tarraing cruth ó liosta pointí | `cruth@stáitse([[0, 0], [0, 100], [100, 0], [100, 100]])` |
-| `cruthLán` | Tarraing cruth lán ó liosta pointí | `cruthLán@stáitse([[0, 0], [0, 100], [100, 0], [100, 100]])` |
-| `píosaCiorcal` | Tarraing píosa ciorcal (stua) | `píosaCiorcal@stáitse(x, y, ga, uillinn_tosaigh, uillinn_deiridh, deisil)` |
-| `píosaCiorcalLán` | Tarraing píosa ciorcal (stua) lán | `píosaCiorcalLán@stáitse(x, y, ga, uillinn_tosaigh, uillinn_deiridh, deisil)` |
-| `glanDron` | Glan dronuilleog | `glanDron@stáitse(x_1, x_2, leithead, airde)` |
+| `cruth_lán` | Tarraing cruth lán ó liosta pointí | `cruth_lán@stáitse([[0, 0], [0, 100], [100, 0], [100, 100]])` |
+| `píosa_ciorcal` | Tarraing píosa ciorcal (stua) | `píosa_ciorcal@stáitse(x, y, ga, uillinn_tosaigh, uillinn_deiridh, deisil)` |
+| `píosa_ciorcal_lán` | Tarraing píosa ciorcal (stua) lán | `píosa_ciorcal_lán@stáitse(x, y, ga, uillinn_tosaigh, uillinn_deiridh, deisil)` |
+| `glan_dron` | Glan dronuilleog | `glan_dron@stáitse(x_1, x_2, leithead, airde)` |
 | `glan` | Glan an stáitse iomlán | `glan@stáitse()` |
