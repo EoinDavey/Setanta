@@ -39,4 +39,4 @@ title: Matamaitic
 | `acos` | Comhshíneas inbhéartach | `acos@mata(pi@mata)` |
 | `atan` | Tangant inbhéartach    | `atan@mata(0)` |
 | `rand` | Uimhir randamach idir 0 agus 1 | `rand@mata()` |
-| `randUimh` | Slánuimhir randamach i raon éigin | `randUimh@mata(5, 10)` |
+| `slánuimh_rand` | Slánuimhir randamach i raon éigin | `slánuimh_rand@mata(5, 10)` |

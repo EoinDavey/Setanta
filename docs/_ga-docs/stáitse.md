@@ -10,8 +10,8 @@ _**Ar fáil ar try-setanta.ie amháin**_
 
 | Ainm | Cur síos | Sampla |
 |----
-| `fadX` | Fad an stáitse sa treo x | `fadX@stáitse` |
-| `fadY` | Fad an stáitse sa treo y | `fadY@stáitse` |
+| `fad_x` | Fad an stáitse sa treo x | `fad_x@stáitse` |
+| `fad_y` | Fad an stáitse sa treo y | `fad_y@stáitse` |
 
 ## Gníomhartha
 

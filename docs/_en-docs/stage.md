@@ -10,8 +10,8 @@ _**Only available on try-setanta.ie**_
 
 | Name | Description | Example |
 |----
-| `fadX` | Length of the stage in the x direction| `fadX@stáitse` |
-| `fadY` | Length of the stage in the y direction | `fadY@stáitse` |
+| `fad_x` | Length of the stage in the x direction| `fad_x@stáitse` |
+| `fad_y` | Length of the stage in the y direction | `fad_y@stáitse` |
 
 ## Actions
 

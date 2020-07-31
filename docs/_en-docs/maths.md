@@ -39,4 +39,4 @@ title: Maths
 | `acos` | Inverse cosine | `acos@mata(pi@mata)` |
 | `atan` | Inverse tangent    | `atan@mata(0)` |
 | `rand` | Random number from 0 to 1 | `rand@mata()` |
-| `randUimh` | Random whole number in some range | `randUimh@mata(5, 10)` |
+| `slánuimh_rand` | Random whole number (slánuimhir) in some range | `slánuimh_rand@mata(5, 10)` |
