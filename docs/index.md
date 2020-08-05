@@ -19,3 +19,11 @@ Seo é an doiciméadacht Setanta. Is teanga ríomhchlárúcháin nua-aimseartha,
 - [Open the new tutorial (learn Setanta + some Irish)](https://try-setanta.ie/tut/intro.html)
 - [Open the old tutorial](/english/01-start)
 - [Read the documentation](/en-docs/00-start)
+
+## Cabhair / _Help_
+
+Déan _Issue_ ar [Github](https://github.com/EoinDavey/Setanta) nó cuir ríomhphost chuig
+<cabhair@try-setanta.ie> chun cabhair a fháil.
+
+_Create an_ Issue _on [Github](https://github.com/EoinDavey/Setanta) or send an email to_
+<help@try-setanta.ie> _to get help_.
