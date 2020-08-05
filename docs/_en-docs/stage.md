@@ -29,3 +29,8 @@ _**Only available on try-setanta.ie**_
 | `píosa_ciorcal_lán` | Draw a filled piece of a circle (arc) | `píosa_ciorcal_lán@stáitse(x, y, ga, uillinn_tosaigh, uillinn_deiridh, deisil)` |
 | `glan_dron` | Clear a rectangle | `glan_dron@stáitse(x_1, x_2, leithead, airde)` |
 | `glan` | Clear the whole stage | `glan@stáitse()` |
+| `méarchlár` | Choose an action to use with keyboard input (key down) | `méarchlár@stáitse(gníomh (k) { scríobh(k) })` |
+| `méarchlár_suas` | Choose an action to use with keyboard input (key up) | `méarchlár_suas@stáitse(gníomh (k) { scríobh(k) })` |
+| `luch` | Choose an action to use with mouse input (mouse down) | `luch@stáitse(gníomh (x, y) { scríobh("Mouse-down @", x, y) })` |
+| `luch_suas` | Choose an action to use with mouse input (mouse up) | `luch_suas@stáitse(gníomh (x, y) { scríobh("Mouse-up @", x, y) })` |
+| `luch_bog` | Choose an action to use with mouse input (mouse move) | `luch_bog@stáitse(gníomh (x, y) { scríobh("Mouse-move @", x, y) })` |

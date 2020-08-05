@@ -29,3 +29,8 @@ _**Ar fáil ar try-setanta.ie amháin**_
 | `píosa_ciorcal_lán` | Tarraing píosa ciorcal (stua) lán | `píosa_ciorcal_lán@stáitse(x, y, ga, uillinn_tosaigh, uillinn_deiridh, deisil)` |
 | `glan_dron` | Glan dronuilleog | `glan_dron@stáitse(x_1, x_2, leithead, airde)` |
 | `glan` | Glan an stáitse iomlán | `glan@stáitse()` |
+| `méarchlár` | Roghnaigh gníomh le húsáid le ionchur an mhéarchláir  | `méarchlár@stáitse(gníomh (k) { scríobh(k) })` |
+| `méarchlár_suas` | Roghnaigh gníomh le húsáid le ionchur an mhéarchláir (eochair suas) | `méarchlár_suas@stáitse(gníomh (k) { scríobh(k) })` |
+| `luch` | Roghnaigh gníomh le húsáid le ionchur na luiche (luch síos) | `luch@stáitse(gníomh (x, y) { scríobh("luch-síos @", x, y) })` |
+| `luch_suas` | Roghnaigh gníomh le húsáid le ionchur na luiche (luch suas) | `luch_suas@stáitse(gníomh (x, y) { scríobh("luch-suas @", x, y) })` |
+| `luch_bog` | Roghnaigh gníomh le húsáid le ionchur na luiche (luch bog) | `luch_bog@stáitse(gníomh (x, y) { scríobh("luch-bog @", x, y) })` |
