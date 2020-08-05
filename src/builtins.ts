@@ -179,6 +179,14 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             }
         ],
         [
+            "fan",
+            {
+                ainm: "fan",
+                arity: () => 0,
+                call: () => new Promise<null>((_, rej) => ctx.addRejectFn(rej))
+            }
+        ],
+        [
             // Built in maths object
             "mata", new ObjIntfWrap("mata", [
                 // constants

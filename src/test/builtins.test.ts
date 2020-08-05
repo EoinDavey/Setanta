@@ -203,3 +203,15 @@ test("test codladh", async () => {
     expect(nonBlocked).toEqual(true);
     expect(end-start).toBeGreaterThan(500);
 })
+
+test("test fan", async () => {
+    const res = parse(`fan()`)
+    expect(res.err).toBeNull();
+    expect(res.ast).not.toBeNull();
+    const i = new Interpreter();
+    const start = Date.now();
+    setTimeout(() => i.stop(), 1000);
+    await i.interpret(res.ast!);
+    const end = Date.now();
+    expect(end-start).toBeGreaterThan(500);
+})
