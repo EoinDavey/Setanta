@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "full-test": "jest && ./rundemos.sh && tslint -c tslint.json --project .",
-    "lint": "tslint -c tslint.json --force",
-    "lint-all": "tslint -c tslint.json --force \"src/**/*.ts\"",
+    "full-test": "jest && ./rundemos.sh",
     "gen": "tspeg src/grammar.gram src/gen_parser.ts",
     "build": "tspeg src/grammar.gram src/gen_parser.ts && tsc --declaration",
     "clean": "rm -rf node_build/ && rm -rf docs/_site/",
@@ -28,7 +26,6 @@
     "@types/node": "^13.11.0",
     "jest": "^25.2.6",
     "ts-jest": "^25.3.0",
-    "tslint": "^6.1.1",
     "tspeg": "^1.3.2",
     "typescript": "^3.8.3"
   },
