@@ -6,7 +6,7 @@ import { Parser } from "../../src/gen_parser";
 import { GníomhWrap } from "../../src/gniomh";
 import { Interpreter } from "../../src/i10r";
 import { Rud } from "../../src/rud";
-import { Callable, Value } from "../../src/values";
+import { Value } from "../../src/values";
 
 test("test isEqual", () => {
     interface TC { a: Value; b: Value; eq: boolean; }
@@ -700,7 +700,7 @@ test("test obj lookups", async () => {
                 ["b", {
                     ainm: "b",
                     getAttr: (s: string) => s === "a" ? true : null,
-                    setAttr: (id: string, v: Value) => undefined,
+                    setAttr: () => undefined,
                 }],
             ]),
             exp : true,
@@ -711,7 +711,7 @@ test("test obj lookups", async () => {
                 ["b", {
                     ainm: "b",
                     getAttr: (s: string) => s === "a" ? true : null,
-                    setAttr: (id: string, v: Value) => undefined,
+                    setAttr: () => undefined,
                 }],
             ]),
             exp : null,
@@ -727,14 +727,14 @@ test("test obj lookups", async () => {
                             getAttr: (at: string) => at === "a" ? {
                                 ainm: "",
                                 arity: () => 0,
-                                call: (args: Value[]): Promise<Value> => {
+                                call: (): Promise<Value> => {
                                     return Promise.resolve("0");
                                 },
                             } : null,
-                            setAttr: (id: string, v: Value) => undefined,
+                            setAttr: () => undefined,
                         }
                     : null,
-                    setAttr: (id: string, v: Value) => undefined,
+                    setAttr: () => undefined,
                 }],
             ]),
             exp : "0",
@@ -1029,7 +1029,7 @@ test("test constructor", async () => {
                         ["achar", new GníomhWrap(
                             "achar",
                             0,
-                            (seo: Rud, args: Value[]) => {
+                            (seo: Rud) => {
                                 const h = Asserts.assertNumber(seo.getAttr("ard"));
                                 const w = Asserts.assertNumber(seo.getAttr("lthd"));
                                 return Promise.resolve(h * w);
@@ -1183,7 +1183,7 @@ test("stop action test", async () => {
                 {
                     ainm: "dontrunme",
                     arity: () => 0,
-                    call: (args: Value[]) => {
+                    call: () => {
                         wasRan = true;
                         return Promise.resolve(null)
                     }
