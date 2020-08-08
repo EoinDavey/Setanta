@@ -1,4 +1,3 @@
-import { Environment } from "./env";
 import { Context } from "./ctx";
 import { RuntimeError } from "./error";
 import { Rud } from "./rud";
@@ -30,7 +29,7 @@ export class GníomhImpl implements Callable {
         return new GníomhImpl(this.ainm, this.defn, this.args,
             ctx);
     }
-    public arity() {
+    public arity(): number {
         return this.args.length;
     }
     public call(args: Value[]): Promise<Value> {
@@ -38,7 +37,7 @@ export class GníomhImpl implements Callable {
         for (let i = 0; i < args.length; ++i) {
             ctx.env.define(this.args[i], args[i]);
         }
-        return execStmts(this.defn, ctx).then((e) => null).catch((e) => {
+        return execStmts(this.defn, ctx).then(() => null).catch((e) => {
             if (e instanceof Toradh) {
                 return e.luach;
             }
@@ -61,7 +60,7 @@ export class GníomhWrap implements Gníomh {
         this.f = f;
         this.seo = seo || null;
     }
-    public arity() { return this.ar; }
+    public arity(): number { return this.ar; }
     public call(args: Value[]): Promise<Value> {
         if (this.seo === null) {
             // Really really should not happen

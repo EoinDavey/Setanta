@@ -1,10 +1,7 @@
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
-import { CreatlachImpl } from "./creatlach";
 import { RuntimeError } from "./error";
-import { GníomhWrap } from "./gniomh";
 import { athchuir } from "./teacs";
-import { Rud } from "./rud";
 import { ObjIntfWrap, Callable, callFunc, goTéacs, Value } from "./values";
 import { Context } from "./ctx";
 import { STOPType } from "./consts";
@@ -32,10 +29,12 @@ function sleepPromise(ctx: Context, time: number): Promise<null> {
         }
 
         // We have to cast to any here as Node doesn't use a number as a timeout id
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         id = (setTimeout(() => {
             accept(null)
             ctx.removeRejectFn(rfn);
         }, time) as any);
+        /* eslint-enable @typescript-eslint/no-explicit-any */
 
         ctx.addRejectFn(rfn);
     });
@@ -256,7 +255,7 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
                     ["rand"], {
                         ainm: "rand",
                         arity: () => 0,
-                        call: (args: Value[]): Promise<number> => Promise.resolve(Math.random()),
+                        call: (): Promise<number> => Promise.resolve(Math.random()),
                     },
                 ],
                 [
@@ -344,7 +343,7 @@ const téacsOpsList: [string, (s: string) => Value][] = [
             return {
                 ainm: "go_liosta",
                 arity : () => 0,
-                call : async (args: Value[]): Promise<Value> => s.split("")
+                call : () => Promise.resolve(s.split(""))
             }
         },
     ],
@@ -360,7 +359,7 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
             return {
                 ainm: "sórtáil",
                 arity : () => 0,
-                call : async (args: Value[]) => ls.sort()
+                call : () => Promise.resolve(ls.sort())
             }
         },
     ],
@@ -369,7 +368,7 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
             return {
                 ainm: "sórtáil",
                 arity : () => 0,
-                call : async (args: Value[]) => ls.sort()
+                call : () => Promise.resolve(ls.sort())
             }
         },
     ],

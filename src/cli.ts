@@ -2,7 +2,7 @@
 import * as readline from "readline";
 import * as Asserts from "./asserts";
 import { syntaxErrString, RuntimeError } from "./error";
-import { SyntaxErr, PosInfo, ParseResult, ASTKinds, Parser } from "./gen_parser";
+import { SyntaxErr, PosInfo, ASTKinds, Parser } from "./gen_parser";
 import { Interpreter } from "./i10r";
 import { goTéacs, Value } from "./values";
 import { STOP } from "./consts";
@@ -56,9 +56,7 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
             ["léigh_líne", "léigh_line", "léigh_líne", "leigh_line"], {
                 ainm: "léigh_líne",
                 arity : () => 0,
-                call : (args: Value[]): Promise<Value> => {
-                    return léighfn(ctx);
-                },
+                call : () => léighfn(ctx)
             },
         ],
     ];
@@ -67,7 +65,7 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
 async function getFullInput(getLine: () => Promise<string|null>,
     continuance: () => Promise<string|null>): Promise<string|SyntaxErr> {
     let prev = "";
-    while(true) {
+    for(;;) {
         const inpFn = prev === "" ? getLine : continuance;
         const inp = (await inpFn()) + '\n';
         if(inp === null)
@@ -108,7 +106,7 @@ async function repl() {
     const i = new Interpreter(getExternals(léighLíne));
     let soFar = "";
     let prevPos: PosInfo = {overallPos: 0, line: 1, offset: 0};
-    while (true) {
+    for(;;) {
         if(i.global.stopped)
             break;
         const input = await getFullInput(getLine, continuance);
@@ -122,9 +120,13 @@ async function repl() {
         const res = parser.parse();
 
         // Ignore that mark is private, for now - TODO fix this in tsPEG
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         prevPos = parser.mark();
-        const ast = res.ast!;
+        if (res.ast === null) {
+            return Promise.reject(`Parser failure: ${res.err}`);
+        }
+        const ast = res.ast;
         try {
             // This is an expression, we can print the result
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
@@ -152,6 +154,9 @@ async function runFile() {
         process.exitCode = 1;
         return;
     }
+    if (res.ast === null) {
+        throw new Error("Unknown parser error: Serious failure")
+    }
     const rl: readline.Interface = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
@@ -170,7 +175,7 @@ async function runFile() {
     const i = new Interpreter(getExternals(léigh));
 
     try {
-        await i.interpret(res.ast!);
+        await i.interpret(res.ast);
     } catch (err) {
         if (err instanceof RuntimeError) {
             printError(err, inFile);

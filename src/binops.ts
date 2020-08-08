@@ -221,18 +221,18 @@ const binOpTable: Map<string, BinOpEntry[]> = new Map([
     ["<=", [compBinOpEntry((a, b) => a <= b)]],
     [">=", [compBinOpEntry((a, b) => a >= b)]],
     ["==", [{
-        lcheck : (x: Value): boolean => true, // All values pass this check.
+        lcheck : (): boolean => true, // All values pass this check.
         op : makeBinOp((x: Value): Value => x,
             (x: Value): Value => x,
             (a: Value, b: Value): boolean => Checks.isEqual(a, b)),
-        rcheck : (x: Value): boolean => true, // All values pass this check.
+        rcheck : (): boolean => true, // All values pass this check.
     }]],
     ["!=", [{
-        lcheck : (x: Value): boolean => true, // All values pass this check.
+        lcheck : (): boolean => true, // All values pass this check.
         op : makeBinOp((x: Value): Value => x, // All values get asserted fine.
             (x: Value): Value => x,
             (a: Value, b: Value): boolean => !Checks.isEqual(a, b)),
-        rcheck : (x: Value): boolean => true, // All values pass this check.
+        rcheck : (): boolean => true, // All values pass this check.
     }]],
 ]);
 
@@ -314,7 +314,7 @@ const asgnOpTable: Map<string, AsgnOpEntry[]> = new Map([
     ]],
 ]);
 
-export function evalAsgnOp(ref: Ref, cur: Value, dv: Value, op: string) {
+export function evalAsgnOp(ref: Ref, cur: Value, dv: Value, op: string): void {
     const g = asgnOpTable.get(op);
     if (g) {
         for (const x of g) {

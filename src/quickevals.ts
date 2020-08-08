@@ -1,10 +1,10 @@
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
-import { RuntimeError, tagErrorLoc } from "./error";
+import { tagErrorLoc } from "./error";
 import { Context } from "./ctx";
-import { PosInfo, CSArgs, ListLit, GniomhExpr, ObjLookups, Postfix, PostOp, PostOp_2, Prefix } from "./gen_parser";
+import { PosInfo, CSArgs, ListLit, GniomhExpr, ObjLookups, Postfix, Prefix } from "./gen_parser";
 import { unescapeChars } from "./teacs";
-import { callFunc, idxList, qIdxList, Value } from "./values";
+import { qIdxList, Value } from "./values";
 import { getAttr } from "./obj";
 import { GníomhImpl } from "./gniomh";
 
@@ -30,7 +30,7 @@ export function qGníomhEval(gn: GniomhExpr): EvalFn {
 
 export function qTéacsEval(lit: string, start: PosInfo, end: PosInfo): EvalFn {
     let x: null | string = null;
-    return (ctx: Context) => {
+    return () => {
         if(x !== null)
             return x;
         try {
@@ -43,12 +43,12 @@ export function qTéacsEval(lit: string, start: PosInfo, end: PosInfo): EvalFn {
 
 export function qIntEval(lit: string): EvalFn {
     const x = parseFloat(lit);
-    return (ctx: Context) => x;
+    return () => x;
 }
 
 export function qBoolEval(lit: string): EvalFn {
     const x = lit === "fior" || lit === "fíor";
-    return (ctx: Context) => x;
+    return () => x;
 }
 
 export function qIdEval(id: string, start: PosInfo, end: PosInfo): EvalFn {

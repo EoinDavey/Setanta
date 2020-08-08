@@ -1,13 +1,12 @@
 import * as Asserts from "./asserts";
 import { evalAsgnOp } from "./binops";
 import * as Checks from "./checks";
-import { Creatlach, CreatlachImpl } from "./creatlach";
-import { tagErrorLoc, RuntimeError, undefinedError } from "./error";
+import { CreatlachImpl } from "./creatlach";
+import { tagErrorLoc, RuntimeError } from "./error";
 import * as P from "./gen_parser";
 import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
-import { Stmt, Callable, callFunc, Comparable,
-    goTéacs, idxList, ObjIntf, Ref, TypeCheck, Value } from "./values";
+import { Stmt, goTéacs, ObjIntf, Ref, Value } from "./values";
 import { Context } from "./ctx";
 import { BrisException, CCException, SKIP_COUNT_LIM, STOP } from "./consts";
 
@@ -58,9 +57,9 @@ function execStmt(st: Stmt, ctx: Context): Promise<void> {
         case ASTKinds.ToradhStmt:
             return execToradhStmt(st, ctx);
         case ASTKinds.CCStmt:
-            return execCCStmt(st);
+            return execCCStmt();
         case ASTKinds.BrisStmt:
-            return execBrisStmt(st);
+            return execBrisStmt();
         case ASTKinds.CtlchStmt:
             return Promise.resolve(execCtlchStmt(st, ctx));
         default:
@@ -125,9 +124,9 @@ function refAtom(a: P.Atom, ctx: Context): Promise<Ref> {
     });
 }
 
-function execCCStmt(b: P.CCStmt): Promise<void> { return Promise.reject(CCException); }
+function execCCStmt(): Promise<void> { return Promise.reject(CCException); }
 
-function execBrisStmt(b: P.BrisStmt): Promise<void> { return Promise.reject(BrisException); }
+function execBrisStmt(): Promise<void> { return Promise.reject(BrisException); }
 
 function execCtlchStmt(b: P.CtlchStmt, ctx: Context) {
     const gníomhs = new Map<string, Gníomh>();
@@ -168,7 +167,7 @@ function execGniomhStmt(fn: P.GniomhStmt, ctx: Context): Promise<void> {
 }
 
 async function execNuair(n: P.NuairStmt, ctx: Context): Promise<void> {
-    while (true) {
+    for(;;){
         const x = await n.expr.evalfn(ctx);
         if (!Checks.isTrue(x)) {
             break;

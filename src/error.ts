@@ -30,7 +30,6 @@ export function tagErrorLoc(r: Error, start: PosInfo, end: PosInfo): Error {
 const whitespaceRegex = "(?:\\s|>--(?:(?!--<).)*(--<|\\n|$))";
 const identifierRegex = "[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*";
 const boolRegex = "f[ií]or|br[eé]ag";
-const nuairaRegex = "nuair-a";
 
 export function syntaxErrString(err: SyntaxErr): string {
     // remove the whitespace regex match because it's confusing to be displayed

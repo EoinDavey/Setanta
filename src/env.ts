@@ -22,16 +22,16 @@ export class Environment {
     }
 
     public get(id: string): Value {
-        if (this.values.has(id)) {
-            return this.values.get(id)!;
+        const lookup = this.values.get(id);
+        if (lookup !== undefined) {
+            return lookup;
         }
-        if (this.enclosing) {
+        if (this.enclosing)
             return this.enclosing.get(id);
-        }
         throw undefinedError(id);
     }
 
-    public assign(id: string, val: Value) {
+    public assign(id: string, val: Value): void {
         if (this.values.has(id)) {
             this.values.set(id, val);
             return;
@@ -43,7 +43,7 @@ export class Environment {
         throw undefinedError(id);
     }
 
-    public define(id: string, val: Value) {
+    public define(id: string, val: Value): void {
         this.values.set(id, val);
     }
 }

@@ -28,17 +28,17 @@ export class Context {
             this._rejectPool = [new Set()];
         }
     }
-    public get skipCnt() {
+    public get skipCnt(): number {
         return this._skipCnt[0];
     }
     public set skipCnt(n: number) {
         this._skipCnt[0] = n;
     }
 
-    public get stopped() {
+    public get stopped(): boolean {
         return this._stopped[0];
     }
-    public stop() {
+    public stop(): void {
         this._stopped[0] = true;
         for(const fn of this.rejectPool) {
             fn(STOP);
@@ -46,13 +46,13 @@ export class Context {
         this.rejectPool.clear();
     }
 
-    public get rejectPool() {
+    public get rejectPool(): Set<(s: STOPType) => void> {
         return this._rejectPool[0];
     }
-    public addRejectFn(fn: (s: STOPType) => void) {
+    public addRejectFn(fn: (s: STOPType) => void): void {
         this._rejectPool[0].add(fn);
     }
-    public removeRejectFn(fn: (s: STOPType) => void) {
+    public removeRejectFn(fn: (s: STOPType) => void): void {
         this._rejectPool[0].delete(fn);
     }
 }

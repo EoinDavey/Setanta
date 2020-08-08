@@ -16,15 +16,15 @@ test("test goTéacs", () => {
         { v : [[1, true], ["bréag", []]], exp : "[[1, fíor], [bréag, []]]" },
         {
             exp : "< gníomh id >",
-            v : { ainm: "id", arity: () => 0, call: (a: Value[]) => Promise.resolve(null) },
+            v : { ainm: "id", arity: () => 0, call: () => Promise.resolve(null) },
         },
         {
             exp : "< gníomh  >",
-            v : { ainm: "", arity: () => 0, call: (a: Value[]) => Promise.resolve(null) },
+            v : { ainm: "", arity: () => 0, call: () => Promise.resolve(null) },
         },
         {
             exp : "< gníomh gníomh >",
-            v : { ainm: "gníomh", arity: () => 0, call: (a: Value[]) => Promise.resolve(null) },
+            v : { ainm: "gníomh", arity: () => 0, call: () => Promise.resolve(null) },
         },
     ];
     for (const c of cases) {
