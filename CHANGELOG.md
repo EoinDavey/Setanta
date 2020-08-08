@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0 - 2020/07/22
+
+### Added
+
+- Add `fan` action
+
 ## 0.7.0 - 2020/07/22
 
 ### Fixes
