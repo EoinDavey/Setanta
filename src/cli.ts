@@ -207,11 +207,10 @@ function parseCommands(): boolean {
 function main(): Promise<void> {
     if(parseCommands())
         return Promise.resolve();
-    if (pargs.length === 1) {
+    if (pargs.length === 1)
         return runFile();
-    } else if (pargs.length === 0) {
+    if (pargs.length === 0)
         return repl();
-    }
     console.error(usage);
     return Promise.resolve();
 }

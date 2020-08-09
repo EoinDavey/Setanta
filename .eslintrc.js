@@ -9,7 +9,13 @@ module.exports = {
         'plugin:@typescript-eslint/recommended',
     ],
     rules: {
-        eqeqeq: ["error", "always"]
+        "eqeqeq": ["error", "always"],
+        "no-promise-executor-return": "error",
+        "no-template-curly-in-string": "error",
+        "no-else-return": ["error", {allowElseIf: false}],
+        "no-eval": "error",
+        "no-implied-eval": "error",
+        "no-loop-func": "error",
     },
     overrides: [
         {
