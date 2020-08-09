@@ -3,11 +3,11 @@ import * as Checks from "./checks";
 import { Context } from "./ctx";
 import { RuntimeError, tagErrorLoc } from "./error";
 import { EvalFn } from "./evals";
-import { PosInfo, And, Or } from "./gen_parser";
+import { And, Or, PosInfo } from "./gen_parser";
 import { cat, repeat } from "./liosta";
 import { strcat, strrep } from "./teacs";
-import { IsQuick, isQuick, MaybeEv as MaybeQuickEv } from "./quickevals";
-import { Comparable, goTéacs, Ref, TypeCheck, Value } from "./values";
+import { IsQuick, MaybeEv as MaybeQuickEv, isQuick } from "./quickevals";
+import { Comparable, Ref, TypeCheck, Value, goTéacs } from "./values";
 
 interface IEvalable {evalfn: EvalFn; qeval: MaybeQuickEv; }
 
@@ -155,16 +155,16 @@ function makeBinOp<L extends Value, R extends Value>(lassert: (v: Value) => L,
 
 function numBinOpEntry(f: (a: number, b: number) => Value): BinOpEntry {
     return {
-        lcheck : Checks.isNumber,
-        op : makeBinOp(Asserts.assertNumber, Asserts.assertNumber, f),
+        lcheck: Checks.isNumber,
+        op: makeBinOp(Asserts.assertNumber, Asserts.assertNumber, f),
         rcheck: Checks.isNumber,
     };
 }
 
 function compBinOpEntry(f: (a: Comparable, b: Comparable) => Value): BinOpEntry {
     return {
-        lcheck : Checks.isComparable,
-        op : makeBinOp(Asserts.assertComparable, Asserts.assertComparable, f),
+        lcheck: Checks.isComparable,
+        op: makeBinOp(Asserts.assertComparable, Asserts.assertComparable, f),
         rcheck: Checks.isComparable,
     };
 }
@@ -173,28 +173,28 @@ const binOpTable: Map<string, BinOpEntry[]> = new Map([
     ["+", [
         numBinOpEntry((a, b) => a + b),
         {
-            lcheck : Checks.isLiosta,
-            op : makeBinOp(Asserts.assertLiosta, Asserts.assertLiosta, cat),
-            rcheck : Checks.isLiosta,
+            lcheck: Checks.isLiosta,
+            op: makeBinOp(Asserts.assertLiosta, Asserts.assertLiosta, cat),
+            rcheck: Checks.isLiosta,
         },
         {
-            lcheck : Checks.isTéacs,
-            op : makeBinOp(Asserts.assertTéacs, Asserts.assertTéacs, strcat),
-            rcheck : Checks.isTéacs,
+            lcheck: Checks.isTéacs,
+            op: makeBinOp(Asserts.assertTéacs, Asserts.assertTéacs, strcat),
+            rcheck: Checks.isTéacs,
         },
     ]],
     ["-", [numBinOpEntry((a, b) => a - b)]],
     ["*", [
         numBinOpEntry((a, b) => a * b),
         {
-            lcheck : Checks.isLiosta,
-            op : makeBinOp(Asserts.assertLiosta, Asserts.assertNumber, repeat),
-            rcheck : Checks.isNumber,
+            lcheck: Checks.isLiosta,
+            op: makeBinOp(Asserts.assertLiosta, Asserts.assertNumber, repeat),
+            rcheck: Checks.isNumber,
         },
         {
-            lcheck : Checks.isTéacs,
-            op : makeBinOp(Asserts.assertTéacs, Asserts.assertNumber, strrep),
-            rcheck : Checks.isNumber,
+            lcheck: Checks.isTéacs,
+            op: makeBinOp(Asserts.assertTéacs, Asserts.assertNumber, strrep),
+            rcheck: Checks.isNumber,
         },
     ]],
     ["%", [numBinOpEntry((a, b) => {
@@ -221,18 +221,18 @@ const binOpTable: Map<string, BinOpEntry[]> = new Map([
     ["<=", [compBinOpEntry((a, b) => a <= b)]],
     [">=", [compBinOpEntry((a, b) => a >= b)]],
     ["==", [{
-        lcheck : (x: Value): boolean => true, // All values pass this check.
-        op : makeBinOp((x: Value): Value => x,
+        lcheck: (): boolean => true, // All values pass this check.
+        op: makeBinOp((x: Value): Value => x,
             (x: Value): Value => x,
             (a: Value, b: Value): boolean => Checks.isEqual(a, b)),
-        rcheck : (x: Value): boolean => true, // All values pass this check.
+        rcheck: (): boolean => true, // All values pass this check.
     }]],
     ["!=", [{
-        lcheck : (x: Value): boolean => true, // All values pass this check.
-        op : makeBinOp((x: Value): Value => x, // All values get asserted fine.
+        lcheck: (): boolean => true, // All values pass this check.
+        op: makeBinOp((x: Value): Value => x, // All values get asserted fine.
             (x: Value): Value => x,
             (a: Value, b: Value): boolean => !Checks.isEqual(a, b)),
-        rcheck : (x: Value): boolean => true, // All values pass this check.
+        rcheck: (): boolean => true, // All values pass this check.
     }]],
 ]);
 
@@ -265,8 +265,8 @@ function makeAsgnOp<L extends Value, R extends Value>(lassert: (v: Value) => L,
 
 function numAsgnOpEntry(f: (a: number, b: number) => Value): AsgnOpEntry {
     return {
-        lcheck : Checks.isNumber,
-        op : makeAsgnOp(Asserts.assertNumber, Asserts.assertNumber, f),
+        lcheck: Checks.isNumber,
+        op: makeAsgnOp(Asserts.assertNumber, Asserts.assertNumber, f),
         rcheck: Checks.isNumber,
     };
 }
@@ -314,7 +314,7 @@ const asgnOpTable: Map<string, AsgnOpEntry[]> = new Map([
     ]],
 ]);
 
-export function evalAsgnOp(ref: Ref, cur: Value, dv: Value, op: string) {
+export function evalAsgnOp(ref: Ref, cur: Value, dv: Value, op: string): void {
     const g = asgnOpTable.get(op);
     if (g) {
         for (const x of g) {

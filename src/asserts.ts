@@ -1,6 +1,6 @@
 import * as Checks from "./checks";
 import { RuntimeError } from "./error";
-import { Obj, Callable, Comparable, goTéacs, ObjIntf, Value } from "./values";
+import { Callable, Comparable, Obj, ObjIntf, Value, goTéacs } from "./values";
 
 export function assertNumber(x: Value): number {
     if (Checks.isNumber(x)) {

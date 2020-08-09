@@ -1,6 +1,6 @@
 import { Gníomh } from "./gniomh";
 import { Rud } from "./rud";
-import { Callable, callFunc, Value } from "./values";
+import { Callable, Value, callFunc } from "./values";
 
 export interface Creatlach extends Callable {
     tuismitheoir: Creatlach | null;

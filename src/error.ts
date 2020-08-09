@@ -1,4 +1,4 @@
-import { SyntaxErr, PosInfo } from "./gen_parser";
+import { PosInfo, SyntaxErr } from "./gen_parser";
 export class RuntimeError extends Error {
     public msg: string;
     public start: PosInfo | null;
@@ -30,7 +30,6 @@ export function tagErrorLoc(r: Error, start: PosInfo, end: PosInfo): Error {
 const whitespaceRegex = "(?:\\s|>--(?:(?!--<).)*(--<|\\n|$))";
 const identifierRegex = "[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*";
 const boolRegex = "f[ií]or|br[eé]ag";
-const nuairaRegex = "nuair-a";
 
 export function syntaxErrString(err: SyntaxErr): string {
     // remove the whitespace regex match because it's confusing to be displayed
@@ -59,5 +58,5 @@ export function syntaxErrString(err: SyntaxErr): string {
         return `Eisceacht ar líne ${err.pos.line}: Suíomh ${err.pos.offset}: Ag súil le ainm`;
     }
 
-    return `Eisceacht ar líne ${err.pos.line}: Suíomh ${err.pos.offset}: Ag súil le ceann de: ${matches}`
+    return `Eisceacht ar líne ${err.pos.line}: Suíomh ${err.pos.offset}: Ag súil le ceann de: ${matches}`;
 }

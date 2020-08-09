@@ -1,5 +1,4 @@
 import { getGlobalBuiltins } from "./builtins";
-import { Environment } from "./env";
 import { Value } from "./values";
 import { Context } from "./ctx";
 import { Program } from "./gen_parser";
@@ -16,7 +15,7 @@ export class Interpreter {
             externals(this.global).forEach(ext =>
                 ext[0].forEach(a => this.global.env.define(a, ext[1])));
     }
-    public stop() {
+    public stop(): void {
         this.global.stop();
     }
     public interpret(p: Program): Promise<void> {

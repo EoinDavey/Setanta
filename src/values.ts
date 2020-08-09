@@ -1,8 +1,8 @@
+import { RuntimeError } from "./error";
+import { AsgnStmt, NonAsgnStmt } from "./gen_parser";
+
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
-import { RuntimeError } from "./error";
-import { AsgnStmt, ID, NonAsgnStmt } from "./gen_parser";
-import { Interpreter } from "./i10r";
 
 export type Value = number | boolean | Callable | null | Value[] | string | ObjIntf;
 
@@ -75,7 +75,7 @@ export class ObjIntfWrap implements ObjIntf {
     public getAttr(id: string): Value {
         return this.attrs.get(id) || null;
     }
-    public setAttr(id: string, v: Value) {
+    public setAttr(): void {
         throw new RuntimeError(`Ní feidir leat ${goTéacs(this)} a athrú`);
     }
 }

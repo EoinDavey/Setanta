@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import * as readline from "readline";
 import * as Asserts from "./asserts";
-import { syntaxErrString, RuntimeError } from "./error";
-import { SyntaxErr, PosInfo, ParseResult, ASTKinds, Parser } from "./gen_parser";
+import { RuntimeError, syntaxErrString } from "./error";
+import { ASTKinds, Parser, PosInfo, SyntaxErr } from "./gen_parser";
 import { Interpreter } from "./i10r";
-import { goTéacs, Value } from "./values";
+import { Value, goTéacs } from "./values";
 import { STOP } from "./consts";
 import { Context } from "./ctx";
 
@@ -20,7 +20,7 @@ function printError(r: RuntimeError, source: string) {
         const sourceLines = source.split('\n');
         console.error(`Eisceacht: ${r.msg}`);
         for(let i = r.start.line; i <= r.end.line; i++)
-            console.error(`Líne ${i}: ${sourceLines[i-1]}`);
+            console.error(`Líne ${i}: ${sourceLines[i - 1]}`);
     } else if(r.start && r.end) {
         console.error(`Suíomh [${r.start.line}:${r.start.offset} - ${r.end.line}:${r.end.offset}]: Eisceacht: ${r.msg}`);
     } else if(r.start) {
@@ -35,8 +35,8 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
         [
             ["scríobh", "scriobh"], {
                 ainm: "scríobh",
-                arity : () => -1,
-                call : async (args: Value[]): Promise<string|null> => {
+                arity: () => -1,
+                call: async (args: Value[]): Promise<string|null> => {
                     console.log(...args.map(goTéacs));
                     return null;
                 },
@@ -45,8 +45,8 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
         [
             ["ceist"], {
                 ainm: "ceist",
-                arity : () => 1,
-                call : (args: Value[]): Promise<string|null> => {
+                arity: () => 1,
+                call: (args: Value[]): Promise<string|null> => {
                     process.stdout.write(Asserts.assertTéacs(args[0]));
                     return léighfn(ctx);
                 },
@@ -55,10 +55,8 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
         [
             ["léigh_líne", "léigh_line", "léigh_líne", "leigh_line"], {
                 ainm: "léigh_líne",
-                arity : () => 0,
-                call : (args: Value[]): Promise<Value> => {
-                    return léighfn(ctx);
-                },
+                arity: () => 0,
+                call: () => léighfn(ctx),
             },
         ],
     ];
@@ -67,7 +65,7 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
 async function getFullInput(getLine: () => Promise<string|null>,
     continuance: () => Promise<string|null>): Promise<string|SyntaxErr> {
     let prev = "";
-    while(true) {
+    for(;;) {
         const inpFn = prev === "" ? getLine : continuance;
         const inp = (await inpFn()) + '\n';
         if(inp === null)
@@ -93,10 +91,10 @@ async function repl() {
             ctx.addRejectFn(rej);
             rl.question("", (resp) => {
                 ctx.removeRejectFn(rej);
-                acc(resp)
+                acc(resp);
             });
-        })
-    }
+        });
+    };
     const getLine = (): Promise<string|null> => {
         return new Promise((r) => {
             rl.question("᚛ ", (resp) => r(resp));
@@ -104,11 +102,11 @@ async function repl() {
     };
     const continuance = (): Promise<string|null> => {
         return new Promise((r) => rl.question("...", r));
-    }
+    };
     const i = new Interpreter(getExternals(léighLíne));
     let soFar = "";
     let prevPos: PosInfo = {overallPos: 0, line: 1, offset: 0};
-    while (true) {
+    for(;;) {
         if(i.global.stopped)
             break;
         const input = await getFullInput(getLine, continuance);
@@ -122,9 +120,13 @@ async function repl() {
         const res = parser.parse();
 
         // Ignore that mark is private, for now - TODO fix this in tsPEG
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         prevPos = parser.mark();
-        const ast = res.ast!;
+        if (res.ast === null) {
+            return Promise.reject(`Parser failure: ${res.err}`);
+        }
+        const ast = res.ast;
         try {
             // This is an expression, we can print the result
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
@@ -152,10 +154,13 @@ async function runFile() {
         process.exitCode = 1;
         return;
     }
+    if (res.ast === null) {
+        throw new Error("Unknown parser error: Serious failure");
+    }
     const rl: readline.Interface = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
-        terminal : false,
+        terminal: false,
     });
     const it: AsyncIterableIterator<string> = rl[Symbol.asyncIterator]();
     const léigh = (ctx: Context): Promise<string|null> => {
@@ -163,14 +168,14 @@ async function runFile() {
             ctx.addRejectFn(rej);
             it.next().then(next => {
                 ctx.removeRejectFn(rej);
-                return next.done ? acc(null) : acc(next.value)
-            })
+                return next.done ? acc(null) : acc(next.value);
+            });
         });
     };
     const i = new Interpreter(getExternals(léigh));
 
     try {
-        await i.interpret(res.ast!);
+        await i.interpret(res.ast);
     } catch (err) {
         if (err instanceof RuntimeError) {
             printError(err, inFile);
@@ -202,11 +207,10 @@ function parseCommands(): boolean {
 function main(): Promise<void> {
     if(parseCommands())
         return Promise.resolve();
-    if (pargs.length === 1) {
+    if (pargs.length === 1)
         return runFile();
-    } else if (pargs.length === 0) {
+    if (pargs.length === 0)
         return repl();
-    }
     console.error(usage);
     return Promise.resolve();
 }
