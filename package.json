@@ -4,8 +4,10 @@
   "description": "Setanta Irish Programming Language",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest && eslint --ext .ts --max-warnings=0 src/",
     "full-test": "jest && ./rundemos.sh",
+    "lint": "eslint",
+    "lint-all": "eslint --ext .ts src/",
     "gen": "tspeg src/grammar.gram src/gen_parser.ts",
     "build": "tspeg src/grammar.gram src/gen_parser.ts && tsc --declaration",
     "clean": "rm -rf node_build/ && rm -rf docs/_site/",

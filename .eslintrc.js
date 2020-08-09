@@ -8,6 +8,9 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
   ],
+  rules: {
+      eqeqeq: ["error", "always"]
+  },
   overrides: [
       {
           // Disabling non-null assertions checks in tests because we are asserting
