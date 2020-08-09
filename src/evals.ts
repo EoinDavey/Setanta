@@ -1,9 +1,9 @@
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { Context } from "./ctx";
-import { CSArgs, ObjLookups, Postfix, PostOp, Prefix } from "./gen_parser";
+import { CSArgs, ObjLookups, PostOp, Postfix, Prefix } from "./gen_parser";
 import * as Quick from "./quickevals";
-import { callFunc, idxList, qIdxList, Value } from "./values";
+import { Value, callFunc, idxList, qIdxList } from "./values";
 import { tagErrorLoc } from "./error";
 import { getAttr } from "./obj";
 

@@ -1,5 +1,5 @@
 import { Creatlach } from "./creatlach";
-import { Obj, Callable, Comparable, ObjIntf, Value } from "./values";
+import { Callable, Comparable, Obj, ObjIntf, Value } from "./values";
 
 export function isTrue(v: Value): boolean {
     return v !== 0 && v !== false && v !== null;

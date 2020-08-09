@@ -1,5 +1,5 @@
-import { goTéacs, Value, Obj } from "./values";
-import { isTéacs, isLiosta } from "./checks";
+import { Obj, Value, goTéacs } from "./values";
+import { isLiosta, isTéacs } from "./checks";
 import { RuntimeError } from "./error";
 import { liostaBuiltins, téacsBuiltins } from "./builtins";
 

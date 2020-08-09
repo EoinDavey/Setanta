@@ -2,7 +2,7 @@ import { Context } from "./ctx";
 import { RuntimeError } from "./error";
 import { Rud } from "./rud";
 import { Callable, Stmt, Value } from "./values";
-import { execStmts, Toradh } from "./execs";
+import { Toradh, execStmts } from "./execs";
 import { BrisException } from "./consts";
 
 export interface Gníomh extends Callable {

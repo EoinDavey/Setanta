@@ -2,11 +2,11 @@ import * as Asserts from "./asserts";
 import { evalAsgnOp } from "./binops";
 import * as Checks from "./checks";
 import { CreatlachImpl } from "./creatlach";
-import { tagErrorLoc, RuntimeError } from "./error";
+import { RuntimeError, tagErrorLoc } from "./error";
 import * as P from "./gen_parser";
 import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
-import { Stmt, goTéacs, ObjIntf, Ref, Value } from "./values";
+import { ObjIntf, Ref, Stmt, Value, goTéacs } from "./values";
 import { Context } from "./ctx";
 import { BrisException, CCException, SKIP_COUNT_LIM, STOP } from "./consts";
 

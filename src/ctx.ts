@@ -1,5 +1,5 @@
 import { Environment } from "./env";
-import { STOPType, STOP } from "./consts";
+import { STOP, STOPType } from "./consts";
 
 export class Context {
     // We use single element arrays (tuples in TS) here to hold these values so that

@@ -1,6 +1,6 @@
 import { Creatlach } from "./creatlach";
 import { RuntimeError } from "./error";
-import { goTéacs, ObjIntf, Value } from "./values";
+import { ObjIntf, Value, goTéacs } from "./values";
 
 export class Rud implements ObjIntf {
     public ainm: string;

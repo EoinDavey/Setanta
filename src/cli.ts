@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import * as readline from "readline";
 import * as Asserts from "./asserts";
-import { syntaxErrString, RuntimeError } from "./error";
-import { SyntaxErr, PosInfo, ASTKinds, Parser } from "./gen_parser";
+import { RuntimeError, syntaxErrString } from "./error";
+import { ASTKinds, Parser, PosInfo, SyntaxErr } from "./gen_parser";
 import { Interpreter } from "./i10r";
-import { goTéacs, Value } from "./values";
+import { Value, goTéacs } from "./values";
 import { STOP } from "./consts";
 import { Context } from "./ctx";
 
@@ -20,7 +20,7 @@ function printError(r: RuntimeError, source: string) {
         const sourceLines = source.split('\n');
         console.error(`Eisceacht: ${r.msg}`);
         for(let i = r.start.line; i <= r.end.line; i++)
-            console.error(`Líne ${i}: ${sourceLines[i-1]}`);
+            console.error(`Líne ${i}: ${sourceLines[i - 1]}`);
     } else if(r.start && r.end) {
         console.error(`Suíomh [${r.start.line}:${r.start.offset} - ${r.end.line}:${r.end.offset}]: Eisceacht: ${r.msg}`);
     } else if(r.start) {
@@ -35,8 +35,8 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
         [
             ["scríobh", "scriobh"], {
                 ainm: "scríobh",
-                arity : () => -1,
-                call : async (args: Value[]): Promise<string|null> => {
+                arity: () => -1,
+                call: async (args: Value[]): Promise<string|null> => {
                     console.log(...args.map(goTéacs));
                     return null;
                 },
@@ -45,8 +45,8 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
         [
             ["ceist"], {
                 ainm: "ceist",
-                arity : () => 1,
-                call : (args: Value[]): Promise<string|null> => {
+                arity: () => 1,
+                call: (args: Value[]): Promise<string|null> => {
                     process.stdout.write(Asserts.assertTéacs(args[0]));
                     return léighfn(ctx);
                 },
@@ -55,8 +55,8 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
         [
             ["léigh_líne", "léigh_line", "léigh_líne", "leigh_line"], {
                 ainm: "léigh_líne",
-                arity : () => 0,
-                call : () => léighfn(ctx)
+                arity: () => 0,
+                call: () => léighfn(ctx),
             },
         ],
     ];
@@ -91,10 +91,10 @@ async function repl() {
             ctx.addRejectFn(rej);
             rl.question("", (resp) => {
                 ctx.removeRejectFn(rej);
-                acc(resp)
+                acc(resp);
             });
-        })
-    }
+        });
+    };
     const getLine = (): Promise<string|null> => {
         return new Promise((r) => {
             rl.question("᚛ ", (resp) => r(resp));
@@ -102,7 +102,7 @@ async function repl() {
     };
     const continuance = (): Promise<string|null> => {
         return new Promise((r) => rl.question("...", r));
-    }
+    };
     const i = new Interpreter(getExternals(léighLíne));
     let soFar = "";
     let prevPos: PosInfo = {overallPos: 0, line: 1, offset: 0};
@@ -155,12 +155,12 @@ async function runFile() {
         return;
     }
     if (res.ast === null) {
-        throw new Error("Unknown parser error: Serious failure")
+        throw new Error("Unknown parser error: Serious failure");
     }
     const rl: readline.Interface = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
-        terminal : false,
+        terminal: false,
     });
     const it: AsyncIterableIterator<string> = rl[Symbol.asyncIterator]();
     const léigh = (ctx: Context): Promise<string|null> => {
@@ -168,8 +168,8 @@ async function runFile() {
             ctx.addRejectFn(rej);
             it.next().then(next => {
                 ctx.removeRejectFn(rej);
-                return next.done ? acc(null) : acc(next.value)
-            })
+                return next.done ? acc(null) : acc(next.value);
+            });
         });
     };
     const i = new Interpreter(getExternals(léigh));

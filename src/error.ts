@@ -1,4 +1,4 @@
-import { SyntaxErr, PosInfo } from "./gen_parser";
+import { PosInfo, SyntaxErr } from "./gen_parser";
 export class RuntimeError extends Error {
     public msg: string;
     public start: PosInfo | null;
@@ -58,5 +58,5 @@ export function syntaxErrString(err: SyntaxErr): string {
         return `Eisceacht ar líne ${err.pos.line}: Suíomh ${err.pos.offset}: Ag súil le ainm`;
     }
 
-    return `Eisceacht ar líne ${err.pos.line}: Suíomh ${err.pos.offset}: Ag súil le ceann de: ${matches}`
+    return `Eisceacht ar líne ${err.pos.line}: Suíomh ${err.pos.offset}: Ag súil le ceann de: ${matches}`;
 }

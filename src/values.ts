@@ -1,7 +1,8 @@
-import * as Asserts from "./asserts";
-import * as Checks from "./checks";
 import { RuntimeError } from "./error";
 import { AsgnStmt, NonAsgnStmt } from "./gen_parser";
+
+import * as Asserts from "./asserts";
+import * as Checks from "./checks";
 
 export type Value = number | boolean | Callable | null | Value[] | string | ObjIntf;
 

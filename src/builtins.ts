@@ -2,7 +2,7 @@ import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { RuntimeError } from "./error";
 import { athchuir } from "./teacs";
-import { ObjIntfWrap, Callable, callFunc, goTéacs, Value } from "./values";
+import { Callable, ObjIntfWrap, Value, callFunc, goTéacs } from "./values";
 import { Context } from "./ctx";
 import { STOPType } from "./consts";
 
@@ -14,8 +14,8 @@ function mathWrap(ainm: string, fn: (x: number) => number): Callable {
         call: (args: Value[]) => {
             const x = Asserts.assertNumber(args[0]);
             return Promise.resolve(fn(x));
-        }
-    }
+        },
+    };
 }
 
 function sleepPromise(ctx: Context, time: number): Promise<null> {
@@ -26,12 +26,12 @@ function sleepPromise(ctx: Context, time: number): Promise<null> {
         const rfn = (s: STOPType) => {
             clearTimeout(id);
             reject(s);
-        }
+        };
 
         // We have to cast to any here as Node doesn't use a number as a timeout id
         /* eslint-disable @typescript-eslint/no-explicit-any */
         id = (setTimeout(() => {
-            accept(null)
+            accept(null);
             ctx.removeRejectFn(rfn);
         }, time) as any);
         /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -47,8 +47,8 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             // Available as a separate function for legacy reasons
             "fad", {
                 ainm: "fad",
-                arity : () => 1,
-                call : async (args: Value[]): Promise<Value> => {
+                arity: () => 1,
+                call: async (args: Value[]): Promise<Value> => {
                     return Asserts.assertIndexable(args[0]).length;
                 },
             },
@@ -57,8 +57,8 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             // Thar takes a function f and returns the map of f over the liosta
             "thar", {
                 ainm: "thar",
-                arity : () => 2,
-                call : async (args: Value[]): Promise<Value> => {
+                arity: () => 2,
+                call: async (args: Value[]): Promise<Value> => {
                     const f = Asserts.assertCallable(args[0]);
                     const ls = Asserts.assertLiosta(args[1]);
                     return Promise.all(ls.map((x) => callFunc(f, [x])));
@@ -69,9 +69,9 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             // args[0]: (téacs | bool | uimhir)
             // go_uimh casts args[0] to a number
             "go_uimh", {
-                ainm : "go_uimh",
-                arity : () => 1,
-                call : (args: Value[]): Promise<number> => {
+                ainm: "go_uimh",
+                arity: () => 1,
+                call: (args: Value[]): Promise<number> => {
                     if (Checks.isTéacs(args[0]) || Checks.isBool(args[0]) || Checks.isNumber(args[0])) {
                         return Promise.resolve(Number(args[0]));
                     }
@@ -83,9 +83,9 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             // args[0]: any
             // go_téacs casts args[0] to a string
             "go_téacs", {
-                ainm : "go_téacs",
-                arity : () => 1,
-                call : (args: Value[]): Promise<string> => {
+                ainm: "go_téacs",
+                arity: () => 1,
+                call: (args: Value[]): Promise<string> => {
                     if (Checks.isTéacs(args[0])) {
                         return Promise.resolve(args[0]);
                     }
@@ -97,9 +97,9 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             // args[0]: any
             // go_téacs casts args[0] to a string
             "go_teacs", {
-                ainm : "go_téacs",
-                arity : () => 1,
-                call : (args: Value[]): Promise<string> => {
+                ainm: "go_téacs",
+                arity: () => 1,
+                call: (args: Value[]): Promise<string> => {
                     if (Checks.isTéacs(args[0])) {
                         return Promise.resolve(args[0]);
                     }
@@ -111,9 +111,9 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             // args[0-1]: number
             // íos returns min of args[0], args[1]
             "íos", {
-                ainm : "íos",
-                arity : () => 2,
-                call : (args: Value[]): Promise<number> => {
+                ainm: "íos",
+                arity: () => 2,
+                call: (args: Value[]): Promise<number> => {
                     const a = Asserts.assertNumber(args[0]);
                     const b = Asserts.assertNumber(args[1]);
                     return Promise.resolve(Math.min(a, b));
@@ -124,9 +124,9 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             // args[0-1]: number
             // íos returns min of args[0], args[1]
             "ios", {
-                ainm : "íos",
-                arity : () => 2,
-                call : (args: Value[]): Promise<number> => {
+                ainm: "íos",
+                arity: () => 2,
+                call: (args: Value[]): Promise<number> => {
                     const a = Asserts.assertNumber(args[0]);
                     const b = Asserts.assertNumber(args[1]);
                     return Promise.resolve(Math.min(a, b));
@@ -137,9 +137,9 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             // args[0-1]: number
             // uas returns max of args[0], args[1]
             "uas", {
-                ainm : "uas",
-                arity : () => 2,
-                call : (args: Value[]): Promise<number> => {
+                ainm: "uas",
+                arity: () => 2,
+                call: (args: Value[]): Promise<number> => {
                     const a = Asserts.assertNumber(args[0]);
                     const b = Asserts.assertNumber(args[1]);
                     return Promise.resolve(Math.max(a, b));
@@ -174,16 +174,16 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
                 call: (): Promise<null> => {
                     ctx.stop();
                     return Promise.resolve(null);
-                }
-            }
+                },
+            },
         ],
         [
             "fan",
             {
                 ainm: "fan",
                 arity: () => 0,
-                call: () => new Promise<null>((_, rej) => ctx.addRejectFn(rej))
-            }
+                call: () => new Promise<null>((_, rej) => ctx.addRejectFn(rej)),
+            },
         ],
         [
             // Built in maths object
@@ -193,7 +193,7 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
                 [["e"], Math.E],
                 [
                     // Square function
-                    ["cearn"], mathWrap("cearn", x => x*x)
+                    ["cearn"], mathWrap("cearn", x => x * x),
                 ],
                 [
                     // Sqrt function
@@ -201,7 +201,7 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
                         if (x < 0)
                             throw new RuntimeError("Níl fréamh sainmhínithe le uimhir diúltach");
                         return Math.sqrt(x);
-                    })
+                    }),
                 ],
                 [["cos"],  mathWrap("cos", Math.cos)],
                 [["sin"], mathWrap("sin", Math.sin)],
@@ -218,12 +218,12 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
                             throw new RuntimeError(`Níl log(0) sainmhínithe`);
                         }
                         return Math.log(x);
-                    })
+                    }),
                 ],
                 [
                     // logB function
                     ["logb"], {
-                        ainm : "logb",
+                        ainm: "logb",
                         arity: () => 2,
                         call: (args: Value[]): Promise<number> => {
                             const x = Asserts.assertNumber(args[0]);
@@ -241,7 +241,7 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
                 [
                     // power function
                     ["cmhcht"], {
-                        ainm : "cmhcht",
+                        ainm: "cmhcht",
                         arity: () => 2,
                         call: (args: Value[]): Promise<number> => {
                             const x = Asserts.assertNumber(args[0]);
@@ -292,20 +292,20 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
 
 const téacsOpsList: [string, (s: string) => Value][] = [
     [
-        "fad", s => s.length
+        "fad", s => s.length,
     ],
     [
         "athchuir",
         (s: string) => {
             return {
                 ainm: "athchuir",
-                arity : () => 2,
-                call : async (args: Value[]) => {
+                arity: () => 2,
+                call: async (args: Value[]) => {
                     const b = Asserts.assertTéacs(args[0]);
                     const c = Asserts.assertTéacs(args[1]);
                     return athchuir(s, b, c);
                 },
-            }
+            };
         },
     ],
     [
@@ -314,12 +314,12 @@ const téacsOpsList: [string, (s: string) => Value][] = [
         "roinn", s => {
             return {
                 ainm: "roinn",
-                arity : () => 1,
-                call : async (args: Value[]): Promise<Value> => {
+                arity: () => 1,
+                call: async (args: Value[]): Promise<Value> => {
                     const b = Asserts.assertTéacs(args[0]);
                     return s.split(b);
                 },
-            }
+            };
         },
     ],
     [
@@ -328,13 +328,13 @@ const téacsOpsList: [string, (s: string) => Value][] = [
         "cuid", s => {
             return {
                 ainm: "cuid",
-                arity : () => 2,
-                call : async (args: Value[]): Promise<Value> => {
+                arity: () => 2,
+                call: async (args: Value[]): Promise<Value> => {
                     const l = Asserts.assertNumber(args[0]);
                     const r = Asserts.assertNumber(args[1]);
                     return s.substring(l, r);
                 },
-            }
+            };
         },
     ],
     [
@@ -342,9 +342,9 @@ const téacsOpsList: [string, (s: string) => Value][] = [
         "go_liosta", s => {
             return {
                 ainm: "go_liosta",
-                arity : () => 0,
-                call : () => Promise.resolve(s.split(""))
-            }
+                arity: () => 0,
+                call: () => Promise.resolve(s.split("")),
+            };
         },
     ],
 ];
@@ -352,24 +352,24 @@ export const téacsBuiltins = new Map(téacsOpsList);
 
 const liostaOpsList: [string, (ls: Value[]) => Value][] = [
     [
-        "fad", ls => ls.length
+        "fad", ls => ls.length,
     ],
     [
         "sórtáil", ls => {
             return {
                 ainm: "sórtáil",
-                arity : () => 0,
-                call : () => Promise.resolve(ls.sort())
-            }
+                arity: () => 0,
+                call: () => Promise.resolve(ls.sort()),
+            };
         },
     ],
     [
         "sortail", ls => {
             return {
                 ainm: "sórtáil",
-                arity : () => 0,
-                call : () => Promise.resolve(ls.sort())
-            }
+                arity: () => 0,
+                call: () => Promise.resolve(ls.sort()),
+            };
         },
     ],
     [
@@ -378,13 +378,13 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
         "cuid", ls => {
             return {
                 ainm: "cuid",
-                arity : () => 2,
-                call : async (args: Value[]): Promise<Value> => {
+                arity: () => 2,
+                call: async (args: Value[]): Promise<Value> => {
                     const l = Asserts.assertNumber(args[0]);
                     const r = Asserts.assertNumber(args[1]);
                     return ls.slice(l, r);
                 },
-            }
+            };
         },
     ],
     [
@@ -394,12 +394,12 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
         "nasc", ls => {
             return {
                 ainm: "nasc",
-                arity : () => 1,
-                call : async (args: Value[]): Promise<Value> => {
+                arity: () => 1,
+                call: async (args: Value[]): Promise<Value> => {
                     const a = Asserts.assertTéacs(args[0]);
                     return ls.map(goTéacs).join(a);
                 },
-            }
+            };
         },
     ],
 ];
