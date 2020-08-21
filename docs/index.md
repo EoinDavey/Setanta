@@ -11,6 +11,7 @@ Seo é an doiciméadacht Setanta. Is teanga ríomhchlárúcháin nua-aimseartha,
 - [Oscail an teagasc nua (Foghlaim Setanta + roinnt Gaeilge)](https://try-setanta.ie/tut/intro.html)
 - [Oscail an sean teagasc (as Gaeilge)](/gaeilge/01-tosaigh)
 - [Léigh an doiciméadacht](/ga-docs/00-tosaigh)
+- [Féach ar rang Setanta taifeadta (as Béarla)](https://youtu.be/qngHy1BJAF4)
 
 ## *Welcome!*
 
@@ -19,6 +20,7 @@ Seo é an doiciméadacht Setanta. Is teanga ríomhchlárúcháin nua-aimseartha,
 - [Open the new tutorial (learn Setanta + some Irish)](https://try-setanta.ie/tut/intro.html)
 - [Open the old tutorial](/english/01-start)
 - [Read the documentation](/en-docs/00-start)
+- [Watch a recorded Setanta class](https://youtu.be/qngHy1BJAF4)
 
 ## Cabhair / _Help_
 
