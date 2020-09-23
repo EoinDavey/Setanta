@@ -119,9 +119,6 @@ async function repl() {
         parser.reset(prevPos);
         const res = parser.parse();
 
-        // Ignore that mark is private, for now - TODO fix this in tsPEG
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         prevPos = parser.mark();
         if (res.ast === null) {
             return Promise.reject(`Parser failure: ${res.err}`);
