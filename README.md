@@ -38,6 +38,16 @@ NB: Níl mo chuid Gaeilge foirfe, má tá botún nó earráid éigin ar an suío
 
 *NB: My Irish is not perfect. If there are any mistakes or errors on that site, please send me an email at `eoind@vey.ie`, or send a PR to me on GitHub.*
 
+## CLI Úsáid
+
+- Clóscríobh `setanta` isteach sa teirminéal chun REPL a oscailt.
+- Clóscríobh `setanta <ainm comhad>` le comhad foinseach éigin chun an ríomhchlár a tosnú.
+
+## *CLI Usage*
+
+- *Type `setanta` into the terminal to open a REPL.*
+- *Type `setanta <file name>` with some source file to start the program.*
+
 ## Stair Setanta
 
 D'fhorbair mé Setanta mar chuid de mo thionscadal an bliana deiridh ag Ollscoil Mhá Nuad. Tá mo thráchtas le fheiceáil [anseo](https://github.com/EoinDavey/Setanta-site/raw/master/notes/out/final-report.pdf).
@@ -48,15 +58,6 @@ Rinne mé Setanta mar thug mé faoi deara go raibh beagnach gach teanga ríomhch
 - Chun an nasc idir Béarla agus na gnáth-theanga ríomhchláruchain a taiscéaladh. B'fhéidir go bhfuil naisc ann nach bhfuil soiléir.
 - Chun feabhas a chur ar mo chuid Gaeilge. Ní cainteoir dúchais mé, thóg mé an deis seo chun mo chuid Gaeilge a chleachtadh, agus a neartú.
 
-## CLI Úsáid
-
-- Clóscríobh `setanta` isteach sa teirminéal chun REPL a oscailt.
-- Clóscríobh `setanta <ainm comhad>` le comhad foinseach éigin chun an ríomhchlár a tosnú.
-
-## *CLI Usage*
-
-- *Type `setanta` into the terminal to open a REPL.*
-- *Type `setanta <file name>` with some source file to start the program.*
 
 ## *History of Setanta*
 
