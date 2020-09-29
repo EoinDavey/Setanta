@@ -4,10 +4,11 @@
   "description": "Setanta Irish Programming Language",
   "main": "index.js",
   "scripts": {
-    "test": "jest && eslint --ext .ts --max-warnings=0 src/",
-    "full-test": "jest && ./rundemos.sh",
+    "test": "jest && npm run lint-all-err",
+    "full-test": "npm run test && ./rundemos.sh",
     "lint": "eslint",
     "lint-all": "eslint --ext .ts src/",
+    "lint-all-err": "npm run lint-all -- --max-warnings=0",
     "gen": "tspeg src/grammar.gram src/gen_parser.ts",
     "build": "tspeg src/grammar.gram src/gen_parser.ts && tsc --declaration",
     "clean": "rm -rf node_build/ && rm -rf docs/_site/",
