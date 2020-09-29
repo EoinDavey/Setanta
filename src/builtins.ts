@@ -182,7 +182,7 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             {
                 ainm: "fan",
                 arity: () => 0,
-                call: () => new Promise<null>((_, rej) => ctx.addRejectFn(rej)),
+                call: () => new Promise<null>((_, rej) => { ctx.addRejectFn(rej); }),
             },
         ],
         [

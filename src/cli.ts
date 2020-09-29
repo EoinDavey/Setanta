@@ -101,7 +101,7 @@ async function repl() {
         });
     };
     const continuance = (): Promise<string|null> => {
-        return new Promise((r) => rl.question("...", r));
+        return new Promise(r => { rl.question("...", r); });
     };
     const i = new Interpreter(getExternals(léighLíne));
     let soFar = "";
