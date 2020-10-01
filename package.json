@@ -9,8 +9,8 @@
     "lint": "eslint",
     "lint-all": "eslint --ext .ts src/",
     "lint-all-err": "npm run lint-all -- --max-warnings=0",
-    "gen": "tspeg src/grammar.gram src/gen_parser.ts",
-    "build": "tspeg src/grammar.gram src/gen_parser.ts && tsc --declaration",
+    "gen": "tspeg src/grammar.peg src/gen_parser.ts",
+    "build": "npm run gen && tsc --declaration",
     "clean": "rm -rf node_build/ && rm -rf docs/_site/",
     "diff": "git diff -- . ':(exclude)src/gen_parser.ts'",
     "docs": "docker run --rm -it -v \"$PWD/docs:/srv/jekyll\" -v \"/tmp/gems:/usr/local/bundle\" -p 4000:4000 jekyll/jekyll:3.8 /bin/bash -c \"bundle update && bundle exec jekyll serve --host=0.0.0.0\""
