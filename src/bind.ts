@@ -1,6 +1,7 @@
 import { ASTKinds } from "./gen_parser";
 import * as P from "./gen_parser";
 import { Stmt } from "./values";
+import type { ASTVisitor } from "./visitor";
 
 enum VarState {
     DECLARED,
@@ -12,106 +13,110 @@ interface GniomhBody {
     stmts: Stmt[]
 }
 
-export class Binder {
+export class Binder implements ASTVisitor<void> {
     private scopes: Map<string, VarState>[] = [];
 
-    public bindStmts(stmts: Stmt[]): void {
-        for(const stmt of stmts)
-            this.bindStmt(stmt);
+    public visitProgram(p: P.Program): void {
+        return this.visitStmts(p.stmts);
     }
 
-    public bindStmt(stmt: Stmt): void {
+    public visitStmts(stmts: Stmt[]): void {
+        for(const stmt of stmts)
+            this.visitStmt(stmt);
+    }
+
+    public visitStmt(stmt: Stmt): void {
         switch (stmt.kind) {
             case ASTKinds.IfStmt:
-                return this.bindMá(stmt);
+                return this.visitIfStmt(stmt);
             case ASTKinds.BlockStmt:
-                return this.bindStmtBlock(stmt);
+                return this.visitBlockStmt(stmt);
             case ASTKinds.AssgnStmt:
-                return this.bindAssgn(stmt);
+                return this.visitAssgnStmt(stmt);
             case ASTKinds.DefnStmt:
-                return this.bindDefn(stmt);
+                return this.visitDefnStmt(stmt);
             case ASTKinds.NuairStmt:
-                return this.bindNuair(stmt);
+                return this.visitNuairStmt(stmt);
             case ASTKinds.LeStmt:
-                return this.bindLeStmt(stmt);
+                return this.visitLeStmt(stmt);
             case ASTKinds.GniomhStmt:
-                return this.bindGniomhStmt(stmt);
+                return this.visitGniomhStmt(stmt);
             case ASTKinds.ToradhStmt:
-                return this.bindToradhStmt(stmt);
+                return this.visitToradhStmt(stmt);
             case ASTKinds.CCStmt:
                 return;
             case ASTKinds.BrisStmt:
                 return;
             case ASTKinds.CtlchStmt:
-                return this.bindCtlchStmt(stmt);
+                return this.visitCtlchStmt(stmt);
             default:
-                return this.bindExpr(stmt);
+                return this.visitExpr(stmt);
         }
     }
 
-    public bindMá(stmt: P.IfStmt): void {
-        this.bindExpr(stmt.expr);
-        this.bindStmt(stmt.stmt);
+    public visitIfStmt(stmt: P.IfStmt): void {
+        this.visitExpr(stmt.expr);
+        this.visitStmt(stmt.stmt);
         if(stmt.elsebranch !== null)
-            this.bindStmt(stmt.elsebranch.stmt);
+            this.visitStmt(stmt.elsebranch.stmt);
     }
 
-    public bindStmtBlock(stmt: P.BlockStmt): void {
+    public visitBlockStmt(stmt: P.BlockStmt): void {
         this.enterScope();
-        this.bindStmts(stmt.blk);
+        this.visitStmts(stmt.blk);
         this.exitScope();
     }
 
-    public bindAssgn(stmt: P.AssgnStmt): void {
-        this.bindExpr(stmt.expr);
+    public visitAssgnStmt(stmt: P.AssgnStmt): void {
+        this.visitExpr(stmt.expr);
         // TODO Resolve ref (P.Postfix)
-        // this.bindExpr(stmt.lhs);
+        // this.visitExpr(stmt.lhs);
     }
 
-    public bindDefn(stmt: P.DefnStmt): void {
+    public visitDefnStmt(stmt: P.DefnStmt): void {
         // TODO check if defined in scope already
         this.declareVar(stmt.id.id);
-        this.bindExpr(stmt.expr);
+        this.visitExpr(stmt.expr);
         this.defineVar(stmt.id.id);
     }
 
-    public bindNuair(stmt: P.NuairStmt): void {
-        this.bindExpr(stmt.expr);
-        this.bindStmt(stmt.stmt);
+    public visitNuairStmt(stmt: P.NuairStmt): void {
+        this.visitExpr(stmt.expr);
+        this.visitStmt(stmt.stmt);
     }
 
-    public bindLeStmt(stmt: P.LeStmt): void {
+    public visitLeStmt(stmt: P.LeStmt): void {
         // Le-idir stmts create a new scope for the declaration of the
         // loop variable
         this.enterScope();
 
-        this.bindExpr(stmt.strt);
-        this.bindExpr(stmt.end);
+        this.visitExpr(stmt.strt);
+        this.visitExpr(stmt.end);
         if(stmt.step !== null)
-            this.bindExpr(stmt.step.step);
+            this.visitExpr(stmt.step.step);
 
         this.defineVar(stmt.id.id);
 
-        this.bindStmt(stmt.stmt);
+        this.visitStmt(stmt.stmt);
 
         this.exitScope();
     }
 
-    public bindGniomhStmt(stmt: P.GniomhStmt): void {
+    public visitGniomhStmt(stmt: P.GniomhStmt): void {
         this.defineVar(stmt.id.id);
-        this.bindGniomhBody(stmt);
+        this.visitGniomhBody(stmt);
     }
 
-    public bindToradhStmt(stmt: P.ToradhStmt): void {
+    public visitToradhStmt(stmt: P.ToradhStmt): void {
         if(stmt.exp)
-            this.bindExpr(stmt.exp);
+            this.visitExpr(stmt.exp);
     }
 
-    public bindCtlchStmt(stmt: P.CtlchStmt): void {
+    public visitCtlchStmt(stmt: P.CtlchStmt): void {
         this.defineVar(stmt.id.id);
         // TODO fix once expression resolution added
         /* if(stmt.tuis)
-            this.bindExpr(stmt.tuis.id);
+            this.visitExpr(stmt.tuis.id);
         */
 
         this.enterScope();
@@ -121,84 +126,88 @@ export class Binder {
             this.defineVar("tuis");
 
         for(const gniomh of stmt.gniomhs)
-            this.bindGniomhBody(gniomh);
+            this.visitGniomhBody(gniomh);
 
         this.exitScope();
     }
 
-    public bindExpr(expr: P.And): void {
-        this.bindOr(expr.head);
-        for(const tl of expr.tail)
-            this.bindOr(tl.trm);
+    public visitExpr(expr: P.Expr): void {
+        return this.visitAnd(expr);
     }
 
-    public bindOr(expr: P.Or): void {
-        this.bindEq(expr.head);
+    public visitAnd(expr: P.And): void {
+        this.visitOr(expr.head);
         for(const tl of expr.tail)
-            this.bindEq(tl.trm);
+            this.visitOr(tl.trm);
     }
 
-    public bindEq(expr: P.Eq): void {
-        this.bindComp(expr.head);
+    public visitOr(expr: P.Or): void {
+        this.visitEq(expr.head);
         for(const tl of expr.tail)
-            this.bindComp(tl.trm);
+            this.visitEq(tl.trm);
     }
 
-    public bindComp(expr: P.Comp): void {
-        this.bindSum(expr.head);
+    public visitEq(expr: P.Eq): void {
+        this.visitComp(expr.head);
         for(const tl of expr.tail)
-            this.bindSum(tl.trm);
+            this.visitComp(tl.trm);
     }
 
-    public bindSum(expr: P.Sum): void {
-        this.bindProduct(expr.head);
+    public visitComp(expr: P.Comp): void {
+        this.visitSum(expr.head);
         for(const tl of expr.tail)
-            this.bindProduct(tl.trm);
+            this.visitSum(tl.trm);
     }
 
-    public bindProduct(expr: P.Product): void {
-        this.bindPostfix(expr.head.pf);
+    public visitSum(expr: P.Sum): void {
+        this.visitProduct(expr.head);
         for(const tl of expr.tail)
-            this.bindPostfix(tl.trm.pf);
+            this.visitProduct(tl.trm);
     }
 
-    public bindPostfix(expr: P.Postfix): void {
-        this.bindObjLookups(expr.at);
+    public visitProduct(expr: P.Product): void {
+        this.visitPostfix(expr.head.pf);
+        for(const tl of expr.tail)
+            this.visitPostfix(tl.trm.pf);
+    }
+
+    public visitPostfix(expr: P.Postfix): void {
+        this.visitObjLookups(expr.at);
         for(const op of expr.ops) {
             if(op.kind === ASTKinds.PostOp_1) {
                 for(const arg of op.args?.exprs ?? [])
-                    this.bindExpr(arg);
+                    this.visitExpr(arg);
             } else {
-                this.bindExpr(op.expr);
+                this.visitExpr(op.expr);
             }
         }
     }
 
-    public bindObjLookups(expr: P.ObjLookups): void {
-        this.bindAtom(expr.root);
+    public visitObjLookups(expr: P.ObjLookups): void {
+        this.visitAtom(expr.root);
         for(const attr of expr.attrs)
-            this.bindID(attr.id);
+            this.visitID(attr.id);
     }
 
-    public bindAtom(expr: P.Atom): void {
+    public visitAtom(expr: P.Atom): void {
         switch(expr.kind) {
             case ASTKinds.Atom_1:
-                return this.bindExpr(expr.trm);
+                return this.visitExpr(expr.trm);
             case ASTKinds.ID:
-                return this.bindID(expr);
+                return this.visitID(expr);
             case ASTKinds.ListLit:
-                return this.bindListLit(expr);
+                return this.visitListLit(expr);
             case ASTKinds.GniomhExpr:
-                return this.bindGniomhBody(expr);
+                return this.visitGniomhBody(expr);
         }
     }
 
-    public bindListLit(expr: P.ListLit): void {
+    public visitListLit(expr: P.ListLit): void {
         for(const el of expr.els?.exprs ?? [])
-            this.bindExpr(el);
+            this.visitExpr(el);
     }
 
-    public bindID(expr: P.ID): void {
+    public visitID(expr: P.ID): void {
         // TODO real work goes here
     }
 
@@ -225,14 +234,14 @@ export class Binder {
         this.scopes[this.scopes.length - 1].set(s, VarState.DEFINED);
     }
 
-    private bindGniomhBody(gniomh: GniomhBody): void {
+    private visitGniomhBody(gniomh: GniomhBody): void {
         // Create a new scope to define arguments in
         this.enterScope();
 
         for(const arg of gniomh.args?.ids ?? [])
             this.defineVar(arg);
 
-        this.bindStmts(gniomh.stmts);
+        this.visitStmts(gniomh.stmts);
 
         this.exitScope();
     }
