@@ -4,6 +4,7 @@ import { Context } from "./ctx";
 import { Program } from "./gen_parser";
 import { execStmts } from "./execs";
 import { STOP } from "./consts";
+import { Binder } from "./bind";
 
 export class Interpreter {
     public global: Context;
@@ -15,16 +16,20 @@ export class Interpreter {
             externals(this.global).forEach(ext =>
                 ext[0].forEach(a => this.global.env.define(a, ext[1])));
     }
+
     public stop(): void {
         this.global.stop();
     }
+
     public interpret(p: Program): Promise<void> {
+        const binder = new Binder();
+        binder.visitProgram(p);
         return execStmts(p.stmts, this.global)
-        .catch((err) => {
-            if (err === STOP) {
-                return;
-            }
-            return Promise.reject(err);
-        });
+            .catch((err) => {
+                if (err === STOP) {
+                    return;
+                }
+                return Promise.reject(err);
+            });
     }
 }

@@ -14,10 +14,14 @@ interface GniomhBody {
 }
 
 export class Binder implements ASTVisitor<void> {
+    public depthMap: Map<P.ID, number> = new Map();
+
     private scopes: Map<string, VarState>[] = [];
 
     public visitProgram(p: P.Program): void {
-        return this.visitStmts(p.stmts);
+        this.enterScope();
+        this.visitStmts(p.stmts);
+        this.exitScope();
     }
 
     public visitStmts(stmts: Stmt[]): void {
@@ -68,9 +72,8 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitAssgnStmt(stmt: P.AssgnStmt): void {
+        this.visitPostfix(stmt.lhs);
         this.visitExpr(stmt.expr);
-        // TODO Resolve ref (P.Postfix)
-        // this.visitExpr(stmt.lhs);
     }
 
     public visitDefnStmt(stmt: P.DefnStmt): void {
@@ -88,12 +91,12 @@ export class Binder implements ASTVisitor<void> {
     public visitLeStmt(stmt: P.LeStmt): void {
         // Le-idir stmts create a new scope for the declaration of the
         // loop variable
-        this.enterScope();
-
         this.visitExpr(stmt.strt);
         this.visitExpr(stmt.end);
         if(stmt.step !== null)
             this.visitExpr(stmt.step.step);
+
+        this.enterScope();
 
         this.defineVar(stmt.id.id);
 
@@ -113,11 +116,12 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitCtlchStmt(stmt: P.CtlchStmt): void {
+        this.declareVar(stmt.id.id);
+
+        if(stmt.tuis)
+            this.visitID(stmt.tuis.id);
+
         this.defineVar(stmt.id.id);
-        // TODO fix once expression resolution added
-        /* if(stmt.tuis)
-            this.visitExpr(stmt.tuis.id);
-        */
 
         this.enterScope();
 
@@ -208,7 +212,19 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitID(expr: P.ID): void {
-        // TODO real work goes here
+        // TODO error on self definition? (a := 2*a)
+        // Resolve this variable
+        // Find innermost scope containing defined var
+        for(let i = 0; i < this.scopes.length; i++) {
+            const def = this.scopes[this.scopes.length - 1 - i].get(expr.id);
+            if(def === VarState.DEFINED) {
+                if(this.depthMap.has(expr))
+                    throw new Error("fugd");
+                // Variable defined in scope i;
+                this.depthMap.set(expr, i);
+                return;
+            }
+        }
     }
 
     private enterScope(): void {

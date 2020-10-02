@@ -187,13 +187,14 @@ async function execNuair(n: P.NuairStmt, ctx: Context): Promise<void> {
 }
 
 async function execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
-    ctx = new Context(ctx);
     const s = Asserts.assertNumber(await n.strt.evalfn(ctx));
     const e = Asserts.assertNumber(await n.end.evalfn(ctx));
     let stp = e >= s ? 1 : -1;
     if (n.step !== null) {
         stp = Asserts.assertNumber(await n.step.step.evalfn(ctx));
     }
+
+    ctx = new Context(ctx);
     const dircheck = e >= s ? (a: number, b: number) => a < b : (a: number, b: number) => a > b;
     for (let i = s; dircheck(i, e); i += stp) {
         ctx.env.define(n.id.id, i);
