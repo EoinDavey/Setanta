@@ -104,6 +104,7 @@
 * CSArgs      := start=@ head=Expr tail={_ ',' exp=Expr}* end=@
 *                .evalfn = (env:Context) => Promise<Value[]> { return csArgsEval(this); }
 *                .qeval = ((env:Context) => Value[]) | null { return Quick.qCSArgsEval(this); }
+*                .exprs = Expr[] { return [this.head].concat(this.tail.map((x) => x.exp)); }
 * CSIDs       := head=ID tail={_ ',' id=ID}*
 *                .ids = string[] { return [this.head.id].concat(this.tail.map((x) => x.id.id)); }
 * ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*' end=@
@@ -645,6 +646,7 @@ export class CSArgs {
     public end: PosInfo;
     public evalfn: (env:Context) => Promise<Value[]>;
     public qeval: ((env:Context) => Value[]) | null;
+    public exprs: Expr[];
     constructor(start: PosInfo, head: Expr, tail: CSArgs_$0[], end: PosInfo){
         this.start = start;
         this.head = head;
@@ -655,6 +657,9 @@ export class CSArgs {
         })();
         this.qeval = ((): ((env:Context) => Value[]) | null => {
         return Quick.qCSArgsEval(this);
+        })();
+        this.exprs = ((): Expr[] => {
+        return [this.head].concat(this.tail.map((x) => x.exp));
         })();
     }
 }

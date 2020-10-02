@@ -7,6 +7,11 @@ enum VarState {
     DEFINED,
 }
 
+interface GniomhBody {
+    args: P.CSIDs | null
+    stmts: Stmt[]
+}
+
 export class Binder {
     private scopes: Map<string, VarState>[] = [];
 
@@ -76,7 +81,7 @@ export class Binder {
     }
 
     public bindLeStmt(stmt: P.LeStmt): void {
-        // Le-idir stmts create a new scope for the declaration of the 
+        // Le-idir stmts create a new scope for the declaration of the
         // loop variable
         this.enterScope();
 
@@ -122,7 +127,79 @@ export class Binder {
     }
 
     public bindExpr(expr: P.And): void {
-        console.log(expr);
+        this.bindOr(expr.head);
+        for(const tl of expr.tail)
+            this.bindOr(tl.trm);
+    }
+
+    public bindOr(expr: P.Or): void {
+        this.bindEq(expr.head);
+        for(const tl of expr.tail)
+            this.bindEq(tl.trm);
+    }
+
+    public bindEq(expr: P.Eq): void {
+        this.bindComp(expr.head);
+        for(const tl of expr.tail)
+            this.bindComp(tl.trm);
+    }
+
+    public bindComp(expr: P.Comp): void {
+        this.bindSum(expr.head);
+        for(const tl of expr.tail)
+            this.bindSum(tl.trm);
+    }
+
+    public bindSum(expr: P.Sum): void {
+        this.bindProduct(expr.head);
+        for(const tl of expr.tail)
+            this.bindProduct(tl.trm);
+    }
+
+    public bindProduct(expr: P.Product): void {
+        this.bindPostfix(expr.head.pf);
+        for(const tl of expr.tail)
+            this.bindPostfix(tl.trm.pf);
+    }
+
+    public bindPostfix(expr: P.Postfix): void {
+        this.bindObjLookups(expr.at);
+        for(const op of expr.ops) {
+            if(op.kind === ASTKinds.PostOp_1) {
+                for(const arg of op.args?.exprs ?? [])
+                    this.bindExpr(arg);
+            } else {
+                this.bindExpr(op.expr);
+            }
+        }
+    }
+
+    public bindObjLookups(expr: P.ObjLookups): void {
+        this.bindAtom(expr.root);
+        for(const attr of expr.attrs)
+            this.bindID(attr.id);
+    }
+
+    public bindAtom(expr: P.Atom): void {
+        switch(expr.kind) {
+            case ASTKinds.Atom_1:
+                return this.bindExpr(expr.trm);
+            case ASTKinds.ID:
+                return this.bindID(expr);
+            case ASTKinds.ListLit:
+                return this.bindListLit(expr);
+            case ASTKinds.GniomhExpr:
+                return this.bindGniomhBody(expr);
+        }
+    }
+
+    public bindListLit(expr: P.ListLit): void {
+        for(const el of expr.els?.exprs ?? [])
+            this.bindExpr(el);
+    }
+
+    public bindID(expr: P.ID): void {
+        // TODO real work goes here
     }
 
     private enterScope(): void {
@@ -148,7 +225,7 @@ export class Binder {
         this.scopes[this.scopes.length - 1].set(s, VarState.DEFINED);
     }
 
-    private bindGniomhBody(gniomh: P.GniomhStmt): void {
+    private bindGniomhBody(gniomh: GniomhBody): void {
         // Create a new scope to define arguments in
         this.enterScope();
 
