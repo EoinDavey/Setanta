@@ -1,7 +1,10 @@
 import { ASTKinds } from "./gen_parser";
 import * as P from "./gen_parser";
 import { Stmt } from "./values";
-import type { ASTVisitor } from "./visitor";
+
+type Attach<U> = U extends P.ID
+    ? (P.ID & { test: number })
+    : { [K in keyof U]: Attach<U> };
 
 enum VarState {
     DECLARED,
@@ -13,7 +16,7 @@ interface GniomhBody {
     stmts: Stmt[]
 }
 
-export class Binder implements ASTVisitor<void> {
+export class Binder {
     public depthMap: Map<P.ID, number> = new Map();
 
     private scopes: Map<string, VarState>[] = [];
@@ -198,7 +201,8 @@ export class Binder implements ASTVisitor<void> {
             case ASTKinds.Atom_1:
                 return this.visitExpr(expr.trm);
             case ASTKinds.ID:
-                return this.visitID(expr);
+                this.visitID(expr);
+                return;
             case ASTKinds.ListLit:
                 return this.visitListLit(expr);
             case ASTKinds.GniomhExpr:
@@ -211,20 +215,25 @@ export class Binder implements ASTVisitor<void> {
             this.visitExpr(el);
     }
 
-    public visitID(expr: P.ID): void {
+    public visitID(expr: P.ID): Attach<P.ID> {
         // TODO error on self definition? (a := 2*a)
         // Resolve this variable
         // Find innermost scope containing defined var
         for(let i = 0; i < this.scopes.length; i++) {
             const def = this.scopes[this.scopes.length - 1 - i].get(expr.id);
             if(def === VarState.DEFINED) {
+                // TODO fix this error
                 if(this.depthMap.has(expr))
                     throw new Error("fugd");
                 // Variable defined in scope i;
                 this.depthMap.set(expr, i);
-                return;
+                return { ...expr, test: i };
             }
         }
+        return {
+            ...expr,
+            test: -1,
+        };
     }
 
     private enterScope(): void {
