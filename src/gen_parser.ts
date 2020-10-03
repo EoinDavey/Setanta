@@ -2,7 +2,7 @@
 * INPUT GRAMMAR:
 * ---
 * import { Context } from "./ctx";
-* import { callFunc, idxList, Value } from "./values";
+* import { PossibleDepth, callFunc, idxList, Value } from "./values";
 * import { unescapeChars } from "./teacs";
 * import * as Asserts from "./asserts";
 * import * as Checks from "./checks";
@@ -131,6 +131,7 @@
 *                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id, this.start, this.end)); }
 *                .qeval = Quick.EvalFn { return Quick.qIdEval(this.id, this.start, this.end); }
 *                .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitID(this); }
+*                .depth = PossibleDepth { return {resolved: false}; }
 * Bool        := _ bool='f[ií]or|br[eé]ag'
 *                .evalfn = EvalFn { return qEvalToEval(Quick.qBoolEval(this.bool)); }
 *                .qeval = Quick.EvalFn { return Quick.qBoolEval(this.bool); }
@@ -156,7 +157,7 @@
 */
 
 import { Context } from "./ctx";
-import { callFunc, idxList, Value } from "./values";
+import { PossibleDepth, callFunc, idxList, Value } from "./values";
 import { unescapeChars } from "./teacs";
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
@@ -826,6 +827,7 @@ export class ID {
     public evalfn: EvalFn;
     public qeval: Quick.EvalFn;
     public accept: Acceptor;
+    public depth: PossibleDepth;
     constructor(start: PosInfo, id: string, end: PosInfo){
         this.start = start;
         this.id = id;
@@ -838,6 +840,9 @@ export class ID {
         })();
         this.accept = ((): Acceptor => {
         return <T>(v: ASTVisitor<T>) => v.visitID(this);
+        })();
+        this.depth = ((): PossibleDepth => {
+        return {resolved: false};
         })();
     }
 }

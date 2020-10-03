@@ -2,10 +2,6 @@ import { ASTKinds } from "./gen_parser";
 import * as P from "./gen_parser";
 import { Stmt } from "./values";
 
-type Attach<U> = U extends P.ID
-    ? (P.ID & { test: number })
-    : { [K in keyof U]: Attach<U> };
-
 enum VarState {
     DECLARED,
     DEFINED,
@@ -215,7 +211,7 @@ export class Binder {
             this.visitExpr(el);
     }
 
-    public visitID(expr: P.ID): Attach<P.ID> {
+    public visitID(expr: P.ID): void {
         // TODO error on self definition? (a := 2*a)
         // Resolve this variable
         // Find innermost scope containing defined var
@@ -227,13 +223,10 @@ export class Binder {
                     throw new Error("fugd");
                 // Variable defined in scope i;
                 this.depthMap.set(expr, i);
-                return { ...expr, test: i };
+                expr.depth = {resolved: true, depth: i};
+                return;
             }
         }
-        return {
-            ...expr,
-            test: -1,
-        };
     }
 
     private enterScope(): void {

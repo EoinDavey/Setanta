@@ -6,6 +6,8 @@ import * as Checks from "./checks";
 
 export type Value = number | boolean | Callable | null | Value[] | string | ObjIntf;
 
+export type PossibleDepth = { resolved: false } | { resolved: true, depth: number };
+
 export type TypeCheck = (v: Value) => boolean;
 
 export type Stmt = AsgnStmt | NonAsgnStmt;
