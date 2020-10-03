@@ -128,8 +128,8 @@
 * CSIDs       := head=ID tail={_ ',' id=ID}*
 *                .ids = string[] { return [this.head.id].concat(this.tail.map((x) => x.id.id)); }
 * ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*' end=@
-*                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this.id, this.start, this.end)); }
-*                .qeval = Quick.EvalFn { return Quick.qIdEval(this.id, this.start, this.end); }
+*                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this)); }
+*                .qeval = Quick.EvalFn { return Quick.qIdEval(this); }
 *                .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitID(this); }
 *                .depth = PossibleDepth { return {resolved: false}; }
 * Bool        := _ bool='f[ií]or|br[eé]ag'
@@ -833,10 +833,10 @@ export class ID {
         this.id = id;
         this.end = end;
         this.evalfn = ((): EvalFn => {
-        return qEvalToEval(Quick.qIdEval(this.id, this.start, this.end));
+        return qEvalToEval(Quick.qIdEval(this));
         })();
         this.qeval = ((): Quick.EvalFn => {
-        return Quick.qIdEval(this.id, this.start, this.end);
+        return Quick.qIdEval(this);
         })();
         this.accept = ((): Acceptor => {
         return <T>(v: ASTVisitor<T>) => v.visitID(this);

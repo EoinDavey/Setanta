@@ -1,6 +1,14 @@
 import { ASTKinds } from "./gen_parser";
 import * as P from "./gen_parser";
-import { Stmt } from "./values";
+import { PossibleDepth, Stmt } from "./values";
+
+export type Resolved<T> = T extends { kind: string }
+    ? { [K in keyof T]: Resolved<T[K]> }
+    : T extends PossibleDepth
+    ? { resolved: true, depth: number }
+    : T extends (infer X)[]
+    ? Resolved<X>[]
+    : T;
 
 enum VarState {
     DECLARED,
@@ -17,10 +25,11 @@ export class Binder {
 
     private scopes: Map<string, VarState>[] = [];
 
-    public visitProgram(p: P.Program): void {
+    public visitProgram(p: P.Program): Resolved<P.Program> {
         this.enterScope();
         this.visitStmts(p.stmts);
         this.exitScope();
+        return p as Resolved<P.Program>;
     }
 
     public visitStmts(stmts: Stmt[]): void {
@@ -227,6 +236,7 @@ export class Binder {
                 return;
             }
         }
+        expr.depth = {resolved: true, depth: -1};
     }
 
     private enterScope(): void {

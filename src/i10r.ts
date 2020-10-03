@@ -23,8 +23,8 @@ export class Interpreter {
 
     public interpret(p: Program): Promise<void> {
         const binder = new Binder();
-        binder.visitProgram(p);
-        return execStmts(p.stmts, this.global)
+        const resolvedAst = binder.visitProgram(p);
+        return execStmts(resolvedAst.stmts, this.global)
             .catch((err) => {
                 if (err === STOP) {
                     return;

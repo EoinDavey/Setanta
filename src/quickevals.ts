@@ -2,7 +2,8 @@ import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { tagErrorLoc } from "./error";
 import { Context } from "./ctx";
-import { CSArgs, GniomhExpr, ListLit, ObjLookups, PosInfo, Postfix, Prefix } from "./gen_parser";
+import { CSArgs, GniomhExpr, ID, ListLit, ObjLookups,
+    PosInfo, Postfix, Prefix } from "./gen_parser";
 import { unescapeChars } from "./teacs";
 import { Value, qIdxList } from "./values";
 import { getAttr } from "./obj";
@@ -51,12 +52,12 @@ export function qBoolEval(lit: string): EvalFn {
     return () => x;
 }
 
-export function qIdEval(id: string, start: PosInfo, end: PosInfo): EvalFn {
+export function qIdEval(id: ID): EvalFn {
     return (ctx: Context) =>  {
         try {
-            return ctx.env.get(id);
+            return ctx.env.get(id.id);
         } catch(err) {
-            throw tagErrorLoc(err, start, end);
+            throw tagErrorLoc(err, id.start, id.end);
         }
     };
 }
