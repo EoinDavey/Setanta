@@ -1,11 +1,12 @@
 import { CreatlachImpl } from "../../src/creatlach";
 import { Environment } from "../../src/env";
-import { Parser } from "../../src/gen_parser";
+import { Parser, parse } from "../../src/gen_parser";
 import { GníomhWrap } from "../../src/gniomh";
 import { Interpreter } from "../../src/i10r";
 import { Rud } from "../../src/rud";
 import { Value } from "../../src/values";
 import { resolveASTNode } from "./utils";
+import { Binder } from "../../src/bind";
 
 import * as Asserts from "../../src/asserts";
 import * as Checks from "../../src/checks";
@@ -1204,4 +1205,22 @@ test("stop action test", async () => {
     expect(res.ast).not.toBeNull();
     await i.interpret(res.ast!);
     expect(wasRan).toEqual(false);
+});
+
+test("regression test for lexical scoping bug #10", async () => {
+    const ast = parse(`
+    a := 0
+    gníomh fn() {
+        gníomh fn() {
+            toradh a
+        }
+        a := 1
+        toradh fn
+    }
+    res := fn()()`).ast!;
+    const b = new Binder();
+    b.visitProgram(ast);
+    const i = new Interpreter();
+    await i.interpret(ast);
+    expect(i.global.env.get("res")).toEqual(0);
 });
