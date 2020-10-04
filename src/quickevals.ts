@@ -1,6 +1,6 @@
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
-import { tagErrorLoc } from "./error";
+import { tagErrorLoc, undefinedError } from "./error";
 import { Context } from "./ctx";
 import { CSArgs, GniomhExpr, ID, ListLit, ObjLookups,
     PosInfo, Postfix, Prefix } from "./gen_parser";
@@ -8,7 +8,6 @@ import { unescapeChars } from "./teacs";
 import { Value, qIdxList } from "./values";
 import { getAttr } from "./obj";
 import { GníomhImpl } from "./gniomh";
-
 export type EvalFn = (ctx: Context) => Value;
 export type MaybeEv = EvalFn | null;
 interface MaybeQuick {
@@ -55,7 +54,9 @@ export function qBoolEval(lit: string): EvalFn {
 export function qIdEval(id: ID): EvalFn {
     return (ctx: Context) =>  {
         try {
-            return ctx.env.get(id.id);
+            if(!id.depth.resolved)
+                throw undefinedError(id.id);
+            return ctx.env.getAtDepth(id.id, id.depth.depth);
         } catch(err) {
             throw tagErrorLoc(err, id.start, id.end);
         }

@@ -5,6 +5,7 @@ import { GníomhWrap } from "../../src/gniomh";
 import { Interpreter } from "../../src/i10r";
 import { Rud } from "../../src/rud";
 import { Value } from "../../src/values";
+import { resolveASTNode } from "./utils";
 
 import * as Asserts from "../../src/asserts";
 import * as Checks from "../../src/checks";
@@ -86,8 +87,9 @@ test("test expressions", async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
+        const resolved = resolveASTNode(res!);
         try {
-            const got = await res!.evalfn(i.global);
+            const got = await resolved.evalfn(i.global);
             const quickGet = res!.qeval;
             expect(quickGet).not.toBeNull();
             expect(quickGet!(i.global)).toEqual(c.exp);

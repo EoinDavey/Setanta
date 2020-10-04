@@ -1,6 +1,18 @@
 import { undefinedError } from "./error";
 import { Value } from "./values";
 
+function getValAtDepth(env: Environment, id: string, depth: number): Value {
+    for(let i = 0; i < depth; ++i){
+        if(env.enclosing === null)
+            throw undefinedError(id);
+        env = env.enclosing;
+    }
+    const val = env.values.get(id);
+    if(val === undefined)
+        throw undefinedError(id);
+    return val;
+}
+
 export class Environment {
 
     public static from(arr: [string, Value][]): Environment {
@@ -10,8 +22,8 @@ export class Environment {
         }
         return v;
     }
-    private enclosing: Environment | null;
-    private values: Map<string, Value> = new Map();
+    public enclosing: Environment | null;
+    public values: Map<string, Value> = new Map();
 
     constructor(enc?: Environment) {
         this.enclosing = enc || null;
@@ -29,6 +41,10 @@ export class Environment {
         if (this.enclosing)
             return this.enclosing.get(id);
         throw undefinedError(id);
+    }
+
+    public getAtDepth(id: string, depth: number): Value {
+        return getValAtDepth(this, id, depth);
     }
 
     public assign(id: string, val: Value): void {

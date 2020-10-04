@@ -1,6 +1,7 @@
 import { ASTKinds } from "./gen_parser";
 import * as P from "./gen_parser";
 import { PossibleDepth, Stmt } from "./values";
+import { ASTVisitor } from "./visitor";
 
 export type Resolved<T> = T extends { kind: string }
     ? { [K in keyof T]: Resolved<T[K]> }
@@ -20,7 +21,7 @@ interface GniomhBody {
     stmts: Stmt[]
 }
 
-export class Binder {
+export class Binder implements ASTVisitor<void> {
     public depthMap: Map<P.ID, number> = new Map();
 
     private scopes: Map<string, VarState>[] = [];
@@ -227,23 +228,20 @@ export class Binder {
         for(let i = 0; i < this.scopes.length; i++) {
             const def = this.scopes[this.scopes.length - 1 - i].get(expr.id);
             if(def === VarState.DEFINED) {
-                // TODO fix this error
-                if(this.depthMap.has(expr))
-                    throw new Error("fugd");
                 // Variable defined in scope i;
                 this.depthMap.set(expr, i);
                 expr.depth = {resolved: true, depth: i};
                 return;
             }
         }
-        expr.depth = {resolved: true, depth: -1};
+        expr.depth = {resolved: true, depth: this.scopes.length - 1};
     }
 
-    private enterScope(): void {
+    public enterScope(): void {
         this.scopes.push(new Map());
     }
 
-    private exitScope(): void {
+    public exitScope(): void {
         // Check not necessarily required, but helpful for readability
         if(this.scopes.length === 0)
             return;
