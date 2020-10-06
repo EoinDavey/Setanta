@@ -77,9 +77,8 @@ function refPostfix(p: P.Postfix, ctx: Context): Promise<Ref> {
         const op: P.PostOp = p.ops[p.ops.length - 1];
         const subPost: P.Postfix = new P.Postfix(p.start, p.at, ops, p.end);
         return subPost.evalfn(ctx).then((val: Value) => {
-            if ("args" in op) {
+            if ("args" in op)
                 return Promise.reject(new RuntimeError("Ní féidir leat luach a thabhairt do gníomh", p.start, p.end));
-            }
             const arr: Value[] = Asserts.assertLiosta(val);
             return op.expr.evalfn(ctx).then((idxV: Value) => {
                 const idx: number = Asserts.assertNumber(idxV);

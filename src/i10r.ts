@@ -12,7 +12,7 @@ export class Interpreter {
         this.global = new Context();
         getGlobalBuiltins(this.global)
             .forEach(x => this.global.env.define(x[0], x[1]));
-        if (externals)
+        if(externals)
             externals(this.global).forEach(ext =>
                 ext[0].forEach(a => this.global.env.define(a, ext[1])));
     }
@@ -26,9 +26,8 @@ export class Interpreter {
         const resolvedAst = binder.visitProgram(p);
         return execStmts(resolvedAst.stmts, this.global)
             .catch((err) => {
-                if (err === STOP) {
+                if(err === STOP)
                     return;
-                }
                 return Promise.reject(err);
             });
     }

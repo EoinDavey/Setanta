@@ -2,11 +2,12 @@ import { ASTKinds } from "./gen_parser";
 import * as P from "./gen_parser";
 import { PossibleDepth, Stmt } from "./values";
 import { ASTVisitor } from "./visitor";
+import { StaticError } from "./error";
 
 export type Resolved<T> = T extends { kind: string }
     ? { [K in keyof T]: Resolved<T[K]> }
     : T extends PossibleDepth
-    ? { resolved: true, depth: number }
+    ? { resolved: true, depth: number, offset: number }
     : T extends (infer X)[]
     ? Resolved<X>[]
     : T;
@@ -63,7 +64,8 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitDefnStmt(stmt: P.DefnStmt): void {
-        // TODO check if defined in scope already
+        if(this.scopes.length && this.scopes[this.scopes.length - 1].has(stmt.id.id))
+            throw new StaticError(`Tá ${stmt.id.id} sa scóip seo cheana féin`, stmt.id.start, stmt.id.end);
         this.declareVar(stmt.id.id);
         this.visitExpr(stmt.expr);
         this.defineVar(stmt.id.id);
@@ -180,6 +182,7 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitAtom(expr: P.Atom): void {
+        // No need to bind these
         if(expr.kind === ASTKinds.Teacs || expr.kind == ASTKinds.Int
             || expr.kind === ASTKinds.Bool || expr.kind === ASTKinds.Neamhni)
             return;
@@ -204,11 +207,13 @@ export class Binder implements ASTVisitor<void> {
             if(def === VarState.DEFINED) {
                 // Variable defined in scope i;
                 this.depthMap.set(expr, i);
-                expr.depth = {resolved: true, depth: i };
+                expr.depth = {resolved: true, depth: i, offset: -1};
                 return;
             }
         }
-        expr.depth = {resolved: true, depth: this.scopes.length - 1};
+        // If we haven't found it, assume its a global (we can't always locate globals
+        // for many reasons)
+        expr.depth = {resolved: true, depth: this.scopes.length - 1, offset: -1};
     }
 
     public enterScope(): void {

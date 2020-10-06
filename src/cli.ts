@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as readline from "readline";
 import * as Asserts from "./asserts";
-import { RuntimeError, syntaxErrString } from "./error";
+import { RuntimeError, StaticError, syntaxErrString } from "./error";
 import { ASTKinds, Parser, PosInfo, SyntaxErr } from "./gen_parser";
 import { Interpreter } from "./i10r";
 import { Value, goTéacs } from "./values";
@@ -174,7 +174,7 @@ async function runFile() {
     try {
         await i.interpret(res.ast);
     } catch (err) {
-        if (err instanceof RuntimeError) {
+        if (err instanceof RuntimeError || err instanceof StaticError) {
             printError(err, inFile);
             process.exitCode = 1;
         } else {

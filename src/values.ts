@@ -6,7 +6,7 @@ import * as Checks from "./checks";
 
 export type Value = number | boolean | Callable | null | Value[] | string | ObjIntf;
 
-export type PossibleDepth = { resolved: false } | { resolved: true, depth: number };
+export type PossibleDepth = { resolved: false } | { resolved: true, depth: number, offset: number };
 
 export type TypeCheck = (v: Value) => boolean;
 

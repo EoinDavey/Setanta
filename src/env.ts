@@ -21,6 +21,7 @@ export class Environment {
 
     public readonly enclosing: Environment | null;
     private readonly values: Map<string, Value> = new Map();
+    private testList: (Value | undefined)[] = [];
 
     constructor(enc?: Environment) {
         this.enclosing = enc || null;

@@ -1,4 +1,21 @@
 import { PosInfo, SyntaxErr } from "./gen_parser";
+
+// Start identical to RuntimeError
+export class StaticError extends Error {
+    public msg: string;
+    public start: PosInfo | null;
+    public end: PosInfo | null;
+    constructor(message: string, start?: PosInfo, end?: PosInfo) {
+        super(message);
+        this.msg = message;
+        this.start = start || null;
+        this.end = end || null;
+    }
+    public toString(): string {
+        return `Eisceacht: ${this.msg}`;
+    }
+}
+
 export class RuntimeError extends Error {
     public msg: string;
     public start: PosInfo | null;
