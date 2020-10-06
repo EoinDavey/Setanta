@@ -14,9 +14,8 @@ export class Environment {
 
     public static from(arr: [string, Value][]): Environment {
         const v = new Environment();
-        for (const x of arr) {
+        for (const x of arr)
             v.define(x[0], x[1]);
-        }
         return v;
     }
 

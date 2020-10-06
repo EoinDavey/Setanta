@@ -45,6 +45,7 @@
 * LeStmt      := _ 'le' &gap id=ID _ 'idir' _ '\('strt=Expr _ ',' end=Expr step={_ ',' step=Expr}? _ '\)' stmt=NonAsgnStmt
 *                .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitLeStmt(this); }
 * DefnStmt    := _ idstart=@ id=ID idend=@ _ ':=' _ expr=Expr
+*                .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitDefnStmt(this); }
 * AssgnStmt   := _ lstart=@ lhs=Postfix lend=@ _ op=AsgnOp _ expr=Expr
 *                .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitAssgnStmt(this); }
 * GniomhStmt  := _ 'gn[íi]omh' &gap id=ID _ '\(' args=CSIDs? _ '\)' _ '{'
@@ -115,6 +116,7 @@
 * _ '}'
 *                .evalfn = EvalFn { return qEvalToEval(Quick.qGníomhEval(this)); }
 *                .qeval = Quick.EvalFn { return Quick.qGníomhEval(this); }
+*                .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitGniomhExpr(this); }
 * ListLit     := _ '\[' els=CSArgs? _ '\]'
 *                .evalfn = EvalFn {
 *                    return (env: Context) => this.els ? this.els.evalfn(env) : Promise.resolve([]);
@@ -367,12 +369,22 @@ export interface LeStmt_$0 {
     kind: ASTKinds.LeStmt_$0;
     step: Expr;
 }
-export interface DefnStmt {
-    kind: ASTKinds.DefnStmt;
-    idstart: PosInfo;
-    id: ID;
-    idend: PosInfo;
-    expr: Expr;
+export class DefnStmt {
+    public kind: ASTKinds.DefnStmt = ASTKinds.DefnStmt;
+    public idstart: PosInfo;
+    public id: ID;
+    public idend: PosInfo;
+    public expr: Expr;
+    public accept: Acceptor;
+    constructor(idstart: PosInfo, id: ID, idend: PosInfo, expr: Expr){
+        this.idstart = idstart;
+        this.id = id;
+        this.idend = idend;
+        this.expr = expr;
+        this.accept = ((): Acceptor => {
+        return <T>(v: ASTVisitor<T>) => v.visitDefnStmt(this);
+        })();
+    }
 }
 export class AssgnStmt {
     public kind: ASTKinds.AssgnStmt = ASTKinds.AssgnStmt;
@@ -743,6 +755,7 @@ export class GniomhExpr {
     public stmts: AsgnStmt[];
     public evalfn: EvalFn;
     public qeval: Quick.EvalFn;
+    public accept: Acceptor;
     constructor(args: Nullable<CSIDs>, stmts: AsgnStmt[]){
         this.args = args;
         this.stmts = stmts;
@@ -751,6 +764,9 @@ export class GniomhExpr {
         })();
         this.qeval = ((): Quick.EvalFn => {
         return Quick.qGníomhEval(this);
+        })();
+        this.accept = ((): Acceptor => {
+        return <T>(v: ASTVisitor<T>) => v.visitGniomhExpr(this);
         })();
     }
 }
@@ -1221,7 +1237,7 @@ export class Parser {
                     && this.match_($$dpth + 1, $$cr) !== null
                     && ($scope$expr = this.matchExpr($$dpth + 1, $$cr)) !== null
                 ) {
-                    $$res = {kind: ASTKinds.DefnStmt, idstart: $scope$idstart, id: $scope$id, idend: $scope$idend, expr: $scope$expr};
+                    $$res = new DefnStmt($scope$idstart, $scope$id, $scope$idend, $scope$expr);
                 }
                 return $$res;
             }, $$cr)();

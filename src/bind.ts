@@ -39,32 +39,9 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitStmt(stmt: Stmt): void {
-        switch (stmt.kind) {
-            case ASTKinds.IfStmt:
-                return this.visitIfStmt(stmt);
-            case ASTKinds.BlockStmt:
-                return this.visitBlockStmt(stmt);
-            case ASTKinds.AssgnStmt:
-                return this.visitAssgnStmt(stmt);
-            case ASTKinds.DefnStmt:
-                return this.visitDefnStmt(stmt);
-            case ASTKinds.NuairStmt:
-                return this.visitNuairStmt(stmt);
-            case ASTKinds.LeStmt:
-                return this.visitLeStmt(stmt);
-            case ASTKinds.GniomhStmt:
-                return this.visitGniomhStmt(stmt);
-            case ASTKinds.ToradhStmt:
-                return this.visitToradhStmt(stmt);
-            case ASTKinds.CCStmt:
-                return;
-            case ASTKinds.BrisStmt:
-                return;
-            case ASTKinds.CtlchStmt:
-                return this.visitCtlchStmt(stmt);
-            default:
-                return this.visitExpr(stmt);
-        }
+        if(stmt.kind === ASTKinds.CCStmt || stmt.kind === ASTKinds.BrisStmt)
+            return;
+        stmt.accept<void>(this);
     }
 
     public visitIfStmt(stmt: P.IfStmt): void {
@@ -203,22 +180,19 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitAtom(expr: P.Atom): void {
-        switch(expr.kind) {
-            case ASTKinds.Atom_1:
-                return this.visitExpr(expr.trm);
-            case ASTKinds.ID:
-                this.visitID(expr);
-                return;
-            case ASTKinds.ListLit:
-                return this.visitListLit(expr);
-            case ASTKinds.GniomhExpr:
-                return this.visitGniomhBody(expr);
-        }
+        if(expr.kind === ASTKinds.Teacs || expr.kind == ASTKinds.Int
+            || expr.kind === ASTKinds.Bool || expr.kind === ASTKinds.Neamhni)
+            return;
+        expr.accept<void>(this);
     }
 
     public visitListLit(expr: P.ListLit): void {
         for(const el of expr.els?.exprs ?? [])
             this.visitExpr(el);
+    }
+
+    public visitGniomhExpr(expr: P.GniomhExpr): void {
+        return this.visitGniomhBody(expr);
     }
 
     public visitID(expr: P.ID): void {
@@ -230,7 +204,7 @@ export class Binder implements ASTVisitor<void> {
             if(def === VarState.DEFINED) {
                 // Variable defined in scope i;
                 this.depthMap.set(expr, i);
-                expr.depth = {resolved: true, depth: i};
+                expr.depth = {resolved: true, depth: i };
                 return;
             }
         }

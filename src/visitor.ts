@@ -22,5 +22,6 @@ export interface ASTVisitor<T> {
     visitObjLookups(a: P.ObjLookups): T
     visitAtom(a: P.Atom): T
     visitListLit(a: P.ListLit): T
+    visitGniomhExpr(a: P.GniomhExpr): T
     visitID(a: P.ID): T
 }
