@@ -1,5 +1,6 @@
 import { Environment } from "./env";
 import { STOP, STOPType } from "./consts";
+import { Value } from "./values";
 
 export class Context {
     // We use single element arrays (tuples in TS) here to hold these values so that
@@ -14,6 +15,7 @@ export class Context {
     // Use string literal type to ensure only can be called with STOP exception
     private _rejectPool: [Set<(s: STOPType)=>void>];
     public env: Environment;
+    public slowGlobals: Map<string, Value> = new Map();
 
     constructor(ctx?: Context) {
         if (ctx) {

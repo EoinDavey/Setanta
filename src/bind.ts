@@ -1,8 +1,8 @@
-import { ASTKinds } from "./gen_parser";
+import { ASTKinds, PosInfo } from "./gen_parser";
 import * as P from "./gen_parser";
 import { PossibleDepth, Stmt } from "./values";
 import { ASTVisitor } from "./visitor";
-import { StaticError } from "./error";
+import { alreadyDefinedError, undefinedError } from "./error";
 
 export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) => void }>(node: T): T {
     const b = new Binder();
@@ -30,10 +30,50 @@ interface GniomhBody {
     stmts: Stmt[]
 }
 
+function assert(b: boolean): void {
+    if(!b)
+        throw new Error("broken");
+}
+
+class Scope {
+    private nEntries = 0;
+    private idxMap: Map<string, number> = new Map();
+    private defStatus: Map<string, VarState> = new Map();
+
+    // Declaring an ID defines a new variable and
+    // assigns a unique index in this current scope
+    public declareVar(id: string, start?: PosInfo, end?: PosInfo): void {
+        if(this.idxMap.has(id))
+            throw alreadyDefinedError(id, start, end);
+        const idx = this.nEntries;
+        this.idxMap.set(id, idx);
+        this.defStatus.set(id, VarState.DECLARED);
+        this.nEntries++;
+    }
+
+    public defineVar(id: string): void {
+        if(!this.idxMap.has(id))
+            throw undefinedError(id);
+        this.defStatus.set(id, VarState.DEFINED);
+    }
+
+    public has(id: string): boolean {
+        return this.idxMap.has(id);
+    }
+
+    public getIdx(id: string): number {
+        const idx = this.idxMap.get(id);
+        if(idx === undefined)
+            throw undefinedError(id);
+        return idx;
+    }
+}
+
 export class Binder implements ASTVisitor<void> {
     public depthMap: Map<P.ID, number> = new Map();
 
     private scopes: Map<string, VarState>[] = [];
+    private newScopes: Scope[] = [];
 
     public visitProgram(p: P.Program): Resolved<P.Program> {
         this.enterScope();
@@ -72,9 +112,13 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitDefnStmt(stmt: P.DefnStmt): void {
+        // TODO remove this.scopes
+        assert(this.scopes.length === this.newScopes.length);
         if(this.scopes.length && this.scopes[this.scopes.length - 1].has(stmt.id.id))
-            throw new StaticError(`Tá ${stmt.id.id} sa scóip seo cheana féin`, stmt.id.start, stmt.id.end);
-        this.declareVar(stmt.id.id);
+            throw alreadyDefinedError(stmt.id.id, stmt.id.start, stmt.id.end);
+        if(this.newScopes.length && this.newScopes[this.newScopes.length - 1].has(stmt.id.id))
+            throw alreadyDefinedError(stmt.id.id, stmt.id.start, stmt.id.end);
+        this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
         this.visitExpr(stmt.expr);
         this.defineVar(stmt.id.id);
     }
@@ -94,6 +138,7 @@ export class Binder implements ASTVisitor<void> {
 
         this.enterScope();
 
+        this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
         this.defineVar(stmt.id.id);
 
         this.visitStmt(stmt.stmt);
@@ -102,6 +147,7 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitGniomhStmt(stmt: P.GniomhStmt): void {
+        this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
         this.defineVar(stmt.id.id);
         this.visitGniomhBody(stmt);
     }
@@ -112,7 +158,7 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitCtlchStmt(stmt: P.CtlchStmt): void {
-        this.declareVar(stmt.id.id);
+        this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
 
         if(stmt.tuis)
             this.visitID(stmt.tuis.id);
@@ -121,9 +167,12 @@ export class Binder implements ASTVisitor<void> {
 
         this.enterScope();
 
+        this.declareVar("seo");
         this.defineVar("seo");
-        if(stmt.tuis)
+        if(stmt.tuis) {
+            this.declareVar("tuis");
             this.defineVar("tuis");
+        }
 
         for(const gniomh of stmt.gniomhs)
             this.visitGniomhBody(gniomh);
@@ -226,6 +275,7 @@ export class Binder implements ASTVisitor<void> {
 
     public enterScope(): void {
         this.scopes.push(new Map());
+        this.newScopes.push(new Scope());
     }
 
     public exitScope(): void {
@@ -233,26 +283,34 @@ export class Binder implements ASTVisitor<void> {
         if(this.scopes.length === 0)
             return;
         this.scopes.pop();
+        this.newScopes.pop();
+        assert(this.scopes.length === this.newScopes.length);
     }
 
-    private declareVar(s: string): void {
+    private declareVar(s: string, start?: PosInfo, end?:PosInfo): void {
         if(this.scopes.length === 0)
             return;
+        assert(this.scopes.length === this.newScopes.length);
         this.scopes[this.scopes.length - 1].set(s, VarState.DECLARED);
+        this.newScopes[this.newScopes.length - 1].declareVar(s, start, end);
     }
 
     private defineVar(s: string): void {
         if(this.scopes.length === 0)
             return;
+        assert(this.scopes.length === this.newScopes.length);
         this.scopes[this.scopes.length - 1].set(s, VarState.DEFINED);
+        this.newScopes[this.newScopes.length - 1].defineVar(s);
     }
 
     private visitGniomhBody(gniomh: GniomhBody): void {
         // Create a new scope to define arguments in
         this.enterScope();
 
-        for(const arg of gniomh.args?.ids ?? [])
+        for(const arg of gniomh.args?.ids ?? []) {
+            this.declareVar(arg);
             this.defineVar(arg);
+        }
 
         this.visitStmts(gniomh.stmts);
 
