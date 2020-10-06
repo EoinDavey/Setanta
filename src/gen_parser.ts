@@ -103,7 +103,7 @@
 *                     const childF = this.trm.qeval;
 *                     return childF === null ? null : childF.bind(this.trm);
 *                }
-*                .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitAtom(this); }
+*                .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitExpr(this.trm); }
 *              | ID
 *              | Teacs
 *              | Int
@@ -738,7 +738,7 @@ export class Atom_1 {
                     return childF === null ? null : childF.bind(this.trm);
         })();
         this.accept = ((): Acceptor => {
-        return <T>(v: ASTVisitor<T>) => v.visitAtom(this);
+        return <T>(v: ASTVisitor<T>) => v.visitExpr(this.trm);
         })();
     }
 }

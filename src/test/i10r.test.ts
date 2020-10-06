@@ -5,8 +5,7 @@ import { GníomhWrap } from "../../src/gniomh";
 import { Interpreter } from "../../src/i10r";
 import { Rud } from "../../src/rud";
 import { Value } from "../../src/values";
-import { resolveASTNode } from "./utils";
-import { Binder } from "../../src/bind";
+import { Binder, resolveASTNode } from "../../src/bind";
 
 import * as Asserts from "../../src/asserts";
 import * as Checks from "../../src/checks";

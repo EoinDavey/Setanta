@@ -7,6 +7,7 @@ import { Interpreter } from "./i10r";
 import { Value, goTéacs } from "./values";
 import { STOP } from "./consts";
 import { Context } from "./ctx";
+import { resolveASTNode } from "./bind";
 
 import * as fs from "fs";
 
@@ -120,14 +121,13 @@ async function repl() {
         const res = parser.parse();
 
         prevPos = parser.mark();
-        if (res.ast === null) {
+        if (res.ast === null)
             return Promise.reject(`Parser failure: ${res.err}`);
-        }
         const ast = res.ast;
         try {
             // This is an expression, we can print the result
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
-                    console.log(goTéacs(await ast.stmts[0].evalfn(i.global)));
+                    console.log(goTéacs(await resolveASTNode(ast.stmts[0]).evalfn(i.global)));
                     continue;
             }
             await i.interpret(ast);
@@ -212,6 +212,4 @@ function main(): Promise<void> {
     return Promise.resolve();
 }
 
-main().catch((err) => {
-    console.error(err);
-});
+main().catch(err => console.error(err));

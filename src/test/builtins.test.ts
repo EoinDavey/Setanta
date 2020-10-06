@@ -2,7 +2,7 @@ import { isNumber } from "../../src/checks";
 import { Parser, parse } from "../../src/gen_parser";
 import { Interpreter } from "../../src/i10r";
 import { Value } from "../../src/values";
-import { resolveASTNode } from "./utils";
+import { resolveASTNode } from "../../src/bind";
 
 test("test fad", async () => {
     interface TC { inp: string; exp: Value; }

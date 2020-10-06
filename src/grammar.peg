@@ -101,7 +101,7 @@ Atom        :=  _ '\(' trm=Expr _ '\)'
                     const childF = this.trm.qeval;
                     return childF === null ? null : childF.bind(this.trm);
                }
-               .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitAtom(this); }
+               .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitExpr(this.trm); }
              | ID
              | Teacs
              | Int

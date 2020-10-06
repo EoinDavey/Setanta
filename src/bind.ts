@@ -4,6 +4,14 @@ import { PossibleDepth, Stmt } from "./values";
 import { ASTVisitor } from "./visitor";
 import { StaticError } from "./error";
 
+export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) => void }>(node: T): T {
+    const b = new Binder();
+    b.enterScope();
+    node.accept(b);
+    b.exitScope();
+    return node;
+}
+
 export type Resolved<T> = T extends { kind: string }
     ? { [K in keyof T]: Resolved<T[K]> }
     : T extends PossibleDepth
@@ -183,7 +191,7 @@ export class Binder implements ASTVisitor<void> {
 
     public visitAtom(expr: P.Atom): void {
         // No need to bind these
-        if(expr.kind === ASTKinds.Teacs || expr.kind == ASTKinds.Int
+        if(expr.kind === ASTKinds.Teacs || expr.kind === ASTKinds.Int
             || expr.kind === ASTKinds.Bool || expr.kind === ASTKinds.Neamhni)
             return;
         expr.accept<void>(this);
