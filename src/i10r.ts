@@ -11,10 +11,10 @@ export class Interpreter {
     constructor(externals?: (ctx: Context) => [string[], Value][]) {
         this.global = new Context();
         getGlobalBuiltins(this.global)
-            .forEach(x => this.global.env.define(x[0], x[1]));
+            .forEach(x => this.global.env.define(x[0], x[1], true));
         if(externals)
             externals(this.global).forEach(ext =>
-                ext[0].forEach(a => this.global.env.define(a, ext[1])));
+                ext[0].forEach(a => this.global.env.define(a, ext[1], true)));
     }
 
     public stop(): void {

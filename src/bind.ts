@@ -30,6 +30,7 @@ interface GniomhBody {
     stmts: Stmt[]
 }
 
+// TODO remove this
 function assert(b: boolean): void {
     if(!b)
         throw new Error("broken");
@@ -61,6 +62,10 @@ class Scope {
         return this.idxMap.has(id);
     }
 
+    public defined(id: string): boolean {
+        return this.defStatus.get(id) === VarState.DEFINED;
+    }
+
     public getIdx(id: string): number {
         const idx = this.idxMap.get(id);
         if(idx === undefined)
@@ -70,7 +75,8 @@ class Scope {
 }
 
 export class Binder implements ASTVisitor<void> {
-    public depthMap: Map<P.ID, number> = new Map();
+    // depthMap exists for easier testing
+    public depthMap: Map<P.ID, [number, number]> = new Map();
 
     private scopes: Map<string, VarState>[] = [];
     private newScopes: Scope[] = [];
@@ -140,6 +146,10 @@ export class Binder implements ASTVisitor<void> {
 
         this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
         this.defineVar(stmt.id.id);
+
+        // We visit the loop variable ID to resolve it to the immediate scope
+        // for use in assigning values to it during loop execution
+        this.visitID(stmt.id);
 
         this.visitStmt(stmt.stmt);
 
@@ -259,12 +269,14 @@ export class Binder implements ASTVisitor<void> {
         // TODO error on self definition? (a := 2*a)
         // Resolve this variable
         // Find innermost scope containing defined var
-        for(let i = 0; i < this.scopes.length; i++) {
-            const def = this.scopes[this.scopes.length - 1 - i].get(expr.id);
-            if(def === VarState.DEFINED) {
+        for(let i = 0; i < this.newScopes.length; i++) {
+            const def = this.newScopes[this.scopes.length - 1 - i].defined(expr.id);
+            if(def) {
                 // Variable defined in scope i;
-                this.depthMap.set(expr, i);
-                expr.depth = {resolved: true, depth: i, offset: -1};
+                const idx = this.newScopes[this.scopes.length - 1 - i].getIdx(expr.id);
+                // Variable defined at index idx;
+                this.depthMap.set(expr, [i, idx]);
+                expr.depth = {resolved: true, depth: i, offset: idx};
                 return;
             }
         }
@@ -308,8 +320,8 @@ export class Binder implements ASTVisitor<void> {
         this.enterScope();
 
         for(const arg of gniomh.args?.ids ?? []) {
-            this.declareVar(arg);
-            this.defineVar(arg);
+            this.declareVar(arg.id, arg.start, arg.end);
+            this.defineVar(arg.id);
         }
 
         this.visitStmts(gniomh.stmts);

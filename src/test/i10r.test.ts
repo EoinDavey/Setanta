@@ -81,9 +81,8 @@ test("test expressions", async () => {
     ];
     for (const c of cases) {
         const i = new Interpreter();
-        if (c.env) {
+        if (c.env)
             i.global.env = c.env;
-        }
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();

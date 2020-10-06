@@ -128,7 +128,7 @@
 *                .qeval = ((env:Context) => Value[]) | null { return Quick.qCSArgsEval(this); }
 *                .exprs = Expr[] { return [this.head].concat(this.tail.map((x) => x.exp)); }
 * CSIDs       := head=ID tail={_ ',' id=ID}*
-*                .ids = string[] { return [this.head.id].concat(this.tail.map((x) => x.id.id)); }
+*                .ids = ID[] { return [this.head].concat(this.tail.map((x) => x.id)); }
 * ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*' end=@
 *                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this)); }
 *                .qeval = Quick.EvalFn { return Quick.qIdEval(this); }
@@ -822,12 +822,12 @@ export class CSIDs {
     public kind: ASTKinds.CSIDs = ASTKinds.CSIDs;
     public head: ID;
     public tail: CSIDs_$0[];
-    public ids: string[];
+    public ids: ID[];
     constructor(head: ID, tail: CSIDs_$0[]){
         this.head = head;
         this.tail = tail;
-        this.ids = ((): string[] => {
-        return [this.head.id].concat(this.tail.map((x) => x.id.id));
+        this.ids = ((): ID[] => {
+        return [this.head].concat(this.tail.map((x) => x.id));
         })();
     }
 }

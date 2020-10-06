@@ -121,7 +121,7 @@ function refAtom(a: P.Atom, ctx: Context): Promise<Ref> {
     return Promise.resolve((v: Value) => {
         if(!a.depth.resolved)
             return Promise.reject(undefinedError(a.id));
-        ctx.env.assignAtDepth(a.id, a.depth.depth, v);
+        ctx.env.assignAtDepth(a.id, a.depth.depth, a.depth.offset, v);
     });
 }
 
@@ -138,7 +138,7 @@ function execCtlchStmt(b: P.CtlchStmt, ctx: Context) {
     if (b.tuis) {
         if(!b.tuis.id.depth.resolved)
             throw undefinedError(b.tuis.id.id);
-        const tuis = ctx.env.getAtDepth(b.tuis.id.id, b.tuis.id.depth.depth);
+        const tuis = ctx.env.getAtDepth(b.tuis.id.id, b.tuis.id.depth.depth, b.tuis.id.depth.offset);
         if (!tuis || !(Checks.isCreatlach(tuis))) {
             throw new RuntimeError(`Nil aon creatlach leis an ainm ${b.tuis.id.id}`,
                 b.tuis.parentstart, b.tuis.parentend);
@@ -198,9 +198,14 @@ async function execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
     }
 
     ctx = new Context(ctx);
+    ctx.env.define(n.id.id, s);
     const dircheck = e >= s ? (a: number, b: number) => a < b : (a: number, b: number) => a > b;
     for (let i = s; dircheck(i, e); i += stp) {
-        ctx.env.define(n.id.id, i);
+        if(!n.id.depth.resolved) {
+            console.log("bug");
+            throw undefinedError(n.id.id);
+        }
+        ctx.env.assignAtDepth(n.id.id, n.id.depth.depth, n.id.depth.offset, i);
         try {
             await execStmt(n.stmt, ctx);
         } catch (err) {
@@ -231,7 +236,7 @@ function execDefn(a: P.DefnStmt, ctx: Context): Promise<void> {
     if (ctx.env.has(a.id.id)) {
         return Promise.reject(
             new RuntimeError(`Tá ${a.id.id} sa scóip seo cheana féin`,
-            a.idstart, a.idend));
+                a.idstart, a.idend));
     }
     // Try use quick strategy
     if (a.expr.qeval !== null) {
@@ -239,7 +244,7 @@ function execDefn(a: P.DefnStmt, ctx: Context): Promise<void> {
         ctx.env.define(a.id.id, val);
         return Promise.resolve();
     }
-    return a.expr.evalfn(ctx).then((val) => {
+    return a.expr.evalfn(ctx).then(val => {
         return ctx.env.define(a.id.id, val);
     });
 }

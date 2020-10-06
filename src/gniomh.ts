@@ -4,6 +4,7 @@ import { Rud } from "./rud";
 import { Callable, Stmt, Value } from "./values";
 import { Toradh, execStmts } from "./execs";
 import { BrisException } from "./consts";
+import { ID } from "./gen_parser";
 
 export interface Gníomh extends Callable {
     bind(seo: Rud): Gníomh;
@@ -12,9 +13,9 @@ export interface Gníomh extends Callable {
 export class GníomhImpl implements Callable {
     public ainm: string;
     private defn: Stmt[];
-    private args: string[];
+    private args: ID[];
     private ctx: Context;
-    constructor(ainm: string, defn: Stmt[], args: string[], ctx: Context) {
+    constructor(ainm: string, defn: Stmt[], args: ID[], ctx: Context) {
         this.ainm = ainm;
         this.defn = defn;
         this.args = args;
@@ -23,9 +24,8 @@ export class GníomhImpl implements Callable {
     public bind(seo: Rud): Gníomh {
         const ctx = new Context(this.ctx);
         ctx.env.define("seo", seo);
-        if (seo.tuis) {
+        if (seo.tuis)
             ctx.env.define("tuis", seo.tuis);
-        }
         return new GníomhImpl(this.ainm, this.defn, this.args,
             ctx);
     }
@@ -34,9 +34,9 @@ export class GníomhImpl implements Callable {
     }
     public call(args: Value[]): Promise<Value> {
         const ctx: Context = new Context(this.ctx);
-        for (let i = 0; i < args.length; ++i) {
-            ctx.env.define(this.args[i], args[i]);
-        }
+        // args.length === this.args.length here is checked before call
+        for (let i = 0; i < args.length; ++i)
+            ctx.env.define(this.args[i].id, args[i]);
         return execStmts(this.defn, ctx).then(() => null).catch((e) => {
             if (e instanceof Toradh) {
                 return e.luach;

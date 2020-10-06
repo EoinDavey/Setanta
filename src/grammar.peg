@@ -126,7 +126,7 @@ CSArgs      := start=@ head=Expr tail={_ ',' exp=Expr}* end=@
                .qeval = ((env:Context) => Value[]) | null { return Quick.qCSArgsEval(this); }
                .exprs = Expr[] { return [this.head].concat(this.tail.map((x) => x.exp)); }
 CSIDs       := head=ID tail={_ ',' id=ID}*
-               .ids = string[] { return [this.head.id].concat(this.tail.map((x) => x.id.id)); }
+               .ids = ID[] { return [this.head].concat(this.tail.map((x) => x.id)); }
 ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*' end=@
                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this)); }
                .qeval = Quick.EvalFn { return Quick.qIdEval(this); }

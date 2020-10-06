@@ -3,8 +3,8 @@ import { parse } from "../gen_parser";
 
 test("verify depth correctness", () => {
     // prog is input program
-    // depths is a map of depth expected values *in order of usage*
-    interface TC { prog: string; depths: number[]; }
+    // depths is a map of [depth, idx] expected values *in order of usage*
+    interface TC { prog: string; depths: [number, number][]; }
     const cases: TC[] = [
         {
             prog: 'a := 2',
@@ -13,31 +13,31 @@ test("verify depth correctness", () => {
         {
             prog: `a := 2
                    scríobh(a)`,
-            depths: [0],
+            depths: [[0, 0]],
         },
         {
             prog: `a := 2
                    { a }`,
-            depths: [1],
+            depths: [[1, 0]],
         },
         {
             prog: `a := 2
                    a = 2 * a
                    `,
-            depths: [0, 0],
+            depths: [[0, 0], [0, 0]],
         },
         {
             prog: `a := 2
                    má a
                        scríobh(a)`,
-            depths: [0, 0],
+            depths: [[0, 0], [0, 0]],
         },
         {
             prog: `a := 2
                    má a {
                        scríobh(a)
                    }`,
-            depths: [0, 1],
+            depths: [[0, 0], [1, 0]],
         },
         {
             prog: `a := 2
@@ -47,7 +47,7 @@ test("verify depth correctness", () => {
                        scríobh(b)
                    }
                    `,
-            depths: [0, 0, 0, 0, 1, 2],
+            depths: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [1, 0], [2, 1]],
         },
         {
             prog: `a := 2
@@ -57,14 +57,14 @@ test("verify depth correctness", () => {
                        scríobh(b)
                    }
                    `,
-            depths: [0, 0, 0, 0, 1, 2],
+            depths: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [1, 0], [2, 1]],
         },
         {
             prog: `a := 2
                    nuair-a a scríobh(a)
                    nuair-a a { scríobh(a) }
                    `,
-            depths: [0, 0, 0, 1],
+            depths: [[0, 0], [0, 0], [0, 0], [1, 0]],
         },
         {
             prog: `a := 2
@@ -72,7 +72,7 @@ test("verify depth correctness", () => {
                        toradh a + b
                    }
                    `,
-            depths: [1, 0],
+            depths: [[1, 0], [0, 0]],
         },
         {
             prog: `a := 2
@@ -81,7 +81,7 @@ test("verify depth correctness", () => {
                    }
                    gn
                    `,
-            depths: [0, 0],
+            depths: [[0, 0], [0, 1]],
         },
         {
             prog: `a := 2
@@ -94,7 +94,7 @@ test("verify depth correctness", () => {
                    }
                    scríobh(gn()())
                    `,
-            depths: [2, 0, 0],
+            depths: [[2, 0], [0, 0], [0, 1]],
         },
         {
             prog: `a := 2
@@ -108,7 +108,7 @@ test("verify depth correctness", () => {
                        }
                    }
                    `,
-            depths: [0, 2, 2, 2],
+            depths: [[0, 0], [2, 1], [2, 0], [2, 0]],
         },
         {
             prog: `a := 2
@@ -116,14 +116,14 @@ test("verify depth correctness", () => {
                         toradh a + b
                    }
                    `,
-            depths: [1, 0],
+            depths: [[1, 0], [0, 0]],
         },
         {
             prog: `a := 2
                    b := [a]
                    b[a[gníomh(a) { b }]] = 2*a[a]
                    `,
-            depths: [0, 0, 0, 1, 0, 0],
+            depths: [[0, 0], [0, 1], [0, 0], [1, 1], [0, 0], [0, 0]],
         },
     ];
     for (const c of cases) {
@@ -132,7 +132,7 @@ test("verify depth correctness", () => {
         expect(res.ast).not.toBeNull();
         const binder = new Binder();
         binder.visitProgram(res.ast!);
-        const gotDepths: number[] = Array.from(binder.depthMap.entries())
+        const gotDepths: [number, number][] = Array.from(binder.depthMap.entries())
             .sort((a, b) => a[0].start.overallPos - b[0].start.overallPos)
             .map(x => x[1]);
         expect(c.depths).toEqual(gotDepths);
