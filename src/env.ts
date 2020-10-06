@@ -1,16 +1,13 @@
 import { undefinedError } from "./error";
 import { Value } from "./values";
 
-function getValAtDepth(env: Environment, id: string, depth: number): Value {
+function getEnvAtDepth(env: Environment, depth: number): Environment | null {
     for(let i = 0; i < depth; ++i){
         if(env.enclosing === null)
-            throw undefinedError(id);
+            return env.enclosing;
         env = env.enclosing;
     }
-    const val = env.values.get(id);
-    if(val === undefined)
-        throw undefinedError(id);
-    return val;
+    return env;
 }
 
 export class Environment {
@@ -22,8 +19,9 @@ export class Environment {
         }
         return v;
     }
-    public enclosing: Environment | null;
-    public values: Map<string, Value> = new Map();
+
+    public readonly enclosing: Environment | null;
+    private readonly values: Map<string, Value> = new Map();
 
     constructor(enc?: Environment) {
         this.enclosing = enc || null;
@@ -33,30 +31,30 @@ export class Environment {
         return this.values.has(id);
     }
 
-    public get(id: string): Value {
+    public getValDirect(id: string): Value {
         const lookup = this.values.get(id);
-        if (lookup !== undefined) {
-            return lookup;
-        }
-        if (this.enclosing)
-            return this.enclosing.get(id);
-        throw undefinedError(id);
+        if (lookup === undefined)
+            throw undefinedError(id);
+        return lookup;
     }
 
     public getAtDepth(id: string, depth: number): Value {
-        return getValAtDepth(this, id, depth);
+        const env = getEnvAtDepth(this, depth);
+        if(env === null)
+            throw undefinedError(id);
+        const val = env.values.get(id);
+        if(val === undefined)
+            throw undefinedError(id);
+        return val;
     }
 
-    public assign(id: string, val: Value): void {
-        if (this.values.has(id)) {
-            this.values.set(id, val);
-            return;
-        }
-        if (this.enclosing) {
-            this.enclosing.assign(id, val);
-            return;
-        }
-        throw undefinedError(id);
+    public assignAtDepth(id: string, depth: number, val: Value): void {
+        const env = getEnvAtDepth(this, depth);
+        if(env === null)
+            throw undefinedError(id);
+        if(!env.has(id))
+            throw undefinedError(id);
+        env.values.set(id, val);
     }
 
     public define(id: string, val: Value): void {

@@ -191,7 +191,7 @@ test("test assign", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -247,7 +247,7 @@ test("test if stmt", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -310,7 +310,7 @@ test("test nuair-a loops", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -410,7 +410,7 @@ test("test le idir loops", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -461,7 +461,7 @@ test("test function calls", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -518,7 +518,7 @@ test("test function definitions", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -568,7 +568,7 @@ test("test toradh", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -611,7 +611,7 @@ test("test postfix ops", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -692,7 +692,7 @@ test("test arrays", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -755,7 +755,7 @@ test("test obj lookups", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -915,7 +915,7 @@ test("test creatlach stmt", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -982,7 +982,7 @@ test("test object assignment", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -1064,7 +1064,7 @@ test("test constructor", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -1118,7 +1118,7 @@ test("test comments", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -1161,7 +1161,7 @@ test("test anonymous functions", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -1212,6 +1212,7 @@ test("regression test for lexical scoping bug #10", async () => {
     a := 0
     gníomh fn() {
         gníomh fn() {
+            a = a + 1
             toradh a
         }
         a := 1
@@ -1222,5 +1223,5 @@ test("regression test for lexical scoping bug #10", async () => {
     b.visitProgram(ast);
     const i = new Interpreter();
     await i.interpret(ast);
-    expect(i.global.env.get("res")).toEqual(0);
+    expect(i.global.env.getValDirect("res")).toEqual(1);
 });

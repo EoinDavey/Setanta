@@ -2,7 +2,7 @@ import * as Asserts from "./asserts";
 import { evalAsgnOp } from "./binops";
 import * as Checks from "./checks";
 import { CreatlachImpl } from "./creatlach";
-import { RuntimeError, tagErrorLoc } from "./error";
+import { RuntimeError, tagErrorLoc, undefinedError } from "./error";
 import * as P from "./gen_parser";
 import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
@@ -120,7 +120,9 @@ function refAtom(a: P.Atom, ctx: Context): Promise<Ref> {
         });
     }
     return Promise.resolve((v: Value) => {
-        ctx.env.assign(a.id, v);
+        if(!a.depth.resolved)
+            return Promise.reject(undefinedError(a.id));
+        ctx.env.assignAtDepth(a.id, a.depth.depth, v);
     });
 }
 
@@ -135,7 +137,9 @@ function execCtlchStmt(b: P.CtlchStmt, ctx: Context) {
         gníomhs.set(g.ainm, g);
     }
     if (b.tuis) {
-        const tuis = ctx.env.get(b.tuis.id.id);
+        if(!b.tuis.id.depth.resolved)
+            throw undefinedError(b.tuis.id.id);
+        const tuis = ctx.env.getAtDepth(b.tuis.id.id, b.tuis.id.depth.depth);
         if (!tuis || !(Checks.isCreatlach(tuis))) {
             throw new RuntimeError(`Nil aon creatlach leis an ainm ${b.tuis.id.id}`,
                 b.tuis.parentstart, b.tuis.parentend);
