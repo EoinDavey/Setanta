@@ -30,12 +30,6 @@ interface GniomhBody {
     stmts: Stmt[]
 }
 
-// TODO remove this
-function assert(b: boolean): void {
-    if(!b)
-        throw new Error("broken");
-}
-
 class Scope {
     private nEntries = 0;
     private idxMap: Map<string, number> = new Map();
@@ -117,7 +111,6 @@ export class Binder implements ASTVisitor<void> {
 
     public visitDefnStmt(stmt: P.DefnStmt): void {
         // TODO remove this.scopes
-        assert(this.scopes.length === this.newScopes.length);
         if(this.scopes.length && this.scopes[this.scopes.length - 1].has(stmt.id.id))
             throw alreadyDefinedError(stmt.id.id, stmt.id.start, stmt.id.end);
         if(this.newScopes.length && this.newScopes[this.newScopes.length - 1].has(stmt.id.id))
@@ -294,13 +287,11 @@ export class Binder implements ASTVisitor<void> {
             return;
         this.scopes.pop();
         this.newScopes.pop();
-        assert(this.scopes.length === this.newScopes.length);
     }
 
     private declareVar(s: string, start?: PosInfo, end?:PosInfo): void {
         if(this.scopes.length === 0)
             return;
-        assert(this.scopes.length === this.newScopes.length);
         this.scopes[this.scopes.length - 1].set(s, VarState.DECLARED);
         this.newScopes[this.newScopes.length - 1].declareVar(s, start, end);
     }
@@ -308,7 +299,6 @@ export class Binder implements ASTVisitor<void> {
     private defineVar(s: string): void {
         if(this.scopes.length === 0)
             return;
-        assert(this.scopes.length === this.newScopes.length);
         this.scopes[this.scopes.length - 1].set(s, VarState.DEFINED);
         this.newScopes[this.newScopes.length - 1].defineVar(s);
     }

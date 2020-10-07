@@ -81,8 +81,6 @@ async function getFullInput(getLine: () => Promise<string|null>,
     }
 }
 
-// TODO Fix variable resolution in REPL
-// need persistent use of binder to maintain scoping + indices
 async function repl() {
     const rl: readline.Interface = readline.createInterface({
         input: process.stdin,
