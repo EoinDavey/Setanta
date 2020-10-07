@@ -131,7 +131,9 @@ test("verify depth correctness", () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         const binder = new Binder();
+        binder.enterScope();
         binder.visitProgram(res.ast!);
+        binder.exitScope();
         const gotDepths: [number, number][] = Array.from(binder.depthMap.entries())
             .sort((a, b) => a[0].start.overallPos - b[0].start.overallPos)
             .map(x => x[1]);

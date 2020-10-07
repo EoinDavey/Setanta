@@ -8,8 +8,11 @@ import { Binder } from "./bind";
 
 export class Interpreter {
     public global: Context;
+    public binder: Binder;
     constructor(externals?: (ctx: Context) => [string[], Value][]) {
         this.global = new Context();
+        this.binder = new Binder();
+        this.binder.enterScope();
         getGlobalBuiltins(this.global)
             .forEach(x => this.global.env.define(x[0], x[1], true));
         if(externals)
@@ -22,8 +25,7 @@ export class Interpreter {
     }
 
     public interpret(p: Program): Promise<void> {
-        const binder = new Binder();
-        const resolvedAst = binder.visitProgram(p);
+        const resolvedAst = this.binder.visitProgram(p);
         return execStmts(resolvedAst.stmts, this.global)
             .catch((err) => {
                 if(err === STOP)

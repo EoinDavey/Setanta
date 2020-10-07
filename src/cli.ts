@@ -7,7 +7,6 @@ import { Interpreter } from "./i10r";
 import { Value, goTéacs } from "./values";
 import { STOP } from "./consts";
 import { Context } from "./ctx";
-import { resolveASTNode } from "./bind";
 
 import * as fs from "fs";
 
@@ -129,8 +128,10 @@ async function repl() {
         try {
             // This is an expression, we can print the result
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
-                    console.log(goTéacs(await resolveASTNode(ast.stmts[0]).evalfn(i.global)));
-                    continue;
+                const expr = ast.stmts[0];
+                i.binder.visitExpr(expr);
+                console.log(goTéacs(await ast.stmts[0].evalfn(i.global)));
+                continue;
             }
             await i.interpret(ast);
         } catch (err) {

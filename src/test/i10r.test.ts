@@ -5,7 +5,7 @@ import { GníomhWrap } from "../../src/gniomh";
 import { Interpreter } from "../../src/i10r";
 import { Rud } from "../../src/rud";
 import { Value } from "../../src/values";
-import { Binder, resolveASTNode } from "../../src/bind";
+import { resolveASTNode } from "../../src/bind";
 
 import * as Asserts from "../../src/asserts";
 import * as Checks from "../../src/checks";
@@ -1217,8 +1217,6 @@ test("regression test for lexical scoping bug #10", async () => {
         toradh fn
     }
     res := fn()()`).ast!;
-    const b = new Binder();
-    b.visitProgram(ast);
     const i = new Interpreter();
     await i.interpret(ast);
     expect(i.global.env.getValDirect("res")).toEqual(1);

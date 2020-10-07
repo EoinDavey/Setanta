@@ -82,9 +82,7 @@ export class Binder implements ASTVisitor<void> {
     private newScopes: Scope[] = [];
 
     public visitProgram(p: P.Program): Resolved<P.Program> {
-        this.enterScope();
         this.visitStmts(p.stmts);
-        this.exitScope();
         return p as Resolved<P.Program>;
     }
 
