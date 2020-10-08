@@ -4,6 +4,7 @@ import { PossibleResolution, Stmt } from "./values";
 import { ASTVisitor } from "./visitor";
 import { alreadyDefinedError, undefinedError } from "./error";
 
+// TODO add location to undefinedError
 export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) => void }>(node: T): T {
     const b = new Binder();
     b.enterScope();
@@ -12,7 +13,7 @@ export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) =
     return node;
 }
 
-export type Resolved<T> = T extends { kind: string }
+type Resolved<T> = T extends { kind: string }
     ? { [K in keyof T]: Resolved<T[K]> }
     : T extends PossibleResolution
     ? { resolved: true, global: false, depth: number, offset: number } | { resolved: true, global: true }
@@ -72,8 +73,7 @@ export class Binder implements ASTVisitor<void> {
     // depthMap exists for easier testing
     public depthMap: Map<P.ID, ([number, number] | { global: true})> = new Map();
 
-    private scopes: Map<string, VarState>[] = [];
-    private newScopes: Scope[] = [];
+    private scopes: Scope[] = [];
 
     public visitProgram(p: P.Program): Resolved<P.Program> {
         this.visitStmts(p.stmts);
@@ -110,10 +110,7 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitDefnStmt(stmt: P.DefnStmt): void {
-        // TODO remove this.scopes
         if(this.scopes.length && this.scopes[this.scopes.length - 1].has(stmt.id.id))
-            throw alreadyDefinedError(stmt.id.id, stmt.id.start, stmt.id.end);
-        if(this.newScopes.length && this.newScopes[this.newScopes.length - 1].has(stmt.id.id))
             throw alreadyDefinedError(stmt.id.id, stmt.id.start, stmt.id.end);
         this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
         this.visitExpr(stmt.expr);
@@ -262,11 +259,11 @@ export class Binder implements ASTVisitor<void> {
         // Find innermost scope containing defined var
         // Do not check the outermost scope, as this is the
         // global scope, which is treated separately
-        for(let i = 0; i < this.newScopes.length - 1; i++) {
-            const def = this.newScopes[this.scopes.length - 1 - i].defined(expr.id);
+        for(let i = 0; i < this.scopes.length - 1; i++) {
+            const def = this.scopes[this.scopes.length - 1 - i].defined(expr.id);
             if(def) {
                 // Variable defined in scope i;
-                const idx = this.newScopes[this.scopes.length - 1 - i].getIdx(expr.id);
+                const idx = this.scopes[this.scopes.length - 1 - i].getIdx(expr.id);
                 // Variable defined at index idx;
                 this.depthMap.set(expr, [i, idx]);
                 expr.depth = {resolved: true, global: false, depth: i, offset: idx};
@@ -280,8 +277,7 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public enterScope(): void {
-        this.scopes.push(new Map());
-        this.newScopes.push(new Scope());
+        this.scopes.push(new Scope());
     }
 
     public exitScope(): void {
@@ -289,21 +285,18 @@ export class Binder implements ASTVisitor<void> {
         if(this.scopes.length === 0)
             return;
         this.scopes.pop();
-        this.newScopes.pop();
     }
 
     private declareVar(s: string, start?: PosInfo, end?:PosInfo): void {
         if(this.scopes.length === 0)
             return;
-        this.scopes[this.scopes.length - 1].set(s, VarState.DECLARED);
-        this.newScopes[this.newScopes.length - 1].declareVar(s, start, end);
+        this.scopes[this.scopes.length - 1].declareVar(s, start, end);
     }
 
     private defineVar(s: string): void {
         if(this.scopes.length === 0)
             return;
-        this.scopes[this.scopes.length - 1].set(s, VarState.DEFINED);
-        this.newScopes[this.newScopes.length - 1].defineVar(s);
+        this.scopes[this.scopes.length - 1].defineVar(s);
     }
 
     private visitGniomhBody(gniomh: GniomhBody): void {
