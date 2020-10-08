@@ -56,7 +56,7 @@ export function qIdEval(id: ID): EvalFn {
         try {
             if(!id.depth.resolved)
                 throw undefinedError(id.id);
-            return ctx.env.getAtDepth(id.id, id.depth.depth, id.depth.offset);
+            return ctx.env.get(id.id, id.depth);
         } catch(err) {
             throw tagErrorLoc(err, id.start, id.end);
         }

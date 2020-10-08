@@ -121,7 +121,7 @@ function refAtom(a: P.Atom, ctx: Context): Promise<Ref> {
     return Promise.resolve((v: Value) => {
         if(!a.depth.resolved)
             return Promise.reject(undefinedError(a.id));
-        ctx.env.assignAtDepth(a.id, a.depth.depth, a.depth.offset, v);
+        ctx.env.assign(a.id, a.depth, v);
     });
 }
 
@@ -138,7 +138,7 @@ function execCtlchStmt(b: P.CtlchStmt, ctx: Context) {
     if (b.tuis) {
         if(!b.tuis.id.depth.resolved)
             throw undefinedError(b.tuis.id.id);
-        const tuis = ctx.env.getAtDepth(b.tuis.id.id, b.tuis.id.depth.depth, b.tuis.id.depth.offset);
+        const tuis = ctx.env.get(b.tuis.id.id, b.tuis.id.depth);
         if (!tuis || !(Checks.isCreatlach(tuis))) {
             throw new RuntimeError(`Nil aon creatlach leis an ainm ${b.tuis.id.id}`,
                 b.tuis.parentstart, b.tuis.parentend);
@@ -190,6 +190,7 @@ async function execNuair(n: P.NuairStmt, ctx: Context): Promise<void> {
 }
 
 async function execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
+    const id = n.id;
     const s = Asserts.assertNumber(await n.strt.evalfn(ctx));
     const e = Asserts.assertNumber(await n.end.evalfn(ctx));
     let stp = e >= s ? 1 : -1;
@@ -198,14 +199,12 @@ async function execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
     }
 
     ctx = new Context(ctx);
-    ctx.env.define(n.id.id, s);
+    ctx.env.define(id.id, s);
     const dircheck = e >= s ? (a: number, b: number) => a < b : (a: number, b: number) => a > b;
     for (let i = s; dircheck(i, e); i += stp) {
-        if(!n.id.depth.resolved) {
-            console.log("bug");
-            throw undefinedError(n.id.id);
-        }
-        ctx.env.assignAtDepth(n.id.id, n.id.depth.depth, n.id.depth.offset, i);
+        if(!id.depth.resolved)
+            throw undefinedError(id.id);
+        ctx.env.assign(id.id, id.depth, i);
         try {
             await execStmt(n.stmt, ctx);
         } catch (err) {
@@ -233,11 +232,6 @@ function execMá(f: P.IfStmt, ctx: Context): Promise<void> {
 }
 
 function execDefn(a: P.DefnStmt, ctx: Context): Promise<void> {
-    if (ctx.env.has(a.id.id)) {
-        return Promise.reject(
-            new RuntimeError(`Tá ${a.id.id} sa scóip seo cheana féin`,
-                a.idstart, a.idend));
-    }
     // Try use quick strategy
     if (a.expr.qeval !== null) {
         const val = a.expr.qeval(ctx);

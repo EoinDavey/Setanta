@@ -1,6 +1,6 @@
 import { ASTKinds, PosInfo } from "./gen_parser";
 import * as P from "./gen_parser";
-import { PossibleDepth, Stmt } from "./values";
+import { PossibleResolution, Stmt } from "./values";
 import { ASTVisitor } from "./visitor";
 import { alreadyDefinedError, undefinedError } from "./error";
 
@@ -14,8 +14,8 @@ export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) =
 
 export type Resolved<T> = T extends { kind: string }
     ? { [K in keyof T]: Resolved<T[K]> }
-    : T extends PossibleDepth
-    ? { resolved: true, depth: number, offset: number }
+    : T extends PossibleResolution
+    ? { resolved: true, global: false, depth: number, offset: number } | { resolved: true, global: true }
     : T extends (infer X)[]
     ? Resolved<X>[]
     : T;
@@ -70,7 +70,7 @@ class Scope {
 
 export class Binder implements ASTVisitor<void> {
     // depthMap exists for easier testing
-    public depthMap: Map<P.ID, [number, number]> = new Map();
+    public depthMap: Map<P.ID, ([number, number] | { global: true})> = new Map();
 
     private scopes: Map<string, VarState>[] = [];
     private newScopes: Scope[] = [];
@@ -260,20 +260,23 @@ export class Binder implements ASTVisitor<void> {
         // TODO error on self definition? (a := 2*a)
         // Resolve this variable
         // Find innermost scope containing defined var
-        for(let i = 0; i < this.newScopes.length; i++) {
+        // Do not check the outermost scope, as this is the
+        // global scope, which is treated separately
+        for(let i = 0; i < this.newScopes.length - 1; i++) {
             const def = this.newScopes[this.scopes.length - 1 - i].defined(expr.id);
             if(def) {
                 // Variable defined in scope i;
                 const idx = this.newScopes[this.scopes.length - 1 - i].getIdx(expr.id);
                 // Variable defined at index idx;
                 this.depthMap.set(expr, [i, idx]);
-                expr.depth = {resolved: true, depth: i, offset: idx};
+                expr.depth = {resolved: true, global: false, depth: i, offset: idx};
                 return;
             }
         }
+        this.depthMap.set(expr, { global: true });
         // If we haven't found it, assume its a global (we can't always locate globals
         // for many reasons)
-        expr.depth = {resolved: true, depth: this.scopes.length - 1, offset: -1};
+        expr.depth = {resolved: true, global: true};
     }
 
     public enterScope(): void {

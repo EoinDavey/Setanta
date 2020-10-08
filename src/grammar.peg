@@ -1,6 +1,6 @@
 ---
 import { Context } from "./ctx";
-import { PossibleDepth, callFunc, idxList, Value } from "./values";
+import { PossibleResolution, callFunc, idxList, Value } from "./values";
 import { unescapeChars } from "./teacs";
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
@@ -131,7 +131,7 @@ ID          := _ !{Keyword gap} start=@ id='[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z
                .evalfn = EvalFn { return qEvalToEval(Quick.qIdEval(this)); }
                .qeval = Quick.EvalFn { return Quick.qIdEval(this); }
                .accept = Acceptor { return <T>(v: ASTVisitor<T>) => v.visitID(this); }
-               .depth = PossibleDepth { return {resolved: false}; }
+               .depth = PossibleResolution { return {resolved: false}; }
 Bool        := _ bool='f[ií]or|br[eé]ag'
                .evalfn = EvalFn { return qEvalToEval(Quick.qBoolEval(this.bool)); }
                .qeval = Quick.EvalFn { return Quick.qBoolEval(this.bool); }

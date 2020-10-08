@@ -1,5 +1,5 @@
 import { undefinedError } from "./error";
-import { Value } from "./values";
+import { Resolution, Value } from "./values";
 
 function getEnvAtDepth(env: Environment, depth: number): Environment | null {
     for(let i = 0; i < depth; ++i){
@@ -10,69 +10,92 @@ function getEnvAtDepth(env: Environment, depth: number): Environment | null {
     return env;
 }
 
+// Environment contains the current values for the in-scope variables
+// Environments are recursive, each contains a reference to it's parent
+// environment (enclosing scope) if it exists. (It only doesn't exist for
+// the global environment.
 export class Environment {
 
     public static from(arr: [string, Value][]): Environment {
         const v = new Environment();
         for (const x of arr)
-            v.define(x[0], x[1], true);
+            v.define(x[0], x[1]);
         return v;
     }
 
-    private readonly slowGlobals: Map<string, Value>;
+    // Enclosing environment
     public readonly enclosing: Environment | null;
-    private readonly values: Map<string, Value> = new Map();
-    private testList: Value[] = [];
+    // globals contains the collection of global variables
+    private readonly globals: Map<string, Value>;
+    // values contains the current values for each variable
+    // the mapping of variable name to array index is computed
+    // during the variable resolution stage, and stored on the
+    // AST.
+    private readonly values: Value[] = [];
 
     constructor(enc?: Environment) {
         this.enclosing = enc || null;
-        this.slowGlobals = enc?.slowGlobals ?? new Map();
+        // If we have no enclosing environment, we are
+        // the outermost environment, so we construct
+        // the globals
+        this.globals = enc?.globals ?? new Map();
     }
 
-    public has(id: string): boolean {
-        return this.values.has(id);
+    public getGlobalValDirect(id: string): Value {
+        return this.getGlobal(id);
     }
 
-    public getValDirect(id: string): Value {
-        const lookup = this.values.get(id);
-        if (lookup === undefined)
-            throw undefinedError(id);
-        return lookup;
+    public get(id: string, res: Resolution): Value {
+        return res.global
+            ? this.getGlobal(id)
+            : this.getAtDepth(id, res.depth, res.offset);
     }
 
-    public getAtDepth(id: string, depth: number, idx: number): Value {
+    public assign(id: string, res: Resolution, val: Value): void {
+        if(res.global)
+            this.assignGlobal(id, val);
+        else
+            this.assignAtDepth(id, res.depth, res.offset, val);
+    }
+
+    public define(id: string, val: Value): void {
+        // We are global scope
+        if(this.enclosing === null) {
+            this.globals.set(id, val);
+        } else {
+            this.values.push(val);
+        }
+    }
+
+    private getAtDepth(id: string, depth: number, idx: number): Value {
         const env = getEnvAtDepth(this, depth);
         if(env === null)
             throw undefinedError(id);
-        const val = env.values.get(id);
-        const test = idx === -1 ? env.slowGlobals.get(id) : env.testList[idx];
+        if(idx < 0 || idx >= env.values.length)
+            throw undefinedError(id);
+        const val = env.values[idx];
         if(val === undefined)
             throw undefinedError(id);
-        if(test !== val)
-            throw new Error(`fugd ${test} !== ${val}`);
         return val;
     }
 
-    public assignAtDepth(id: string, depth: number, idx: number, val: Value): void {
+    private getGlobal(id: string): Value {
+        const val = this.globals.get(id);
+        if(val === undefined)
+            throw undefinedError(id);
+        return val;
+    }
+
+    private assignAtDepth(id: string, depth: number, idx: number, val: Value): void {
         const env = getEnvAtDepth(this, depth);
         if(env === null)
             throw undefinedError(id);
-        if(!env.has(id))
+        if(idx < 0 || idx >= env.values.length)
             throw undefinedError(id);
-        if(idx === -1)
-            env.slowGlobals.set(id, val);
-        else
-            env.testList[idx] = val;
-        env.values.set(id, val);
+        env.values[idx] = val;
     }
 
-    // if anonGlobal is true, define ID into the un-resolved global space
-    public define(id: string, val: Value, anonGlobal = false): void {
-        if(anonGlobal) {
-            this.slowGlobals.set(id, val);
-        } else {
-            this.testList.push(val);
-        }
-        this.values.set(id, val);
+    private assignGlobal(id: string, val: Value): void {
+        this.globals.set(id, val);
     }
 }

@@ -14,10 +14,10 @@ export class Interpreter {
         this.binder = new Binder();
         this.binder.enterScope();
         getGlobalBuiltins(this.global)
-            .forEach(x => this.global.env.define(x[0], x[1], true));
+            .forEach(x => this.global.env.define(x[0], x[1]));
         if(externals)
             externals(this.global).forEach(ext =>
-                ext[0].forEach(a => this.global.env.define(a, ext[1], true)));
+                ext[0].forEach(a => this.global.env.define(a, ext[1])));
     }
 
     public stop(): void {
