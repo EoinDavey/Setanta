@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+ 
+### Added
+
+- Variable lookup speeds increased
+- Self definition is now an error ('a := 2 * a')
+
+### Fixed
+
+- Closures now resolve variables lexically correctly (#10)
+
+
 ## 0.8.0 - 2020/07/22
 
 ### Added
