@@ -133,6 +133,7 @@ async function repl() {
             }
             await i.interpret(ast);
         } catch (err) {
+            // TODO add StaticError here
             if (err instanceof RuntimeError) {
                 printError(err, soFar);
             } else if (err !== STOP) {

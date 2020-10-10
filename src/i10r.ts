@@ -24,7 +24,7 @@ export class Interpreter {
         this.global.stop();
     }
 
-    public interpret(p: Program): Promise<void> {
+    public async interpret(p: Program): Promise<void> {
         const resolvedAst = this.binder.visitProgram(p);
         return execStmts(resolvedAst.stmts, this.global)
             .catch((err) => {

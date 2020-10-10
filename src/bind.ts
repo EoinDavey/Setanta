@@ -63,6 +63,10 @@ class Scope {
         return this.defStatus.get(id) === VarState.DEFINED;
     }
 
+    public declared(id: string): boolean {
+        return this.defStatus.get(id) === VarState.DECLARED;
+    }
+
     public getIdx(id: string): number | undefined {
         const idx = this.idxMap.get(id);
         return idx;
@@ -254,7 +258,11 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitID(expr: P.ID): void {
-        // TODO error on self definition? (a := 2*a)
+        // If this variable has been declared, (but not defined) then it can't be evaluated
+        if(this.scopes.length &&
+            this.scopes[this.scopes.length - 1].declared(expr.id)){
+            throw new StaticError(`Níl an athróg "${expr.id}" sainithe fós`, expr.start, expr.end);
+        }
         // Resolve this variable
         // Find innermost scope containing defined var
         // Do not check the outermost scope, as this is the
