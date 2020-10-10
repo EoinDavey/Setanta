@@ -4,7 +4,6 @@ import { PossibleResolution, Stmt } from "./values";
 import { ASTVisitor } from "./visitor";
 import { StaticError, alreadyDefinedError } from "./error";
 
-// TODO add location to undefinedError
 export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) => void }>(node: T): T {
     const b = new Binder();
     b.enterScope();
@@ -21,8 +20,8 @@ type Resolved<T> = T extends { kind: string }
     ? Resolved<X>[]
     : T;
 
-type DefinedID = {
-    defined: true;
+type DeclaredID = {
+    declared: true;
     id: string;
 };
 
@@ -52,7 +51,7 @@ class Scope {
         this.nEntries++;
     }
 
-    public defineVar(id: DefinedID): void {
+    public defineVar(id: DeclaredID): void {
         this.defStatus.set(id.id, VarState.DEFINED);
     }
 
@@ -287,14 +286,14 @@ export class Binder implements ASTVisitor<void> {
         this.scopes.pop();
     }
 
-    private declareVar(s: string, start?: PosInfo, end?:PosInfo): DefinedID {
+    private declareVar(s: string, start?: PosInfo, end?:PosInfo): DeclaredID {
         if(this.scopes.length === 0)
             throw new StaticError(`Ní féidir an athróg ${s} a fhógairt`, start, end);
         this.scopes[this.scopes.length - 1].declareVar(s, start, end);
-        return { defined: true, id: s };
+        return { declared: true, id: s };
     }
 
-    private defineVar(id: DefinedID): void {
+    private defineVar(id: DeclaredID): void {
         if(this.scopes.length === 0)
             return;
         this.scopes[this.scopes.length - 1].defineVar(id);
