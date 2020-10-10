@@ -2,7 +2,7 @@ import { ASTKinds, PosInfo } from "./gen_parser";
 import * as P from "./gen_parser";
 import { PossibleResolution, Stmt } from "./values";
 import { ASTVisitor } from "./visitor";
-import { alreadyDefinedError, undefinedError } from "./error";
+import { StaticError, alreadyDefinedError } from "./error";
 
 // TODO add location to undefinedError
 export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) => void }>(node: T): T {
@@ -20,6 +20,11 @@ type Resolved<T> = T extends { kind: string }
     : T extends (infer X)[]
     ? Resolved<X>[]
     : T;
+
+type DefinedID = {
+    defined: true;
+    id: string;
+};
 
 enum VarState {
     DECLARED,
@@ -47,10 +52,8 @@ class Scope {
         this.nEntries++;
     }
 
-    public defineVar(id: string): void {
-        if(!this.idxMap.has(id))
-            throw undefinedError(id);
-        this.defStatus.set(id, VarState.DEFINED);
+    public defineVar(id: DefinedID): void {
+        this.defStatus.set(id.id, VarState.DEFINED);
     }
 
     public has(id: string): boolean {
@@ -61,10 +64,8 @@ class Scope {
         return this.defStatus.get(id) === VarState.DEFINED;
     }
 
-    public getIdx(id: string): number {
+    public getIdx(id: string): number | undefined {
         const idx = this.idxMap.get(id);
-        if(idx === undefined)
-            throw undefinedError(id);
         return idx;
     }
 }
@@ -112,9 +113,9 @@ export class Binder implements ASTVisitor<void> {
     public visitDefnStmt(stmt: P.DefnStmt): void {
         if(this.scopes.length && this.scopes[this.scopes.length - 1].has(stmt.id.id))
             throw alreadyDefinedError(stmt.id.id, stmt.id.start, stmt.id.end);
-        this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
+        const ainm = this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
         this.visitExpr(stmt.expr);
-        this.defineVar(stmt.id.id);
+        this.defineVar(ainm);
     }
 
     public visitNuairStmt(stmt: P.NuairStmt): void {
@@ -132,8 +133,8 @@ export class Binder implements ASTVisitor<void> {
 
         this.enterScope();
 
-        this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
-        this.defineVar(stmt.id.id);
+        const loopvar = this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
+        this.defineVar(loopvar);
 
         // We visit the loop variable ID to resolve it to the immediate scope
         // for use in assigning values to it during loop execution
@@ -145,8 +146,8 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitGniomhStmt(stmt: P.GniomhStmt): void {
-        this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
-        this.defineVar(stmt.id.id);
+        const ainm = this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
+        this.defineVar(ainm);
         this.visitGniomhBody(stmt);
     }
 
@@ -156,20 +157,20 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitCtlchStmt(stmt: P.CtlchStmt): void {
-        this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
+        const id = this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
 
         if(stmt.tuis)
             this.visitID(stmt.tuis.id);
 
-        this.defineVar(stmt.id.id);
+        this.defineVar(id);
 
         this.enterScope();
 
-        this.declareVar("seo");
-        this.defineVar("seo");
+        const seo = this.declareVar("seo");
+        this.defineVar(seo);
         if(stmt.tuis) {
-            this.declareVar("tuis");
-            this.defineVar("tuis");
+            const tuis = this.declareVar("tuis");
+            this.defineVar(tuis);
         }
 
         for(const gniomh of stmt.gniomhs)
@@ -260,15 +261,14 @@ export class Binder implements ASTVisitor<void> {
         // Do not check the outermost scope, as this is the
         // global scope, which is treated separately
         for(let i = 0; i < this.scopes.length - 1; i++) {
-            const def = this.scopes[this.scopes.length - 1 - i].defined(expr.id);
-            if(def) {
-                // Variable defined in scope i;
-                const idx = this.scopes[this.scopes.length - 1 - i].getIdx(expr.id);
-                // Variable defined at index idx;
-                this.depthMap.set(expr, [i, idx]);
-                expr.depth = {resolved: true, global: false, depth: i, offset: idx};
-                return;
-            }
+            const idx = this.scopes[this.scopes.length - 1 - i].getIdx(expr.id);
+            if(idx === undefined)
+                continue;
+            // Variable defined in scope i;
+            // Variable defined at index idx;
+            this.depthMap.set(expr, [i, idx]);
+            expr.depth = {resolved: true, global: false, depth: i, offset: idx};
+            return;
         }
         this.depthMap.set(expr, { global: true });
         // If we haven't found it, assume its a global (we can't always locate globals
@@ -287,16 +287,17 @@ export class Binder implements ASTVisitor<void> {
         this.scopes.pop();
     }
 
-    private declareVar(s: string, start?: PosInfo, end?:PosInfo): void {
+    private declareVar(s: string, start?: PosInfo, end?:PosInfo): DefinedID {
         if(this.scopes.length === 0)
-            return;
+            throw new StaticError(`Ní féidir an athróg ${s} a fhógairt`, start, end);
         this.scopes[this.scopes.length - 1].declareVar(s, start, end);
+        return { defined: true, id: s };
     }
 
-    private defineVar(s: string): void {
+    private defineVar(id: DefinedID): void {
         if(this.scopes.length === 0)
             return;
-        this.scopes[this.scopes.length - 1].defineVar(s);
+        this.scopes[this.scopes.length - 1].defineVar(id);
     }
 
     private visitGniomhBody(gniomh: GniomhBody): void {
@@ -304,8 +305,8 @@ export class Binder implements ASTVisitor<void> {
         this.enterScope();
 
         for(const arg of gniomh.args?.ids ?? []) {
-            this.declareVar(arg.id, arg.start, arg.end);
-            this.defineVar(arg.id);
+            const v = this.declareVar(arg.id, arg.start, arg.end);
+            this.defineVar(v);
         }
 
         this.visitStmts(gniomh.stmts);

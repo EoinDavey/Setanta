@@ -31,11 +31,12 @@ export class RuntimeError extends Error {
     }
 }
 
-export function alreadyDefinedError(id: string, start?:PosInfo, end?:PosInfo): StaticError {
+export function alreadyDefinedError(id: string, start?: PosInfo, end?: PosInfo): StaticError {
     return new StaticError(`Tá ${id} sa scóip seo cheana féin`, start, end);
 }
-export function undefinedError(id: string): RuntimeError {
-    return new RuntimeError(`Níl aon athróg le ainm: ${id}`);
+
+export function undefinedError(id: string, start?: PosInfo, end?: PosInfo): RuntimeError {
+    return new RuntimeError(`Níl aon athróg le ainm: ${id}`, start, end);
 }
 
 export function tagErrorLoc(r: Error, start: PosInfo, end: PosInfo): Error {
