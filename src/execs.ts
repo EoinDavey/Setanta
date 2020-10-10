@@ -2,7 +2,7 @@ import * as Asserts from "./asserts";
 import { evalAsgnOp } from "./binops";
 import * as Checks from "./checks";
 import { CreatlachImpl } from "./creatlach";
-import { RuntimeError, tagErrorLoc } from "./error";
+import { RuntimeError, tagErrorLoc, undefinedError } from "./error";
 import * as P from "./gen_parser";
 import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
@@ -77,9 +77,8 @@ function refPostfix(p: P.Postfix, ctx: Context): Promise<Ref> {
         const op: P.PostOp = p.ops[p.ops.length - 1];
         const subPost: P.Postfix = new P.Postfix(p.start, p.at, ops, p.end);
         return subPost.evalfn(ctx).then((val: Value) => {
-            if ("args" in op) {
+            if ("args" in op)
                 return Promise.reject(new RuntimeError("Ní féidir leat luach a thabhairt do gníomh", p.start, p.end));
-            }
             const arr: Value[] = Asserts.assertLiosta(val);
             return op.expr.evalfn(ctx).then((idxV: Value) => {
                 const idx: number = Asserts.assertNumber(idxV);
@@ -120,7 +119,9 @@ function refAtom(a: P.Atom, ctx: Context): Promise<Ref> {
         });
     }
     return Promise.resolve((v: Value) => {
-        ctx.env.assign(a.id, v);
+        if(!a.depth.resolved)
+            return Promise.reject(undefinedError(a.id));
+        ctx.env.assign(a.id, a.depth, v);
     });
 }
 
@@ -135,7 +136,9 @@ function execCtlchStmt(b: P.CtlchStmt, ctx: Context) {
         gníomhs.set(g.ainm, g);
     }
     if (b.tuis) {
-        const tuis = ctx.env.get(b.tuis.id.id);
+        if(!b.tuis.id.depth.resolved)
+            throw undefinedError(b.tuis.id.id);
+        const tuis = ctx.env.get(b.tuis.id.id, b.tuis.id.depth);
         if (!tuis || !(Checks.isCreatlach(tuis))) {
             throw new RuntimeError(`Nil aon creatlach leis an ainm ${b.tuis.id.id}`,
                 b.tuis.parentstart, b.tuis.parentend);
@@ -187,16 +190,21 @@ async function execNuair(n: P.NuairStmt, ctx: Context): Promise<void> {
 }
 
 async function execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
-    ctx = new Context(ctx);
+    const id = n.id;
     const s = Asserts.assertNumber(await n.strt.evalfn(ctx));
     const e = Asserts.assertNumber(await n.end.evalfn(ctx));
     let stp = e >= s ? 1 : -1;
     if (n.step !== null) {
         stp = Asserts.assertNumber(await n.step.step.evalfn(ctx));
     }
+
+    ctx = new Context(ctx);
+    ctx.env.define(id.id, s);
     const dircheck = e >= s ? (a: number, b: number) => a < b : (a: number, b: number) => a > b;
     for (let i = s; dircheck(i, e); i += stp) {
-        ctx.env.define(n.id.id, i);
+        if(!id.depth.resolved)
+            throw undefinedError(id.id);
+        ctx.env.assign(id.id, id.depth, i);
         try {
             await execStmt(n.stmt, ctx);
         } catch (err) {
@@ -224,18 +232,13 @@ function execMá(f: P.IfStmt, ctx: Context): Promise<void> {
 }
 
 function execDefn(a: P.DefnStmt, ctx: Context): Promise<void> {
-    if (ctx.env.has(a.id.id)) {
-        return Promise.reject(
-            new RuntimeError(`Tá ${a.id.id} sa scóip seo cheana féin`,
-            a.idstart, a.idend));
-    }
     // Try use quick strategy
     if (a.expr.qeval !== null) {
         const val = a.expr.qeval(ctx);
         ctx.env.define(a.id.id, val);
         return Promise.resolve();
     }
-    return a.expr.evalfn(ctx).then((val) => {
+    return a.expr.evalfn(ctx).then(val => {
         return ctx.env.define(a.id.id, val);
     });
 }

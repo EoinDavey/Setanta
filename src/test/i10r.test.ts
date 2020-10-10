@@ -1,10 +1,11 @@
 import { CreatlachImpl } from "../../src/creatlach";
 import { Environment } from "../../src/env";
-import { Parser } from "../../src/gen_parser";
+import { Parser, parse } from "../../src/gen_parser";
 import { GníomhWrap } from "../../src/gniomh";
 import { Interpreter } from "../../src/i10r";
 import { Rud } from "../../src/rud";
 import { Value } from "../../src/values";
+import { resolveASTNode } from "../../src/bind";
 
 import * as Asserts from "../../src/asserts";
 import * as Checks from "../../src/checks";
@@ -80,14 +81,14 @@ test("test expressions", async () => {
     ];
     for (const c of cases) {
         const i = new Interpreter();
-        if (c.env) {
+        if (c.env)
             i.global.env = c.env;
-        }
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
+        const resolved = resolveASTNode(res!);
         try {
-            const got = await res!.evalfn(i.global);
+            const got = await resolved.evalfn(i.global);
             const quickGet = res!.qeval;
             expect(quickGet).not.toBeNull();
             expect(quickGet!(i.global)).toEqual(c.exp);
@@ -188,7 +189,7 @@ test("test assign", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -244,7 +245,7 @@ test("test if stmt", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -306,8 +307,13 @@ test("test nuair-a loops", async () => {
         const res = p.parse();
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        try {
+            await i.interpret(res.ast!);
+        } catch(e) {
+            console.log(c.inp);
+            throw e;
+        }
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -407,7 +413,7 @@ test("test le idir loops", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -458,7 +464,7 @@ test("test function calls", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -515,7 +521,7 @@ test("test function definitions", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -565,7 +571,7 @@ test("test toradh", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -608,7 +614,7 @@ test("test postfix ops", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -689,7 +695,7 @@ test("test arrays", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -752,7 +758,7 @@ test("test obj lookups", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -912,7 +918,7 @@ test("test creatlach stmt", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -979,7 +985,7 @@ test("test object assignment", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -1061,7 +1067,7 @@ test("test constructor", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -1115,7 +1121,7 @@ test("test comments", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -1158,7 +1164,7 @@ test("test anonymous functions", async () => {
         expect(res.err).toBeNull();
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
-        expect(i.global.env.get("res")).toEqual(c.exp);
+        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
     }
 });
 
@@ -1202,4 +1208,54 @@ test("stop action test", async () => {
     expect(res.ast).not.toBeNull();
     await i.interpret(res.ast!);
     expect(wasRan).toEqual(false);
+});
+
+test("regression test for lexical scoping bug #10", async () => {
+    const ast = parse(`
+    a := 0
+    gníomh fn() {
+        gníomh fn() {
+            a = a + 1
+            toradh a
+        }
+        a := 1
+        toradh fn
+    }
+    res := fn()()`).ast!;
+    const i = new Interpreter();
+    await i.interpret(ast);
+    expect(i.global.env.getGlobalValDirect("res")).toEqual(1);
+});
+
+test("test to ensure co-recursion works for globals", async () => {
+    const ast = parse(`
+    gníomh a(x) {
+        má x == 0
+            toradh "a"
+        toradh b(x - 1)
+    }
+
+    gníomh b(x) {
+        má x == 0
+            toradh "b"
+        toradh a(x - 1)
+    }
+
+    res := a(10)`).ast!;
+    const i = new Interpreter();
+    await i.interpret(ast);
+    expect(i.global.env.getGlobalValDirect("res")).toEqual("a");
+});
+
+test("Make sure self definition throws error", async () => {
+    const direct = parse(`a := a + 2`).ast!;
+
+    const i = new Interpreter();
+
+    await expect(i.interpret(direct)).
+        rejects.toThrow("Níl an athróg \"a\" sainithe fós");
+
+    const creatlach = parse(`creatlach A ó A {}`).ast!;
+    await expect(i.interpret(creatlach)).
+        rejects.toThrow("Níl an athróg \"A\" sainithe fós");
 });

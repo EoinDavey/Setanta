@@ -6,6 +6,11 @@ import * as Checks from "./checks";
 
 export type Value = number | boolean | Callable | null | Value[] | string | ObjIntf;
 
+// Trick to distribute over type union
+type Resolve<T> = T extends unknown ? T & { resolved: true } : never;
+export type PossibleResolution = { resolved: false } | Resolve<Resolution>;
+export type Resolution = { global: false, depth: number, offset: number } | { global: true };
+
 export type TypeCheck = (v: Value) => boolean;
 
 export type Stmt = AsgnStmt | NonAsgnStmt;

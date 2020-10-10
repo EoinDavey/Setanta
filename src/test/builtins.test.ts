@@ -2,6 +2,7 @@ import { isNumber } from "../../src/checks";
 import { Parser, parse } from "../../src/gen_parser";
 import { Interpreter } from "../../src/i10r";
 import { Value } from "../../src/values";
+import { resolveASTNode } from "../../src/bind";
 
 test("test fad", async () => {
     interface TC { inp: string; exp: Value; }
@@ -23,7 +24,7 @@ test("test fad", async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await res!.evalfn(i.global);
+        const got = await resolveASTNode(res!).evalfn(i.global);
         expect(got).toEqual(c.exp);
     }
 });
@@ -50,7 +51,7 @@ test("test téacs fns", async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await res!.evalfn(i.global);
+        const got = await resolveASTNode(res!).evalfn(i.global);
         expect(got).toEqual(c.exp);
     }
 });
@@ -73,7 +74,7 @@ test("test liosta fns", async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await res!.evalfn(i.global);
+        const got = await resolveASTNode(res!).evalfn(i.global);
         expect(got).toEqual(c.exp);
     }
 });
@@ -93,7 +94,7 @@ test("test go_uimh", async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await res!.evalfn(i.global);
+        const got = await resolveASTNode(res!).evalfn(i.global);
         expect(got).toEqual(c.exp);
     }
 });
@@ -112,7 +113,7 @@ test("test go_téacs", async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await res!.evalfn(i.global);
+        const got = await resolveASTNode(res!).evalfn(i.global);
         expect(got).toEqual(c.exp);
     }
 });
@@ -131,7 +132,7 @@ test("uas/íos test", async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await res!.evalfn(i.global);
+        const got = await resolveASTNode(res!).evalfn(i.global);
         expect(got).toEqual(c.exp);
     }
 });
@@ -181,7 +182,7 @@ test("test mata", async () => {
         const p = new Parser(c.inp);
         const res = p.matchExpr(0);
         expect(res).not.toBeNull();
-        const got = await res!.evalfn(i.global);
+        const got = await resolveASTNode(res!).evalfn(i.global);
         if (isNumber(got)) {
             expect(got).toBeCloseTo(c.exp as number);
         } else {

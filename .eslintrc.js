@@ -17,7 +17,7 @@ module.exports = {
         "no-implied-eval": "error",
         "no-loop-func": "error",
         "no-useless-concat": "error",
-        "no-shadow": "error",
+        "@typescript-eslint/no-shadow": "error",
         "brace-style": ["warn", "1tbs", {allowSingleLine: true}],
         "comma-spacing": "warn",
         "key-spacing": "warn",

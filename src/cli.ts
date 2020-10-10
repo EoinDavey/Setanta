@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as readline from "readline";
 import * as Asserts from "./asserts";
-import { RuntimeError, syntaxErrString } from "./error";
+import { RuntimeError, StaticError, syntaxErrString } from "./error";
 import { ASTKinds, Parser, PosInfo, SyntaxErr } from "./gen_parser";
 import { Interpreter } from "./i10r";
 import { Value, goTéacs } from "./values";
@@ -120,19 +120,20 @@ async function repl() {
         const res = parser.parse();
 
         prevPos = parser.mark();
-        if (res.ast === null) {
+        if (res.ast === null)
             return Promise.reject(`Parser failure: ${res.err}`);
-        }
         const ast = res.ast;
         try {
             // This is an expression, we can print the result
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
-                    console.log(goTéacs(await ast.stmts[0].evalfn(i.global)));
-                    continue;
+                const expr = ast.stmts[0];
+                i.binder.visitExpr(expr);
+                console.log(goTéacs(await ast.stmts[0].evalfn(i.global)));
+                continue;
             }
             await i.interpret(ast);
         } catch (err) {
-            if (err instanceof RuntimeError) {
+            if (err instanceof RuntimeError || err instanceof StaticError) {
                 printError(err, soFar);
             } else if (err !== STOP) {
                 console.error(err);
@@ -174,7 +175,7 @@ async function runFile() {
     try {
         await i.interpret(res.ast);
     } catch (err) {
-        if (err instanceof RuntimeError) {
+        if (err instanceof RuntimeError || err instanceof StaticError) {
             printError(err, inFile);
             process.exitCode = 1;
         } else {
@@ -212,6 +213,4 @@ function main(): Promise<void> {
     return Promise.resolve();
 }
 
-main().catch((err) => {
-    console.error(err);
-});
+main().catch(err => console.error(err));
