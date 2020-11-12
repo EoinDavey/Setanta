@@ -40,7 +40,51 @@ function sleepPromise(ctx: Context, time: number): Promise<null> {
     });
 }
 
-export function getGlobalBuiltins(ctx: Context): [string, Value][] {
+// Compute all combinations of a string with or without fadas
+// at each location with a fada
+// e.g. "cúlú" -> [culu,cúlu,culú,cúlú]
+// limit to 10 fadas, as the number of outputs is 2 ** #fadas
+// and we don't want to be computing thousands of builtin vars
+// for one var
+export function allFadaCombos(s: string): string[] {
+    const fadaMp: { [s: string]: string } = {
+        "á": "a", "Á": "A",
+        "é": "e", "É": "E",
+        "í": "i", "Í": "I",
+        "ó": "o", "Ó": "O",
+        "ú": "u", "Ú": "U",
+    };
+    const fadaIdxs = [];
+    for(let i = 0; i < s.length; ++i)
+        if(s[i] in fadaMp)
+            fadaIdxs.push(i);
+    if(fadaIdxs.length > 10)
+        throw new Error(`Tá an iomarca fada sa focal "${s}".`);
+    const combos: string[] = [];
+    const lm = 2 ** fadaIdxs.length;
+    for(let subset = 0; subset < lm; ++subset) {
+        const alt = s.split("");
+        for(let i = 0; i < fadaIdxs.length; ++i)
+            if((subset & (2 ** i)) !== 0)
+                alt[fadaIdxs[i]] = fadaMp[s[fadaIdxs[i]]];
+        combos.push(alt.join(""));
+    }
+    return combos;
+}
+
+export function listToAllFadaCombos<X>(ls: [string, X][]): [string, X][] {
+    const allCombos: [string, X][] = [];
+    for(const [name, val] of ls)
+        for(const combo of allFadaCombos(name))
+            allCombos.push([combo, val]);
+    return allCombos;
+}
+
+export function globalBuiltinsFadaCombos(ctx: Context): [string, Value][] {
+    return listToAllFadaCombos(getGlobalBuiltins(ctx));
+}
+
+function getGlobalBuiltins(ctx: Context): [string, Value][] {
     return [
         [
             // Fad returns length of liosta / téacs
@@ -94,36 +138,9 @@ export function getGlobalBuiltins(ctx: Context): [string, Value][] {
             },
         ],
         [
-            // args[0]: any
-            // go_téacs casts args[0] to a string
-            "go_teacs", {
-                ainm: "go_téacs",
-                arity: () => 1,
-                call: (args: Value[]): Promise<string> => {
-                    if (Checks.isTéacs(args[0])) {
-                        return Promise.resolve(args[0]);
-                    }
-                    return Promise.resolve(goTéacs(args[0]));
-                },
-            },
-        ],
-        [
             // args[0-1]: number
             // íos returns min of args[0], args[1]
             "íos", {
-                ainm: "íos",
-                arity: () => 2,
-                call: (args: Value[]): Promise<number> => {
-                    const a = Asserts.assertNumber(args[0]);
-                    const b = Asserts.assertNumber(args[1]);
-                    return Promise.resolve(Math.min(a, b));
-                },
-            },
-        ],
-        [
-            // args[0-1]: number
-            // íos returns min of args[0], args[1]
-            "ios", {
                 ainm: "íos",
                 arity: () => 2,
                 call: (args: Value[]): Promise<number> => {
@@ -348,7 +365,7 @@ const téacsOpsList: [string, (s: string) => Value][] = [
         },
     ],
 ];
-export const téacsBuiltins = new Map(téacsOpsList);
+export const téacsBuiltins = new Map(listToAllFadaCombos(téacsOpsList));
 
 const liostaOpsList: [string, (ls: Value[]) => Value][] = [
     [
@@ -403,4 +420,4 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
         },
     ],
 ];
-export const liostaBuiltins = new Map(liostaOpsList);
+export const liostaBuiltins = new Map(listToAllFadaCombos(liostaOpsList));

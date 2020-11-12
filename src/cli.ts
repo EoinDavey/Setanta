@@ -7,6 +7,7 @@ import { Interpreter } from "./i10r";
 import { Value, goTéacs } from "./values";
 import { STOP } from "./consts";
 import { Context } from "./ctx";
+import { listToAllFadaCombos } from "./builtins";
 
 import * as fs from "fs";
 
@@ -30,10 +31,10 @@ function printError(r: RuntimeError, source: string) {
     }
 }
 
-function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: Context) => [string[], Value][] {
-    return (ctx: Context) => [
+function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: Context) => [string, Value][] {
+    return (ctx: Context) => listToAllFadaCombos([
         [
-            ["scríobh", "scriobh"], {
+            "scríobh", {
                 ainm: "scríobh",
                 arity: () => -1,
                 call: async (args: Value[]): Promise<string|null> => {
@@ -43,7 +44,7 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
             },
         ],
         [
-            ["ceist"], {
+            "ceist", {
                 ainm: "ceist",
                 arity: () => 1,
                 call: (args: Value[]): Promise<string|null> => {
@@ -53,13 +54,13 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
             },
         ],
         [
-            ["léigh_líne", "léigh_line", "léigh_líne", "leigh_line"], {
+            "léigh_líne", {
                 ainm: "léigh_líne",
                 arity: () => 0,
                 call: () => léighfn(ctx),
             },
         ],
-    ];
+    ]);
 }
 
 async function getFullInput(getLine: () => Promise<string|null>,

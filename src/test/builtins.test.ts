@@ -3,6 +3,7 @@ import { Parser, parse } from "../../src/gen_parser";
 import { Interpreter } from "../../src/i10r";
 import { Value } from "../../src/values";
 import { resolveASTNode } from "../../src/bind";
+import { allFadaCombos } from "../../src/builtins";
 
 test("test fad", async () => {
     interface TC { inp: string; exp: Value; }
@@ -215,4 +216,51 @@ test("test fan", async () => {
     await i.interpret(res.ast!);
     const end = Date.now();
     expect(end - start).toBeGreaterThan(500);
+});
+
+test("test allFadaCombos", () => {
+    const cases: {inp: string, exp: string[]}[] = [
+        { inp: "á", exp: ["a", "á"] },
+        { inp: "a", exp: ["a"] },
+        {
+            inp: "Uachtarán na hÉireann",
+            exp: [
+                "Uachtarán na hÉireann",
+                "Uachtaran na hÉireann",
+                "Uachtarán na hEireann",
+                "Uachtaran na hEireann",
+            ],
+        },
+        {
+            inp: "Uachtarán na hÉireann",
+            exp: [
+                "Uachtarán na hÉireann",
+                "Uachtaran na hÉireann",
+                "Uachtarán na hEireann",
+                "Uachtaran na hEireann",
+            ],
+        },
+        {
+            inp: "píosa_ciorcal_lán",
+            exp: [
+                "píosa_ciorcal_lán",
+                "píosa_ciorcal_lan",
+                "piosa_ciorcal_lán",
+                "piosa_ciorcal_lan",
+            ],
+        },
+        {
+            inp: "níos mó",
+            exp: [
+                "níos mó",
+                "nios mó",
+                "níos mo",
+                "nios mo",
+            ],
+        },
+    ];
+    for(const tc of cases) {
+        const res = allFadaCombos(tc.inp);
+        expect(res.sort()).toEqual(tc.exp.sort());
+    }
 });

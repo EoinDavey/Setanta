@@ -1186,7 +1186,7 @@ test("stop action test", async () => {
     const i = new Interpreter(
         () => [
             [
-                ["dontrunme"],
+                "dontrunme",
                 {
                     ainm: "dontrunme",
                     arity: () => 0,
