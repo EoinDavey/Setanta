@@ -37,7 +37,7 @@ export function callFunc(x: Value, args: Value[]): Promise<Value> {
     x = Asserts.assertCallable(x);
     const ar = x.arity();
     if (ar !== -1 && args.length !== x.arity()) {
-        throw new RuntimeError(`Teastaíonn ${ar} argóint ó ${goTéacs(x)}, ach fuair sé ${args.length}`);
+        throw new RuntimeError(`Teastaíonn ${ar} argóint ó ${repr(x)}, ach fuair sé ${args.length}`);
     }
     return x.call(args);
 }
@@ -48,7 +48,7 @@ export function idxList(x: Value, idx: Promise<Value>): Promise<Value> {
         v = Asserts.assertNumber(v);
         const adjustedIdx = v < 0 ? v + ls.length : v;
         if (adjustedIdx < 0 || adjustedIdx >= ls.length) {
-            throw new RuntimeError(`Tá ${goTéacs(v)} thar teorainn an liosta`);
+            throw new RuntimeError(`Tá ${repr(v)} thar teorainn an liosta`);
         }
         return ls[adjustedIdx];
     });
@@ -60,7 +60,7 @@ export function qIdxList(x: Value, idx: Value): Value {
     const v = Asserts.assertNumber(idx);
     const adjustedIdx = v < 0 ? v + ls.length : v;
     if (adjustedIdx < 0 || adjustedIdx >= ls.length) {
-        throw new RuntimeError(`Tá ${goTéacs(v)} thar teorainn an liosta`);
+        throw new RuntimeError(`Tá ${repr(v)} thar teorainn an liosta`);
     }
     return ls[adjustedIdx];
 }
@@ -81,28 +81,32 @@ export class ObjIntfWrap implements ObjIntf {
         return this.attrs.get(id) || null;
     }
     public setAttr(): void {
-        throw new RuntimeError(`Ní feidir leat ${goTéacs(this)} a athrú`);
+        throw new RuntimeError(`Ní feidir leat ${repr(this)} a athrú`);
     }
 }
 
+// goTéacs converts a value to a text representation
 export function goTéacs(v: Value): string {
-    if (Checks.isTéacs(v)) {
+    if (Checks.isTéacs(v))
         return v;
-    }
-    if (Checks.isNumber(v)) {
+    if (Checks.isNumber(v))
         return v.toString();
-    }
-    if (Checks.isBool(v)) {
+    if (Checks.isBool(v))
         return v ? "fíor" : "bréag";
-    }
-    if (v === null) {
+    if (v === null)
         return "neamhní";
-    }
-    if (Checks.isLiosta(v)) {
+    if (Checks.isLiosta(v))
         return `[${v.map(goTéacs).join(", ")}]`;
-    }
-    if (Checks.isCallable(v)) {
+    if (Checks.isCallable(v))
         return `< gníomh ${v.ainm} >`;
-    }
     return `< rud ${v.ainm} >`;
+}
+
+// repr returns a representation of the given value
+export function repr(v: Value): string {
+    if (Checks.isTéacs(v))
+        return '"' + v + '"';
+    if (Checks.isLiosta(v))
+        return `[${v.map(repr).join(", ")}]`;
+    return goTéacs(v);
 }

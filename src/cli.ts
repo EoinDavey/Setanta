@@ -4,7 +4,7 @@ import * as Asserts from "./asserts";
 import { RuntimeError, StaticError, syntaxErrString } from "./error";
 import { ASTKinds, Parser, PosInfo, SyntaxErr } from "./gen_parser";
 import { Interpreter } from "./i10r";
-import { Value, goTéacs } from "./values";
+import { Value, goTéacs, repr } from "./values";
 import { STOP } from "./consts";
 import { Context } from "./ctx";
 import { listToAllFadaCombos } from "./builtins";
@@ -129,7 +129,7 @@ async function repl() {
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
                 const expr = ast.stmts[0];
                 i.binder.visitExpr(expr);
-                console.log(goTéacs(await ast.stmts[0].evalfn(i.global)));
+                console.log(repr(await ast.stmts[0].evalfn(i.global)));
                 continue;
             }
             await i.interpret(ast);
