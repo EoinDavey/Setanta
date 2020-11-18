@@ -149,7 +149,7 @@ _           := wspace*
 wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
 gap         := wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' | '$'
 PlusMinus   := '\+|-'
-AsgnOp      := '=|\+=|\*=|-=|%=|\/='
+AsgnOp      := '=|\+=|\*=|-=|%=|\/=|\/\/='
 MulDiv      := '\*|\/\/|%|\/'
 Compare     := '<=|>=|<|>'
 Keyword     := 'm[áa]' | 'n[oó]' | 'nuair-a' | 'f[ií]or|br[eé]ag'

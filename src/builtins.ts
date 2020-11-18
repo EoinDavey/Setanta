@@ -143,10 +143,12 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
             "íos", {
                 ainm: "íos",
                 arity: () => 2,
-                call: (args: Value[]): Promise<number> => {
-                    const a = Asserts.assertNumber(args[0]);
-                    const b = Asserts.assertNumber(args[1]);
-                    return Promise.resolve(Math.min(a, b));
+                call: ([a, b]: Value[]): Promise<number | string> => {
+                    if (Checks.isNumber(a) && Checks.isNumber(b))
+                        return Promise.resolve(Math.min(a, b));
+                    if (Checks.isTéacs(a) && Checks.isTéacs(b))
+                        return Promise.resolve(a < b ? a : b);
+                    throw new RuntimeError(`Ní féidir íos a úsáid le ${a} agus ${b}`);
                 },
             },
         ],
@@ -156,10 +158,12 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
             "uas", {
                 ainm: "uas",
                 arity: () => 2,
-                call: (args: Value[]): Promise<number> => {
-                    const a = Asserts.assertNumber(args[0]);
-                    const b = Asserts.assertNumber(args[1]);
-                    return Promise.resolve(Math.max(a, b));
+                call: ([a, b]: Value[]): Promise<number | string> => {
+                    if (Checks.isNumber(a) && Checks.isNumber(b))
+                        return Promise.resolve(Math.max(a, b));
+                    if (Checks.isTéacs(a) && Checks.isTéacs(b))
+                        return Promise.resolve(a > b ? a : b);
+                    throw new RuntimeError(`Ní féidir uas a úsáid le ${a} agus ${b}`);
                 },
             },
         ],
