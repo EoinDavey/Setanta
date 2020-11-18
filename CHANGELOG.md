@@ -1,16 +1,18 @@
 # Changelog
 
 ## [Unreleased]
- 
+
 ### Added
 
+- Add integer division assignment statement (`//=`) (#9)
+- `uas` and `íos` now work with text
 - Variable lookup speeds increased
-- Self definition is now an error ('a := 2 * a')
+- Self definition is now an error (`a := 2 * a`)
 
 ### Fixed
 
+- Fixed printing of text in error messages (#8)
 - Closures now resolve variables lexically correctly (#10)
-
 
 ## 0.8.0 - 2020/07/22
 
