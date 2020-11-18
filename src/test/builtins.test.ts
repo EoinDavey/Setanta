@@ -120,13 +120,18 @@ test("test go_téacs", async () => {
 });
 
 test("uas/íos test", async () => {
-    interface TC { inp: string; exp: number; }
+    interface TC { inp: string; exp: number | string; }
     const cases: TC[] = [
         { inp: "uas(3, 4)", exp: 4 },
         { inp: "íos(3, 4)", exp: 3 },
         { inp: "ios(3, 4)", exp: 3 },
         { inp: "uas(3, 3)", exp: 3 },
         { inp: "íos(-3, 3)", exp: -3 },
+        { inp: "íos('a', 'b')", exp: "a" },
+        { inp: "íos('ab', 'b')", exp: "ab" },
+        { inp: "uas('b', 'a')", exp: "b" },
+        { inp: "uas('aa', 'a')", exp: "aa" },
+        { inp: "íos('aaaab', 'aaaac')", exp: "aaaab" },
     ];
     for (const c of cases) {
         const i = new Interpreter();

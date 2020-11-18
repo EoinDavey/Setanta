@@ -291,7 +291,20 @@ const asgnOpTable: Map<string, AsgnOpEntry[]> = new Map([
         },
     ]],
     ["-=", [numAsgnOpEntry((a, b) => a - b)]],
-    ["/=", [numAsgnOpEntry((a, b) => a / b)]],
+    ["/=", [
+        numAsgnOpEntry((a, b) => {
+            if (b === 0)
+                throw new RuntimeError(`Roinn le 0`);
+            return a / b;
+        }),
+    ]],
+    ["//=", [
+        numAsgnOpEntry((a, b) => {
+            if (b === 0)
+                throw new RuntimeError(`Roinn le 0`);
+            return Math.floor(a / b);
+        }),
+    ]],
     ["%=", [numAsgnOpEntry((a, b) => {
         let val = a % b;
         if (val < 0) {

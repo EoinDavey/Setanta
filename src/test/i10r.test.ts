@@ -178,6 +178,12 @@ test("test assign", async () => {
                 res := y2_3_0
             `,
         },
+        {
+            exp: 2,
+            inp: `
+                res := 5
+                res //= 2`,
+        },
     ];
     for (const c of cases) {
         const i = new Interpreter();
