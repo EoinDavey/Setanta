@@ -2,7 +2,7 @@ import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 import { RuntimeError } from "./error";
 import { athchuir } from "./teacs";
-import { Callable, ObjIntfWrap, Value, callFunc, goTéacs } from "./values";
+import { Callable, ObjIntfWrap, Value, callFunc, goTéacs, repr } from "./values";
 import { Context } from "./ctx";
 import { STOPType } from "./consts";
 
@@ -119,7 +119,7 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                     if (Checks.isTéacs(args[0]) || Checks.isBool(args[0]) || Checks.isNumber(args[0])) {
                         return Promise.resolve(Number(args[0]));
                     }
-                    throw new RuntimeError(`Níl uimhir, téacs nó bool é ${goTéacs(args[0])}`);
+                    throw new RuntimeError(`Níl uimhir, téacs nó bool é ${repr(args[0])}`);
                 },
             },
         ],
@@ -133,7 +133,7 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                     if (Checks.isTéacs(args[0])) {
                         return Promise.resolve(args[0]);
                     }
-                    return Promise.resolve(goTéacs(args[0]));
+                    return Promise.resolve(repr(args[0]));
                 },
             },
         ],
@@ -148,7 +148,7 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                         return Promise.resolve(Math.min(a, b));
                     if (Checks.isTéacs(a) && Checks.isTéacs(b))
                         return Promise.resolve(a < b ? a : b);
-                    throw new RuntimeError(`Ní féidir íos a úsáid le ${a} agus ${b}`);
+                    throw new RuntimeError(`Ní féidir íos a úsáid le ${repr(a)} agus ${repr(b)}`);
                 },
             },
         ],
@@ -163,7 +163,7 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                         return Promise.resolve(Math.max(a, b));
                     if (Checks.isTéacs(a) && Checks.isTéacs(b))
                         return Promise.resolve(a > b ? a : b);
-                    throw new RuntimeError(`Ní féidir uas a úsáid le ${a} agus ${b}`);
+                    throw new RuntimeError(`Ní féidir uas a úsáid le ${repr(a)} agus ${repr(b)}`);
                 },
             },
         ],

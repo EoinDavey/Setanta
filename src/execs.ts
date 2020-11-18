@@ -6,7 +6,7 @@ import { RuntimeError, tagErrorLoc, undefinedError } from "./error";
 import * as P from "./gen_parser";
 import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
-import { ObjIntf, Ref, Stmt, Value, goTéacs } from "./values";
+import { ObjIntf, Ref, Stmt, Value, repr } from "./values";
 import { Context } from "./ctx";
 import { BrisException, CCException, SKIP_COUNT_LIM, STOP } from "./consts";
 
@@ -30,9 +30,8 @@ function execStmtBlock(blk: P.BlockStmt, ctx: Context): Promise<void> {
 }
 
 function execStmt(st: Stmt, ctx: Context): Promise<void> {
-    if (ctx.stopped === true) {
+    if (ctx.stopped === true)
         return Promise.reject(STOP);
-    }
     // Every SKIP_COUNT_LIM statements put the next execution on the macrotask queue.
     if (ctx.skipCnt >= SKIP_COUNT_LIM) {
         ctx.skipCnt = 0;
@@ -115,7 +114,7 @@ function refAtom(a: P.Atom, ctx: Context): Promise<Ref> {
         return a.evalfn(ctx).then((v: Value) => {
             return Promise.reject(
                 new RuntimeError("Ní féidir leat luach a thabhairt do " +
-                    goTéacs(v)));
+                    repr(v)));
         });
     }
     return Promise.resolve((v: Value) => {
@@ -254,7 +253,7 @@ function execAssgn(t: P.AssgnStmt, ctx: Context): Promise<void> {
         }
         return t.expr.evalfn(ctx).then((val: Value) => {
             return refPostfix(t.lhs, ctx).then((ref: Ref) => ref(val));
-        }) .catch(err => Promise.reject(tagErrorLoc(err, t.lstart, t.lend)));
+            }).catch(err => Promise.reject(tagErrorLoc(err, t.lstart, t.lend)));
     }
     // If both lhs and rhs are quick
     if (t.expr.qeval !== null && t.lhs.qeval !== null) {

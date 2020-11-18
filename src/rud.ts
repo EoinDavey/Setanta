@@ -1,6 +1,6 @@
 import { Creatlach } from "./creatlach";
 import { RuntimeError } from "./error";
-import { ObjIntf, Value, goTéacs } from "./values";
+import { ObjIntf, Value, repr } from "./values";
 
 export class Rud implements ObjIntf {
     public ainm: string;
@@ -23,7 +23,7 @@ export class Rud implements ObjIntf {
         if (gníomh) {
             return gníomh.bind(this);
         }
-        throw new RuntimeError(`Níl aon ball de ${goTéacs(this)} le ainm ${s}`);
+        throw new RuntimeError(`Níl aon ball de ${repr(this)} le ainm "${s}"`);
     }
     public setAttr(id: string, v: Value): void {
         this.baill.set(id, v);

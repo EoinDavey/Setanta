@@ -7,7 +7,7 @@ import { And, Or, PosInfo } from "./gen_parser";
 import { cat, repeat } from "./liosta";
 import { strcat, strrep } from "./teacs";
 import { IsQuick, MaybeEv as MaybeQuickEv, isQuick } from "./quickevals";
-import { Comparable, Ref, TypeCheck, Value, goTéacs } from "./values";
+import { Comparable, Ref, TypeCheck, Value, repr } from "./values";
 
 interface IEvalable {evalfn: EvalFn; qeval: MaybeQuickEv; }
 
@@ -249,7 +249,7 @@ function evalBinOp(a: Value, b: Value, op: string, start: PosInfo, end: PosInfo)
             }
         }
     }
-    throw new RuntimeError(`Ní féidir leat ${goTéacs(op)} a úsaid le ${goTéacs(a)} agus ${goTéacs(b)}`, start, end);
+    throw new RuntimeError(`Ní féidir leat ${repr(op)} a úsaid le ${repr(a)} agus ${repr(b)}`, start, end);
 }
 
 type AsgnOp = (ref: Ref, cur: Value, dv: Value) => void;
@@ -330,11 +330,9 @@ const asgnOpTable: Map<string, AsgnOpEntry[]> = new Map([
 export function evalAsgnOp(ref: Ref, cur: Value, dv: Value, op: string): void {
     const g = asgnOpTable.get(op);
     if (g) {
-        for (const x of g) {
-            if (x.lcheck(cur) && x.rcheck(dv)) {
+        for (const x of g)
+            if (x.lcheck(cur) && x.rcheck(dv))
                 return x.op(ref, cur, dv);
-            }
-        }
     }
-    throw new RuntimeError(`Ní féidir leat ${goTéacs(op)} a úsáid le ${goTéacs(cur)} agus ${goTéacs(dv)}`);
+    throw new RuntimeError(`Ní féidir leat ${repr(op)} a úsáid le ${repr(cur)} agus ${repr(dv)}`);
 }
