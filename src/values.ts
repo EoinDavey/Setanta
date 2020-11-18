@@ -34,7 +34,7 @@ export interface ObjIntf {
 }
 
 export function callFunc(x: Value, args: Value[]): Promise<Value> {
-    x = Asserts.assertCallable(x);
+    Asserts.assertCallable(x);
     const ar = x.arity();
     if (ar !== -1 && args.length !== x.arity()) {
         throw new RuntimeError(`Teastaíonn ${ar} argóint ó ${repr(x)}, ach fuair sé ${args.length}`);
@@ -42,10 +42,10 @@ export function callFunc(x: Value, args: Value[]): Promise<Value> {
     return x.call(args);
 }
 
-export function idxList(x: Value, idx: Promise<Value>): Promise<Value> {
-    const ls = Asserts.assertIndexable(x);
-    return idx.then((v) => {
-        v = Asserts.assertNumber(v);
+export function idxList(ls: Value, idx: Promise<Value>): Promise<Value> {
+    Asserts.assertIndexable(ls);
+    return idx.then(v => {
+        Asserts.assertNumber(v);
         const adjustedIdx = v < 0 ? v + ls.length : v;
         if (adjustedIdx < 0 || adjustedIdx >= ls.length) {
             throw new RuntimeError(`Tá ${repr(v)} thar teorainn an liosta`);
@@ -55,13 +55,12 @@ export function idxList(x: Value, idx: Promise<Value>): Promise<Value> {
 }
 
 // Quick index list, for use with quick evaluation strategies
-export function qIdxList(x: Value, idx: Value): Value {
-    const ls = Asserts.assertIndexable(x);
-    const v = Asserts.assertNumber(idx);
-    const adjustedIdx = v < 0 ? v + ls.length : v;
-    if (adjustedIdx < 0 || adjustedIdx >= ls.length) {
-        throw new RuntimeError(`Tá ${repr(v)} thar teorainn an liosta`);
-    }
+export function qIdxList(ls: Value, idx: Value): Value {
+    Asserts.assertIndexable(ls);
+    Asserts.assertNumber(idx);
+    const adjustedIdx = idx < 0 ? idx + ls.length : idx;
+    if (adjustedIdx < 0 || adjustedIdx >= ls.length)
+        throw new RuntimeError(`Tá ${repr(idx)} thar teorainn an liosta`);
     return ls[adjustedIdx];
 }
 

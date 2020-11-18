@@ -1043,8 +1043,10 @@ test("test constructor", async () => {
                             "achar",
                             0,
                             (seo: Rud) => {
-                                const h = Asserts.assertNumber(seo.getAttr("ard"));
-                                const w = Asserts.assertNumber(seo.getAttr("lthd"));
+                                const h = seo.getAttr("ard");
+                                const w = seo.getAttr("lthd");
+                                Asserts.assertNumber(h);
+                                Asserts.assertNumber(w);
                                 return Promise.resolve(h * w);
                             },
                         )],

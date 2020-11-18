@@ -146,10 +146,12 @@ export function binOpQuickEvalFn(obj: {head: IEvalable, tail: {trm: IEvalable, o
     };
 }
 
-function makeBinOp<L extends Value, R extends Value>(lassert: (v: Value) => L,
-                                                     rassert: (v: Value) => R, op: (a: L, b: R) => Value): BinOp {
+function makeBinOp<L extends Value, R extends Value>(lassert: (v: Value) => asserts v is L,
+                                                     rassert: (v: Value) => asserts v is R,
+                                                     op: (a: L, b: R) => Value): BinOp {
     return (a: Value, b: Value) =>  {
-        return op(lassert(a), rassert(b));
+        lassert(a); rassert(b);
+        return op(a, b);
     };
 }
 
@@ -256,10 +258,12 @@ type AsgnOp = (ref: Ref, cur: Value, dv: Value) => void;
 
 interface AsgnOpEntry { lcheck: TypeCheck; rcheck: TypeCheck; op: AsgnOp; }
 
-function makeAsgnOp<L extends Value, R extends Value>(lassert: (v: Value) => L,
-                                                      rassert: (v: Value) => R, op: (a: L, b: R) => Value): AsgnOp {
+function makeAsgnOp<L extends Value, R extends Value>(lassert: (v: Value) => asserts v is L,
+                                                      rassert: (v: Value) => asserts v is R,
+                                                      op: (a: L, b: R) => Value): AsgnOp {
     return (ref: Ref, a: Value, b: Value) =>  {
-        return ref(op(lassert(a), rassert(b)));
+        lassert(a); rassert(b);
+        return ref(op(a, b));
     };
 }
 
@@ -278,9 +282,9 @@ const asgnOpTable: Map<string, AsgnOpEntry[]> = new Map([
             // Using += on a list is more efficient than x = x + y, due to use of in place `push`
             lcheck: Checks.isLiosta,
             op: (ref: Ref, cur: Value, d: Value) => {
-                const cv = Asserts.assertLiosta(cur);
-                const dv = Asserts.assertLiosta(d);
-                cv.push(...dv);
+                Asserts.assertLiosta(cur);
+                Asserts.assertLiosta(d);
+                cur.push(...d);
             },
             rcheck: Checks.isLiosta,
         },

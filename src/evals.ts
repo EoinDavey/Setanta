@@ -18,11 +18,13 @@ export function prefEval(p: Prefix): EvalFn {
         return p.pf.evalfn.bind(p.pf);
     }
     return (ctx: Context) =>
-        p.pf.evalfn(ctx).then((pf: Value) =>
-            p.op === "-"
-            ? -Asserts.assertNumber(pf)
-            : !Checks.isTrue(pf))
-                .catch(err => Promise.reject(tagErrorLoc(err, p.start, p.end)));
+        p.pf.evalfn(ctx).then((pf: Value) => {
+            if(p.op === "-") {
+                Asserts.assertNumber(pf);
+                return -pf;
+            }
+            return !Checks.isTrue(pf);
+        }).catch(err => Promise.reject(tagErrorLoc(err, p.start, p.end)));
 }
 
 export function csArgsEval(args: CSArgs): (ctx: Context) => Promise<Value[]> {
@@ -75,8 +77,8 @@ export function objLookupsEval(ol: ObjLookups): EvalFn {
     const arr = ol.attrs.slice().reverse();
     return (ctx: Context) =>
         ol.root.evalfn(ctx).then((rt: Value) => {
-            return arr.reduce((x: Value, y): Value => {
-                const obj = Asserts.assertObj(x);
+            return arr.reduce((obj: Value, y): Value => {
+                Asserts.assertObj(obj);
                 return getAttr(obj, y.id.id);
             }, rt);
         }).catch(err => Promise.reject(tagErrorLoc(err, ol.start, ol.end)));

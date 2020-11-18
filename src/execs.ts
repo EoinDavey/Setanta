@@ -6,7 +6,7 @@ import { RuntimeError, tagErrorLoc, undefinedError } from "./error";
 import * as P from "./gen_parser";
 import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
-import { ObjIntf, Ref, Stmt, Value, repr } from "./values";
+import { Ref, Stmt, Value, repr } from "./values";
 import { Context } from "./ctx";
 import { BrisException, CCException, SKIP_COUNT_LIM, STOP } from "./consts";
 
@@ -78,15 +78,15 @@ function refPostfix(p: P.Postfix, ctx: Context): Promise<Ref> {
         return subPost.evalfn(ctx).then((val: Value) => {
             if ("args" in op)
                 return Promise.reject(new RuntimeError("Ní féidir leat luach a thabhairt do gníomh", p.start, p.end));
-            const arr: Value[] = Asserts.assertLiosta(val);
-            return op.expr.evalfn(ctx).then((idxV: Value) => {
-                const idx: number = Asserts.assertNumber(idxV);
+            Asserts.assertLiosta(val);
+            return op.expr.evalfn(ctx).then((idx: Value) => {
+                Asserts.assertNumber(idx);
                 return (v: Value) => {
-                    if (idx < 0 || idx >= arr.length) {
+                    if (idx < 0 || idx >= val.length) {
                         throw new RuntimeError(`Tá ${idx} thar teorainn an liosta`,
                             p.start, p.end);
                     }
-                    arr[idx] = v;
+                    val[idx] = v;
                 };
             });
         });
@@ -100,9 +100,9 @@ function refObjLookups(o: P.ObjLookups, ctx: Context): Promise<Ref> {
         const field: string = o.attrs[0].id.id;
         const subObj: P.ObjLookups = new P.ObjLookups(o.start, attrs, o.root, o.end);
         return subObj.evalfn(ctx).then((obj: Value) => {
-            const val: ObjIntf = Asserts.assertObjIntf(obj);
+            Asserts.assertObjIntf(obj);
             return (v: Value) => {
-                val.setAttr(field, v);
+                obj.setAttr(field, v);
             };
         });
     }
@@ -190,11 +190,15 @@ async function execNuair(n: P.NuairStmt, ctx: Context): Promise<void> {
 
 async function execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
     const id = n.id;
-    const s = Asserts.assertNumber(await n.strt.evalfn(ctx));
-    const e = Asserts.assertNumber(await n.end.evalfn(ctx));
+    const s = await n.strt.evalfn(ctx);
+    const e = await n.end.evalfn(ctx);
+    Asserts.assertNumber(s);
+    Asserts.assertNumber(e);
     let stp = e >= s ? 1 : -1;
     if (n.step !== null) {
-        stp = Asserts.assertNumber(await n.step.step.evalfn(ctx));
+        const stpsz = await n.step.step.evalfn(ctx);
+        Asserts.assertNumber(stpsz);
+        stp = stpsz;
     }
 
     ctx = new Context(ctx);

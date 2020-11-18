@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import * as readline from "readline";
-import * as Asserts from "./asserts";
 import { RuntimeError, StaticError, syntaxErrString } from "./error";
 import { ASTKinds, Parser, PosInfo, SyntaxErr } from "./gen_parser";
 import { Interpreter } from "./i10r";
@@ -48,7 +47,7 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
                 ainm: "ceist",
                 arity: () => 1,
                 call: (args: Value[]): Promise<string|null> => {
-                    process.stdout.write(Asserts.assertTéacs(args[0]));
+                    process.stdout.write(goTéacs(args[0]));
                     return léighfn(ctx);
                 },
             },

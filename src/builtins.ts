@@ -11,8 +11,8 @@ function mathWrap(ainm: string, fn: (x: number) => number): Callable {
     return {
         ainm,
         arity: () => 1,
-        call: (args: Value[]) => {
-            const x = Asserts.assertNumber(args[0]);
+        call: ([x]: Value[]) => {
+            Asserts.assertNumber(x);
             return Promise.resolve(fn(x));
         },
     };
@@ -92,8 +92,9 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
             "fad", {
                 ainm: "fad",
                 arity: () => 1,
-                call: async (args: Value[]): Promise<Value> => {
-                    return Asserts.assertIndexable(args[0]).length;
+                call: async ([ls]: Value[]): Promise<Value> => {
+                    Asserts.assertIndexable(ls);
+                    return ls.length;
                 },
             },
         ],
@@ -102,10 +103,10 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
             "thar", {
                 ainm: "thar",
                 arity: () => 2,
-                call: async (args: Value[]): Promise<Value> => {
-                    const f = Asserts.assertCallable(args[0]);
-                    const ls = Asserts.assertLiosta(args[1]);
-                    return Promise.all(ls.map((x) => callFunc(f, [x])));
+                call: async ([f, ls]: Value[]): Promise<Value> => {
+                    Asserts.assertCallable(f);
+                    Asserts.assertLiosta(ls);
+                    return Promise.all(ls.map(x => callFunc(f, [x])));
                 },
             },
         ],
@@ -172,8 +173,9 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
             {
                 ainm: "codladh",
                 arity: () => 1,
-                call: (args: Value[]): Promise<Value> => {
-                    return sleepPromise(ctx, Asserts.assertNumber(args[0]));
+                call: ([s]: Value[]): Promise<Value> => {
+                    Asserts.assertNumber(s);
+                    return sleepPromise(ctx, s);
                 },
             },
         ],
@@ -182,8 +184,9 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
             {
                 ainm: "codladh",
                 arity: () => 1,
-                call: (args: Value[]): Promise<Value> => {
-                    return sleepPromise(ctx, Asserts.assertNumber(args[0]));
+                call: ([s]: Value[]): Promise<Value> => {
+                    Asserts.assertNumber(s);
+                    return sleepPromise(ctx, s);
                 },
             },
         ],
@@ -246,15 +249,13 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                     ["logb"], {
                         ainm: "logb",
                         arity: () => 2,
-                        call: (args: Value[]): Promise<number> => {
-                            const x = Asserts.assertNumber(args[0]);
-                            const b = Asserts.assertNumber(args[1]);
-                            if (x <= 0) {
+                        call: ([x, b]: Value[]): Promise<number> => {
+                            Asserts.assertNumber(x);
+                            Asserts.assertNumber(b);
+                            if (x <= 0)
                                 return Promise.reject(new RuntimeError(`Níl log(${x}) sainmhínithe`));
-                            }
-                            if (b <= 0 || b === 1) {
+                            if (b <= 0 || b === 1)
                                 return Promise.reject(new RuntimeError(`Níl log i mbun ${b} sainmhínithe`));
-                            }
                             return Promise.resolve(Math.log(x) / Math.log(b));
                         },
                     },
@@ -264,9 +265,9 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                     ["cmhcht"], {
                         ainm: "cmhcht",
                         arity: () => 2,
-                        call: (args: Value[]): Promise<number> => {
-                            const x = Asserts.assertNumber(args[0]);
-                            const y = Asserts.assertNumber(args[1]);
+                        call: ([x, y]: Value[]): Promise<number> => {
+                            Asserts.assertNumber(x);
+                            Asserts.assertNumber(y);
                             return Promise.resolve(Math.pow(x, y));
                         },
                     },
@@ -286,9 +287,9 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                     ["randUimh"], {
                         ainm: "randUimh",
                         arity: () => 2,
-                        call: (args: Value[]): Promise<number> => {
-                            const l = Asserts.assertNumber(args[0]);
-                            const r = Asserts.assertNumber(args[1]);
+                        call: ([l, r]: Value[]): Promise<number> => {
+                            Asserts.assertNumber(l);
+                            Asserts.assertNumber(r);
                             return Promise.resolve(Math.floor(Math.random() * (r - l) + l));
                         },
                     },
@@ -299,9 +300,9 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                     ["slánuimh_rand", "slanuimh_rand"], {
                         ainm: "slánuimh_rand",
                         arity: () => 2,
-                        call: (args: Value[]): Promise<number> => {
-                            const l = Asserts.assertNumber(args[0]);
-                            const r = Asserts.assertNumber(args[1]);
+                        call: ([l, r]: Value[]): Promise<number> => {
+                            Asserts.assertNumber(l);
+                            Asserts.assertNumber(r);
                             return Promise.resolve(Math.floor(Math.random() * (r - l + 1) + l));
                         },
                     },
@@ -321,9 +322,9 @@ const téacsOpsList: [string, (s: string) => Value][] = [
             return {
                 ainm: "athchuir",
                 arity: () => 2,
-                call: async (args: Value[]) => {
-                    const b = Asserts.assertTéacs(args[0]);
-                    const c = Asserts.assertTéacs(args[1]);
+                call: async ([b, c]: Value[]) => {
+                    Asserts.assertTéacs(b);
+                    Asserts.assertTéacs(c);
                     return athchuir(s, b, c);
                 },
             };
@@ -336,8 +337,8 @@ const téacsOpsList: [string, (s: string) => Value][] = [
             return {
                 ainm: "roinn",
                 arity: () => 1,
-                call: async (args: Value[]): Promise<Value> => {
-                    const b = Asserts.assertTéacs(args[0]);
+                call: async ([b]: Value[]): Promise<Value> => {
+                    Asserts.assertTéacs(b);
                     return s.split(b);
                 },
             };
@@ -350,9 +351,9 @@ const téacsOpsList: [string, (s: string) => Value][] = [
             return {
                 ainm: "cuid",
                 arity: () => 2,
-                call: async (args: Value[]): Promise<Value> => {
-                    const l = Asserts.assertNumber(args[0]);
-                    const r = Asserts.assertNumber(args[1]);
+                call: async ([l, r]: Value[]): Promise<Value> => {
+                    Asserts.assertNumber(l);
+                    Asserts.assertNumber(r);
                     return s.substring(l, r);
                 },
             };
@@ -400,9 +401,9 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
             return {
                 ainm: "cuid",
                 arity: () => 2,
-                call: async (args: Value[]): Promise<Value> => {
-                    const l = Asserts.assertNumber(args[0]);
-                    const r = Asserts.assertNumber(args[1]);
+                call: async ([l, r]: Value[]): Promise<Value> => {
+                    Asserts.assertNumber(l);
+                    Asserts.assertNumber(r);
                     return ls.slice(l, r);
                 },
             };
@@ -416,8 +417,8 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
             return {
                 ainm: "nasc",
                 arity: () => 1,
-                call: async (args: Value[]): Promise<Value> => {
-                    const a = Asserts.assertTéacs(args[0]);
+                call: async ([a]: Value[]): Promise<Value> => {
+                    Asserts.assertTéacs(a);
                     return ls.map(goTéacs).join(a);
                 },
             };

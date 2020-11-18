@@ -101,7 +101,10 @@ export function qObjLookupsEval(ol: ObjLookups): MaybeEv {
     return (ctx: Context): Value => {
         const rt: Value = h.qeval(ctx);
         try {
-            return arr.reduce((x, y) => getAttr(Asserts.assertObj(x), y.id.id), rt);
+            return arr.reduce((x, y) => {
+                Asserts.assertObj(x);
+                return getAttr(x, y.id.id);
+            }, rt);
         } catch(err) {
             throw tagErrorLoc(err, ol.start, ol.end);
         }
@@ -155,12 +158,14 @@ export function qPrefEval(p: Prefix): MaybeEv {
     if (!isQuick(pf)) {
         return null;
     }
-    return (ctx: Context) => {
+    return (ctx: Context): number | boolean => {
         try {
             const v = pf.qeval(ctx);
-            return p.op === "-"
-                ? -Asserts.assertNumber(v)
-                : !Checks.isTrue(v);
+            if(p.op === "-") {
+                Asserts.assertNumber(v);
+                return -v;
+            }
+            return !Checks.isTrue(v);
         } catch(err) {
             throw tagErrorLoc(err, p.start, p.end);
         }
