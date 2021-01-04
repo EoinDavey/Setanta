@@ -1,6 +1,6 @@
 {
   "name": "setanta",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Setanta Irish Programming Language",
   "main": "index.js",
   "scripts": {
