@@ -69,6 +69,9 @@ test("test liosta fns", async () => {
         { inp: "sórtáil@[2,3,1]()", exp: [1, 2, 3]},
         { inp: "nasc@[1,2,3,4](', ')", exp: "1, 2, 3, 4"},
         { inp: "nasc@[neamhní, 'hey', 3, fior]('')", exp: "neamhníhey3fíor"},
+        { inp: "aimsigh@[0, 1, 2](1)", exp: 1},
+        { inp: "aimsigh@[1, 1, 2](1)", exp: 0},
+        { inp: "aimsigh@[0, 1, 2](3)", exp: -1},
     ];
     for (const c of cases) {
         const i = new Interpreter();
@@ -78,6 +81,76 @@ test("test liosta fns", async () => {
         const got = await resolveASTNode(res!).evalfn(i.global);
         expect(got).toEqual(c.exp);
     }
+});
+
+test("test cóip liosta", async () => {
+    const prog = `
+    ls := [1, 2, 3]
+    cóip_ls := cóip@ls()
+    cóip_ls[0] += 1
+    res := ls[0] + cóip_ls[0]`;
+    const i = new Interpreter();
+    const res = parse(prog);
+    expect(res.ast).not.toBeNull();
+    await i.interpret(res.ast!);
+    expect(i.global.env.getGlobalValDirect("res")).toEqual(3);
+});
+
+test("test scrios liosta", async () => {
+    const sm = 55;
+    for (let i = 0; i < 10; ++i) {
+        const prog = `
+        ls := [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        scrios@ls(${i})
+        res := 0
+        le i idir (0, fad@ls)
+            res += ls[i]`;
+        const i10r = new Interpreter();
+        const res = parse(prog);
+        expect(res.ast).not.toBeNull();
+        await i10r.interpret(res.ast!);
+        expect(i10r.global.env.getGlobalValDirect("res")).toEqual(sm - (i + 1));
+    }
+
+    // Assert throws correct error
+    const prog = `
+    ls := []
+    scrios@ls(0)`;
+    const i10r = new Interpreter();
+    const res = parse(prog);
+    expect(res.ast).not.toBeNull();
+    expect(i10r.interpret(res.ast!)).rejects.toThrow(`Ní innéacs den liosta é 0`);
+});
+
+test("test scrios_cúl liosta", async () => {
+    const prog = `
+    ls := [1, 2, 3, 4, 5]
+    res := ""
+    le i idir (0, fad@ls) {
+        res += go_téacs(ls) + '\n'
+        scrios_cúl@ls()
+    }
+    `;
+    const i = new Interpreter();
+    const res = parse(prog);
+    expect(res.ast).not.toBeNull();
+    await i.interpret(res.ast!);
+    expect(i.global.env.getGlobalValDirect("res")).toEqual(`[1, 2, 3, 4, 5]
+[1, 2, 3, 4]
+[1, 2, 3]
+[1, 2]
+[1]
+`);
+});
+
+test("test scrios_cúl liosta error", async () => {
+    const prog = `
+    ls := []
+    scrios_cúl@ls()`;
+    const i = new Interpreter();
+    const res = parse(prog);
+    expect(res.ast).not.toBeNull();
+    expect(i.interpret(res.ast!)).rejects.toThrow(`Ní feidir cúl liosta folamh a scriosadh`);
 });
 
 test("test go_uimh", async () => {

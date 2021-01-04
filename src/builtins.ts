@@ -424,5 +424,56 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
             };
         },
     ],
+    [
+        "cóip", ls => {
+            return {
+                ainm: "cóip",
+                arity: () => 0,
+                call: async (): Promise<Value> => {
+                    return [...ls];
+                },
+            };
+        },
+    ],
+    [
+        "scrios", ls => {
+            return {
+                ainm: "scrios",
+                arity: () => 1,
+                call: ([a]: Value[]): Promise<Value> => {
+                    Asserts.assertNumber(a);
+                    if(a >= ls.length || a < 0)
+                        return Promise.reject(new RuntimeError(`Ní innéacs den liosta é ${repr(a)}`));
+                    ls.splice(a, 1);
+                    return Promise.resolve(ls);
+                },
+            };
+        },
+    ],
+    [
+        "aimsigh", ls => {
+            return {
+                ainm: "aimsigh",
+                arity: () => 1,
+                call: ([a]: Value[]): Promise<Value> => {
+                    return Promise.resolve(ls.indexOf(a));
+                },
+            };
+        },
+    ],
+    [
+        "scrios_cúl", ls => {
+            return {
+                ainm: "scrios_cúl",
+                arity: () => 0,
+                call: (): Promise<Value> => {
+                    const a = ls.pop();
+                    if(a === undefined) // list is empty
+                        return Promise.reject(new RuntimeError(`Ní feidir cúl liosta folamh a scriosadh`));
+                    return Promise.resolve(a);
+                },
+            };
+        },
+    ],
 ];
 export const liostaBuiltins = new Map(listToAllFadaCombos(liostaOpsList));
