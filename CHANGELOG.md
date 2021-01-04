@@ -8,6 +8,7 @@
 - `uas` and `íos` now work with text
 - Variable lookup speeds increased
 - Self definition is now an error (`a := 2 * a`)
+- Added new list actions (`cóip`, `scrios`, `aimsigh`, `scrios_cúl`) (#7)
 
 ### Fixed
 
