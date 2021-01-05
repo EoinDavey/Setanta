@@ -152,7 +152,7 @@ test("verify depth correctness", () => {
     ];
     for (const c of cases) {
         const res = parse(c.prog);
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         const binder = new Binder();
         binder.enterScope();

@@ -192,7 +192,7 @@ test("test assign", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -245,10 +245,7 @@ test("test if stmt", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        if (res.err) {
-            console.log(c);
-        }
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -311,7 +308,7 @@ test("test nuair-a loops", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         try {
             await i.interpret(res.ast!);
@@ -416,7 +413,7 @@ test("test le idir loops", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -467,7 +464,7 @@ test("test function calls", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -524,7 +521,7 @@ test("test function definitions", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -574,7 +571,7 @@ test("test toradh", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -617,7 +614,7 @@ test("test postfix ops", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -698,7 +695,7 @@ test("test arrays", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -761,7 +758,7 @@ test("test obj lookups", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -921,7 +918,7 @@ test("test creatlach stmt", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -988,7 +985,7 @@ test("test object assignment", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -1072,7 +1069,7 @@ test("test constructor", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -1089,7 +1086,7 @@ test("context stop test", async () => {
     const p = new Parser(prog);
     const res = p.parse();
     const i = new Interpreter();
-    expect(res.err).toBeNull();
+    expect(res.errs).toEqual([]);
     expect(res.ast).not.toBeNull();
     setTimeout(() => i.stop());
     await i.interpret(res.ast!);
@@ -1126,7 +1123,7 @@ test("test comments", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -1169,7 +1166,7 @@ test("test anonymous functions", async () => {
         }
         const p = new Parser(c.inp);
         const res = p.parse();
-        expect(res.err).toBeNull();
+        expect(res.errs).toEqual([]);
         expect(res.ast).not.toBeNull();
         await i.interpret(res.ast!);
         expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
@@ -1183,7 +1180,7 @@ test("stop codladh test", async () => {
     const p = new Parser(prog);
     const res = p.parse();
     const i = new Interpreter();
-    expect(res.err).toBeNull();
+    expect(res.errs).toEqual([]);
     expect(res.ast).not.toBeNull();
     setTimeout(() => i.stop());
     await i.interpret(res.ast!);
@@ -1212,7 +1209,7 @@ test("stop action test", async () => {
     `;
     const p = new Parser(prog);
     const res = p.parse();
-    expect(res.err).toBeNull();
+    expect(res.errs).toEqual([]);
     expect(res.ast).not.toBeNull();
     await i.interpret(res.ast!);
     expect(wasRan).toEqual(false);

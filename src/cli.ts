@@ -63,7 +63,7 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
 }
 
 async function getFullInput(getLine: () => Promise<string|null>,
-    continuance: () => Promise<string|null>): Promise<string|SyntaxErr> {
+    continuance: () => Promise<string|null>): Promise<string|SyntaxErr[]> {
     let prev = "";
     for(;;) {
         const inpFn = prev === "" ? getLine : continuance;
@@ -73,10 +73,10 @@ async function getFullInput(getLine: () => Promise<string|null>,
         const line = prev + inp;
         const parser = new Parser(line);
         const res = parser.parse();
-        if(res.err === null)
+        if(res.errs.length === 0)
             return line;
-        if(res.err.pos.overallPos !== line.length)
-            return res.err;
+        if(res.errs.length !== 1 || res.errs[0].pos.overallPos !== line.length)
+            return res.errs;
         prev = line;
     }
 }
@@ -109,9 +109,10 @@ async function repl() {
     for(;;) {
         if(i.global.stopped)
             break;
-        const input = await getFullInput(getLine, continuance);
-        if(input instanceof SyntaxErr) {
-            console.error(syntaxErrString(input));
+        const input: string | SyntaxErr[] = await getFullInput(getLine, continuance);
+        if(Array.isArray(input)) {
+            for(const se of input)
+                console.error(syntaxErrString(se));
             continue;
         }
         soFar += input;
@@ -121,7 +122,7 @@ async function repl() {
 
         prevPos = parser.mark();
         if (res.ast === null)
-            return Promise.reject(`Parser failure: ${res.err}`);
+            return Promise.reject(`Parser failure: ${res.errs}`);
         const ast = res.ast;
         try {
             // This is an expression, we can print the result
@@ -147,8 +148,9 @@ async function runFile() {
     const inFile = fs.readFileSync(pargs[0], { encoding: "utf8" });
     const parser = new Parser(inFile);
     const res = parser.parse();
-    if (res.err) {
-        console.error(syntaxErrString(res.err));
+    if (res.errs.length > 0) {
+        for(const se of res.errs)
+            console.error(syntaxErrString(se));
         process.exitCode = 1;
         return;
     }

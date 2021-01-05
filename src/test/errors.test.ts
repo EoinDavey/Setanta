@@ -27,8 +27,8 @@ test("test syntaxErrString", () => {
     ];
     for(const tc of cases) {
         const res = parse(tc.inp);
-        expect(res.err).not.toBeNull();
-        const err = res.err!;
+        expect(res.errs).toHaveLength(1);
+        const err = res.errs[0];
         expect(syntaxErrString(err)).toEqual(tc.expErr);
     }
 });

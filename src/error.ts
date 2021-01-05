@@ -48,24 +48,25 @@ export function tagErrorLoc(r: Error, start: PosInfo, end: PosInfo): Error {
 }
 
 // Needs to be updated to match the correct regex from the grammar spec.
-const whitespaceRegex = "(?:\\s|>--(?:(?!--<).)*(--<|\\n|$))";
-const identifierRegex = "[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*";
-const boolRegex = "f[ií]or|br[eé]ag";
+const whitespaceRegex = "'(?:\\s|>--(?:(?!--<).)*(--<|\\n|$))'";
+const identifierRegex = "'[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*'";
+const boolRegex = "'f[ií]or|br[eé]ag'";
 
 export function syntaxErrString(err: SyntaxErr): string {
+    const literals = err.expmatches.map(x => x.kind === "RegexMatch" ? `'${x.literal}'` : "$EOF");
     // remove the whitespace regex match because it's confusing to be displayed
-    const matches = err.expmatches.filter(x => x !== whitespaceRegex);
+    const matches = literals.filter(x => x !== whitespaceRegex);
 
     // If we can complete a bracket expression with a ) we should recommend this
-    if(matches.includes("\\)")) {
+    if(matches.includes("'\\)'")) {
         return `Eisceacht ar líne ${err.pos.line}: Suíomh ${err.pos.offset}: Ag súil le ")"`;
     }
     // If we can complete a bracket expression with a ] we should recommend this
-    if(matches.includes("\\]")) {
+    if(matches.includes("'\\]'")) {
         return `Eisceacht ar líne ${err.pos.line}: Suíomh ${err.pos.offset}: Ag súil le "]"`;
     }
     // If we can complete a bracket expression with a } we should recommend this
-    if(matches.includes("}")) {
+    if(matches.includes("'}'")) {
         return `Eisceacht ar líne ${err.pos.line}: Suíomh ${err.pos.offset}: Ag súil le "}"`;
     }
 

@@ -12,7 +12,7 @@ import * as Quick from "./quickevals";
 import { ASTVisitor } from "./visitor";
 type Acceptor = <T>(visitor: ASTVisitor<T>) => T;
 ---
-Program     := stmts=AsgnStmt* _
+Program     := stmts=AsgnStmt* _ $
 AsgnStmt    := IfStmt
              | BlockStmt
              | NuairStmt

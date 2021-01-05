@@ -272,7 +272,7 @@ test("test mata", async () => {
 
 test("test codladh", async () => {
     const res = parse(`codladh(1000)`);
-    expect(res.err).toBeNull();
+    expect(res.errs).toEqual([]);
     expect(res.ast).not.toBeNull();
     const i = new Interpreter();
     const start = Date.now();
@@ -286,7 +286,7 @@ test("test codladh", async () => {
 
 test("test fan", async () => {
     const res = parse(`fan()`);
-    expect(res.err).toBeNull();
+    expect(res.errs).toEqual([]);
     expect(res.ast).not.toBeNull();
     const i = new Interpreter();
     const start = Date.now();
