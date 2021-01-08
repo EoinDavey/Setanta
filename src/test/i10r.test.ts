@@ -78,6 +78,7 @@ test("test expressions", async () => {
         {inp: "[1,2,3][-1]", exp: 3},
         {inp: "[1,2,3][-2]", exp: 2},
         {inp: "[1,2,3][-3]", exp: 1},
+        {inp: "-2 % 10", exp: 8},
     ];
     for (const c of cases) {
         const i = new Interpreter();

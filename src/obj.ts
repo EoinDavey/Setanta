@@ -3,6 +3,8 @@ import { isLiosta, isTéacs } from "./checks";
 import { RuntimeError } from "./error";
 import { liostaBuiltins, téacsBuiltins } from "./builtins";
 
+// Utility functions for object lookups
+
 export function getAttr(o: Obj, id: string): Value {
     if(isLiosta(o)) {
         const val = liostaBuiltins.get(id);

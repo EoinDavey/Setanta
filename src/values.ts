@@ -4,19 +4,32 @@ import { AsgnStmt, NonAsgnStmt } from "./gen_parser";
 import * as Asserts from "./asserts";
 import * as Checks from "./checks";
 
+// This library contains type definitions and utility functions for Setanta Values
+
+// Value defines what Values in Setanta are supported.
 export type Value = number | boolean | Callable | null | Value[] | string | ObjIntf;
 
-// Trick to distribute over type union
-type Resolve<T> = T extends unknown ? T & { resolved: true } : never;
+// PossibleResolution is a type for IDs that may not have been resolved yet.
 export type PossibleResolution = { resolved: false } | Resolve<Resolution>;
+
+// Resolution represents variable resolutions. Resolve variables have either a depth
+// and offset or are global.
 export type Resolution = { global: false, depth: number, offset: number } | { global: true };
+
+// Trick to distribute over type union.
+type Resolve<T> = T extends unknown ? T & { resolved: true } : never;
 
 export type TypeCheck = (v: Value) => boolean;
 
+// Stmt is a type to union Assigning statement and non assigning statements.
+// These are only distinct concepts for the parser, after parsing we can ignore the
+// difference.
 export type Stmt = AsgnStmt | NonAsgnStmt;
 
-export type Comparable = number | boolean;
+export type Comparable = number | boolean | string;
 
+// A ref is a reference for assignment. A reference is a function that accepts a value.
+// reference functions return functions that will perform the assignment.
 export type Ref = (v: Value) => void;
 
 export interface Callable {
@@ -33,29 +46,18 @@ export interface ObjIntf {
     setAttr: (id: string, v: Value) => void;
 }
 
+// callFunc takes a Callable value, and a list of arguments, and calls the function.
+// This handles checking that the the number of args is correct for the given arity.
 export function callFunc(x: Value, args: Value[]): Promise<Value> {
     Asserts.assertCallable(x);
     const ar = x.arity();
-    if (ar !== -1 && args.length !== x.arity()) {
+    if (ar !== -1 && args.length !== x.arity())
         throw new RuntimeError(`Teastaíonn ${ar} argóint ó ${repr(x)}, ach fuair sé ${args.length}`);
-    }
     return x.call(args);
 }
 
-export function idxList(ls: Value, idx: Promise<Value>): Promise<Value> {
-    Asserts.assertIndexable(ls);
-    return idx.then(v => {
-        Asserts.assertNumber(v);
-        const adjustedIdx = v < 0 ? v + ls.length : v;
-        if (adjustedIdx < 0 || adjustedIdx >= ls.length) {
-            throw new RuntimeError(`Tá ${repr(v)} thar teorainn an liosta`);
-        }
-        return ls[adjustedIdx];
-    });
-}
-
-// Quick index list, for use with quick evaluation strategies
-export function qIdxList(ls: Value, idx: Value): Value {
+// idxList takes a list of Values and the index.
+export function idxList(ls: Value, idx: Value): Value {
     Asserts.assertIndexable(ls);
     Asserts.assertNumber(idx);
     const adjustedIdx = idx < 0 ? idx + ls.length : idx;
@@ -84,7 +86,7 @@ export class ObjIntfWrap implements ObjIntf {
     }
 }
 
-// goTéacs converts a value to a text representation
+// goTéacs converts a value to a text representation.
 export function goTéacs(v: Value): string {
     if (Checks.isTéacs(v))
         return v;
@@ -102,6 +104,7 @@ export function goTéacs(v: Value): string {
 }
 
 // repr returns a representation of the given value
+// TODO make this limit the total length, e.g. truncate long list to [1, 2, 3 ... ].
 export function repr(v: Value): string {
     if (Checks.isTéacs(v))
         return '"' + v + '"';

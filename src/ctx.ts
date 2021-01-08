@@ -1,6 +1,9 @@
 import { Environment } from "./env";
 import { STOP, STOPType } from "./consts";
 
+// The Context class represents the execution context of a specific execution
+// Context wraps the current lexical scope Environment and handles skip count and stopping
+// logic.
 export class Context {
     // We use single element arrays (tuples in TS) here to hold these values so that
     // they can be inherited from parent contexts by references, instead of by value
@@ -40,9 +43,8 @@ export class Context {
     }
     public stop(): void {
         this._stopped[0] = true;
-        for(const fn of this.rejectPool) {
+        for(const fn of this.rejectPool)
             fn(STOP);
-        }
         this.rejectPool.clear();
     }
 

@@ -1,5 +1,7 @@
 import * as P from "./gen_parser";
 
+// ASTVisitor defines a visitor interface for use
+// in the visitor pattern.
 export interface ASTVisitor<T> {
     visitProgram(a: P.Program): T
     visitIfStmt(a: P.IfStmt): T

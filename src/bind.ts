@@ -4,6 +4,8 @@ import { PossibleResolution, Stmt } from "./values";
 import { ASTVisitor } from "./visitor";
 import { StaticError, alreadyDefinedError } from "./error";
 
+// resolveASTNode is a generic function to resolve variables in AST nodes,
+// it takes advantage of the Visitor pattern supported in the AST.
 export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) => void }>(node: T): T {
     const b = new Binder();
     b.enterScope();
@@ -12,6 +14,7 @@ export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) =
     return node;
 }
 
+// Resolved type represents an AST that has it's variable resolutions assigned.
 type Resolved<T> = T extends { kind: string }
     ? { [K in keyof T]: Resolved<T[K]> }
     : T extends PossibleResolution
@@ -20,28 +23,49 @@ type Resolved<T> = T extends { kind: string }
     ? Resolved<X>[]
     : T;
 
+// Declared ID wraps a standard ID to ensure at the type level that only declared
+// variables are defined.
 type DeclaredID = {
     declared: true;
     id: string;
 };
 
+// VarState => Variable State
 enum VarState {
     DECLARED,
     DEFINED,
 }
 
+// Interface for the body of an action used to unite
+// resolving actions in top level actions and anonymous
+// actions.
 interface GniomhBody {
     args: P.CSIDs | null
     stmts: Stmt[]
 }
 
+// The Scope class represents a lexical scope
+// during the variable resoluion process.
+// It support declaring and defining variables,
+// when a variable is declared it is assigned a unique
+// index. The index is an increasing number that increases by 1
+// with each new declaration.
+// This means that during execution of a Setanta program, a lexical scope
+// can be implemented with a single array of values, and the index assigned
+// during resolution can be used to index the array.
+// Special exception is made for the outermost lexical scope (global scope)
+// as builtins are bound in this scope but aren't defined in the AST.
+// The outermost global scope is implemented with a Map<string, Value>.
 class Scope {
+    // nEntries is how many variables are declared in this scope already.
     private nEntries = 0;
+    // idxMap maps variable name to index.
     private idxMap: Map<string, number> = new Map();
+    // defStatus holds the current variable state.
     private defStatus: Map<string, VarState> = new Map();
 
     // Declaring an ID defines a new variable and
-    // assigns a unique index in this current scope
+    // assigns a unique index in this current scope.
     public declareVar(id: string, start?: PosInfo, end?: PosInfo): void {
         if(this.idxMap.has(id))
             throw alreadyDefinedError(id, start, end);
@@ -51,7 +75,10 @@ class Scope {
         this.nEntries++;
     }
 
+    // defineVar marks a variable as defined.
     public defineVar(id: DeclaredID): void {
+        // No need to check if declared as this is
+        // guaranteed by only accepting a "DeclaredID" object.
         this.defStatus.set(id.id, VarState.DEFINED);
     }
 
@@ -67,18 +94,27 @@ class Scope {
         return this.defStatus.get(id) === VarState.DECLARED;
     }
 
+    // getIdx retrieves the index (if it exists) for a variable.
     public getIdx(id: string): number | undefined {
-        const idx = this.idxMap.get(id);
-        return idx;
+        return this.idxMap.get(id);
     }
 }
 
+// The Binder class actually performs the variable resolution process.
+// It processes the AST line by line, keeping a stack of currently active lexical scopes
+// and performing variable declarations, definitions and lookups.
+// Each variable in the AST is assigned a depth and an index. The depths
+// represents how many lexical scopes "up" to move to find the correct scope.
+// i.e. a depth of 0 means the innermost lexical scope, 1 the next outermost etc.
+// The index then represents the index within the scope that the variable is assigned to.
 export class Binder implements ASTVisitor<void> {
     // depthMap exists for easier testing
     public depthMap: Map<P.ID, ([number, number] | { global: true})> = new Map();
 
+    // The current stack of lexical scopes.
     private scopes: Scope[] = [];
 
+    // visitProgram resolves the binding of a Setanta AST.
     public visitProgram(p: P.Program): Resolved<P.Program> {
         this.visitStmts(p.stmts);
         return p as Resolved<P.Program>;
@@ -89,6 +125,7 @@ export class Binder implements ASTVisitor<void> {
             this.visitStmt(stmt);
     }
 
+    // visitStmt uses the visitor pattern to resolve the binding of a statement
     public visitStmt(stmt: Stmt): void {
         if(stmt.kind === ASTKinds.CCStmt || stmt.kind === ASTKinds.BrisStmt)
             return;
@@ -103,6 +140,7 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitBlockStmt(stmt: P.BlockStmt): void {
+        // Block statements create a new lexical scope
         this.enterScope();
         this.visitStmts(stmt.blk);
         this.exitScope();
@@ -113,7 +151,9 @@ export class Binder implements ASTVisitor<void> {
         this.visitExpr(stmt.expr);
     }
 
+    // visitDefnStmt attempts to define a new variable.
     public visitDefnStmt(stmt: P.DefnStmt): void {
+        // Check the innermost scope to ensure it's not already defined.
         if(this.scopes.length && this.scopes[this.scopes.length - 1].has(stmt.id.id))
             throw alreadyDefinedError(stmt.id.id, stmt.id.start, stmt.id.end);
         const ainm = this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
@@ -160,22 +200,33 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitCtlchStmt(stmt: P.CtlchStmt): void {
+        // Class actions don't get bound as they are not looked-up using
+        // standard lexically bound variables, they're looked-up using
+        // the @ operator.
+
+        // Declare the name of the class.
         const id = this.declareVar(stmt.id.id, stmt.id.start, stmt.id.end);
 
+        // Lookup parent class (done before definition to avoid self-inheritance).
         if(stmt.tuis)
             this.visitID(stmt.tuis.id);
 
+        // Define the name of the class.
         this.defineVar(id);
 
+        // Create new scope for declaring "seo" and "tuis".
         this.enterScope();
 
         const seo = this.declareVar("seo");
         this.defineVar(seo);
+
+        // Only define tuis if we have a parent class.
         if(stmt.tuis) {
             const tuis = this.declareVar("tuis");
             this.defineVar(tuis);
         }
 
+        // Perform variable binding of the body of class actions as normal.
         for(const gniomh of stmt.gniomhs)
             this.visitGniomhBody(gniomh);
 
@@ -240,12 +291,13 @@ export class Binder implements ASTVisitor<void> {
             this.visitID(attr.id);
     }
 
-    public visitAtom(expr: P.Atom): void {
+    public visitAtom(atom: P.Atom): void {
         // No need to bind these
-        if(expr.kind === ASTKinds.Teacs || expr.kind === ASTKinds.Int
-            || expr.kind === ASTKinds.Bool || expr.kind === ASTKinds.Neamhni)
+        if(atom.kind === ASTKinds.Teacs || atom.kind === ASTKinds.Int
+            || atom.kind === ASTKinds.Bool || atom.kind === ASTKinds.Neamhni)
             return;
-        expr.accept<void>(this);
+        // Use visitor pattern to bind atom.
+        atom.accept<void>(this);
     }
 
     public visitListLit(expr: P.ListLit): void {

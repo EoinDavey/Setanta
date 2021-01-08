@@ -1,6 +1,7 @@
 import { PosInfo, SyntaxErr } from "./gen_parser";
 
-// Start identical to RuntimeError
+// StaticError wraps errors that are raised during static analysis
+// of the program.
 export class StaticError extends Error {
     public msg: string;
     public start: PosInfo | null;
@@ -16,6 +17,8 @@ export class StaticError extends Error {
     }
 }
 
+// RuntimeError wraps errors that are raised during execution
+// of the program.
 export class RuntimeError extends Error {
     public msg: string;
     public start: PosInfo | null;
@@ -39,6 +42,8 @@ export function undefinedError(id: string, start?: PosInfo, end?: PosInfo): Runt
     return new RuntimeError(`Níl aon athróg le ainm: ${id}`, start, end);
 }
 
+// If this is a runtime error, tag it with the location information.
+// Location info is used during printing.
 export function tagErrorLoc(r: Error, start: PosInfo, end: PosInfo): Error {
     if(r instanceof RuntimeError && r.start === null && r.end === null) {
         r.start = start;
@@ -52,6 +57,7 @@ const whitespaceRegex = "'(?:\\s|>--(?:(?!--<).)*(--<|\\n|$))'";
 const identifierRegex = "'[a-zA-Z_áéíóúÁÉÍÓÚ][a-zA-Z_áéíóúÁÉÍÓÚ0-9]*'";
 const boolRegex = "'f[ií]or|br[eé]ag'";
 
+// Format a nicer, more readable error string.
 export function syntaxErrString(err: SyntaxErr): string {
     const literals = err.expmatches.map(x => x.kind === "RegexMatch" ? `'${x.literal}'` : "$EOF");
     // remove the whitespace regex match because it's confusing to be displayed

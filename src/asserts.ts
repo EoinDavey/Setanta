@@ -2,6 +2,9 @@ import * as Checks from "./checks";
 import { RuntimeError } from "./error";
 import { Callable, Comparable, Obj, ObjIntf, Value, repr } from "./values";
 
+// This library contains functions for asserting the types of Value
+// objects.
+
 export function assertNumber(x: Value): asserts x is number {
     if (!Checks.isNumber(x))
         throw new RuntimeError(`Ní uimhir é ${repr(x)}`);
@@ -24,7 +27,7 @@ export function assertTéacs(x: Value): asserts x is string {
 
 export function assertCallable(x: Value): asserts x is Callable {
     if (!Checks.isCallable(x))
-        throw new RuntimeError(`Níl gníomh é ${repr(x)}`);
+        throw new RuntimeError(`Ní gníomh é ${repr(x)}`);
 }
 
 export function assertObj(x: Value): asserts x is Obj {

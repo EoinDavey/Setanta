@@ -18,6 +18,8 @@ function mathWrap(ainm: string, fn: (x: number) => number): Callable {
     };
 }
 
+// sleepPromise returns a promise that will be resolved after the given number of
+// milliseconds, and will be stopped when the context is cancelled.
 function sleepPromise(ctx: Context, time: number): Promise<null> {
     return new Promise((accept, reject) => {
         let id = 0; // Id of timer, unknown intially, we capture it into the closure
@@ -45,7 +47,7 @@ function sleepPromise(ctx: Context, time: number): Promise<null> {
 // e.g. "cúlú" -> [culu,cúlu,culú,cúlú]
 // limit to 10 fadas, as the number of outputs is 2 ** #fadas
 // and we don't want to be computing thousands of builtin vars
-// for one var
+// for one var.
 export function allFadaCombos(s: string): string[] {
     const fadaMp: { [s: string]: string } = {
         "á": "a", "Á": "A",
@@ -72,6 +74,7 @@ export function allFadaCombos(s: string): string[] {
     return combos;
 }
 
+// listToAllFadaCombos expands the fada combos in the list
 export function listToAllFadaCombos<X>(ls: [string, X][]): [string, X][] {
     const allCombos: [string, X][] = [];
     for(const [name, val] of ls)
@@ -84,6 +87,7 @@ export function globalBuiltinsFadaCombos(ctx: Context): [string, Value][] {
     return listToAllFadaCombos(getGlobalBuiltins(ctx));
 }
 
+// getGlobalBuiltins returns the builtin actions and values.
 function getGlobalBuiltins(ctx: Context): [string, Value][] {
     return [
         [
@@ -312,6 +316,7 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
     ];
 }
 
+// téacsOpsList is a list of the builtin members of téacs.
 const téacsOpsList: [string, (s: string) => Value][] = [
     [
         "fad", s => s.length,
@@ -372,6 +377,7 @@ const téacsOpsList: [string, (s: string) => Value][] = [
 ];
 export const téacsBuiltins = new Map(listToAllFadaCombos(téacsOpsList));
 
+// liostaOpsList is a list of the builtin members of a liosta.
 const liostaOpsList: [string, (ls: Value[]) => Value][] = [
     [
         "fad", ls => ls.length,

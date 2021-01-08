@@ -31,9 +31,8 @@ export function unescapeChars(s: string): string {
             continue;
         }
         const g = rep.get(s[i + 1]);
-        if (!g) {
+        if (!g)
             throw new RuntimeError(`Ní thuigtear an cód \\${s[i + 1]}`);
-        }
         out += g;
         ++i;
     }

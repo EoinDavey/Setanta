@@ -15,6 +15,7 @@ const [, , ...pargs] = process.argv;
 const usage = `Úsáid: setanta [comhad foinseach]
 Usage: setanta [source file]`;
 
+// Custom logic for better printing of error messages.
 function printError(r: RuntimeError, source: string) {
     if(r.start && r.end && r.end.line - r.start.line <= 3) {
         const sourceLines = source.split('\n');
@@ -30,6 +31,7 @@ function printError(r: RuntimeError, source: string) {
     }
 }
 
+// getExternals implements some custom builtins for the CLI.
 function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: Context) => [string, Value][] {
     return (ctx: Context) => listToAllFadaCombos([
         [
@@ -62,6 +64,12 @@ function getExternals(léighfn: (ctx: Context) => Promise<string|null>): (ctx: C
     ]);
 }
 
+// getFullInput attempts to get user input from the REPL. In order to allow the user
+// to enter multiline statements (e.g. conditionals, loops) it keeps getting more and
+// more input as long as the text so far entered is a prefix of valid Setanta code.
+// Once either valid code is entered or the user entered text that can't be salvaged
+// it returns. The returns is a Promise containing either the string of the valid code
+// or a list of SyntaxErrs.
 async function getFullInput(getLine: () => Promise<string|null>,
     continuance: () => Promise<string|null>): Promise<string|SyntaxErr[]> {
     let prev = "";
@@ -81,11 +89,14 @@ async function getFullInput(getLine: () => Promise<string|null>,
     }
 }
 
+// repls runs the main repl loop.
 async function repl() {
     const rl: readline.Interface = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
     });
+    // léighLíne is a function that gets called when the program calls the
+    // léigh_líne builtin, or the ceist builtin. It is passed to getExternals.
     const léighLíne = (ctx: Context) : Promise<string|null> =>  {
         return new Promise((acc, rej) => {
             ctx.addRejectFn(rej);
@@ -95,15 +106,21 @@ async function repl() {
             });
         });
     };
+    // Used to get a fresh line of input from REPL.
     const getLine = (): Promise<string|null> => {
         return new Promise((r) => {
             rl.question("᚛ ", (resp) => r(resp));
         });
     };
+    // Used to get a continuing line of input from REPL. Called when the input is a multiline input.
     const continuance = (): Promise<string|null> => {
         return new Promise(r => { rl.question("...", r); });
     };
     const i = new Interpreter(getExternals(léighLíne));
+
+    // In order to track positions for error printing correctly we have to keep
+    // track of all code executed so far. We append new input onto this string and
+    // start parsing from the new suffix.
     let soFar = "";
     let prevPos: PosInfo = {overallPos: 0, line: 1, offset: 0};
     for(;;) {
@@ -111,6 +128,7 @@ async function repl() {
             break;
         const input: string | SyntaxErr[] = await getFullInput(getLine, continuance);
         if(Array.isArray(input)) {
+            // If an array is returned, it is an array of SyntaxErrs.
             for(const se of input)
                 console.error(syntaxErrString(se));
             continue;
@@ -128,6 +146,7 @@ async function repl() {
             // This is an expression, we can print the result
             if (ast.stmts.length === 1 && ast.stmts[0].kind === ASTKinds.And) {
                 const expr = ast.stmts[0];
+                // Need to bind variables.
                 i.binder.visitExpr(expr);
                 console.log(repr(await ast.stmts[0].evalfn(i.global)));
                 continue;
@@ -154,9 +173,8 @@ async function runFile() {
         process.exitCode = 1;
         return;
     }
-    if (res.ast === null) {
+    if (res.ast === null)
         throw new Error("Unknown parser error: Serious failure");
-    }
     const rl: readline.Interface = readline.createInterface({
         input: process.stdin,
         output: process.stdout,

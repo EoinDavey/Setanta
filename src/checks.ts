@@ -1,16 +1,26 @@
 import { Creatlach } from "./creatlach";
 import { Callable, Comparable, Obj, ObjIntf, Value } from "./values";
 
+// This library implements type checks to differentiate
+// the base value types in Setanta.
+
+// IsTrue is the authority for what is considered true
+// and false in Setanta.
 export function isTrue(v: Value): boolean {
     return v !== 0 && v !== false && v !== null;
 }
 
+// isEqual is the authority on comparing two values in Setanta
+// numbers, strings and booleans are compared as normal. Two lists
+// are considered equal if each of their elements are equal, two objects
+// are equal if they are literally the same object.
 export function isEqual(a: Value, b: Value): boolean {
     if (a === b)
         return true;
-    if (isLiosta(a) && isLiosta(b) && a.length === b.length) {
-        return a.map((x, i) => [x, b[i]]).every((x) => isEqual(x[0], x[1]));
-    }
+    if (isLiosta(a) && isLiosta(b) && a.length === b.length)
+        return a
+            .map((x, i) => [x, b[i]])
+            .every(([x, y]) => isEqual(x, y));
     return a === b;
 }
 

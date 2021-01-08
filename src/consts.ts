@@ -1,3 +1,5 @@
+// Useful constants
+
 export type STOPType = "STOP";
 export const BrisException = "BRIS";
 export const CCException = "CC";

@@ -12,8 +12,10 @@ function getEnvAtDepth(env: Environment, depth: number): Environment | null {
 
 // Environment contains the current values for the in-scope variables
 // Environments are recursive, each contains a reference to it's parent
-// environment (enclosing scope) if it exists. (It only doesn't exist for
-// the global environment.
+// environment (enclosing scope) if it exists.
+// Global variables are held in a common shared object between execution
+// contexts. They are held separate to other lexical scopes as they include
+// builtins that aren't defined in the program.
 export class Environment {
 
     public static from(arr: [string, Value][]): Environment {

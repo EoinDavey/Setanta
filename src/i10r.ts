@@ -6,6 +6,8 @@ import { execStmts } from "./execs";
 import { STOP } from "./consts";
 import { Binder } from "./bind";
 
+// The Interpreter class can be used to control the execution
+// of a Setanta program
 export class Interpreter {
     public global: Context;
     public binder: Binder;
@@ -20,10 +22,14 @@ export class Interpreter {
                 this.global.env.define(ext[0], ext[1]));
     }
 
+    // stop attempts to stop all active executions
     public stop(): void {
         this.global.stop();
     }
 
+    // interpret takes a Setanta AST and executes it,
+    // it returns a Promise that is resolved when the
+    // execution completes.
     public async interpret(p: Program): Promise<void> {
         const resolvedAst = this.binder.visitProgram(p);
         return execStmts(resolvedAst.stmts, this.global)
@@ -33,4 +39,6 @@ export class Interpreter {
                 return Promise.reject(err);
             });
     }
+
+    // TODO Add function for executing Expr nodes directly and returning Values
 }
