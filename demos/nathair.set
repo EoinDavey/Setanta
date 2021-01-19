@@ -135,4 +135,7 @@ nuair-a fíor {
 }
 
 >-- Ag an deireadh scríobh an scór
-scríobh('Scór', scór)
+má scór >= 1
+    scríobh('Rath')
+nó
+    scríobh('Teip')
