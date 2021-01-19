@@ -23,7 +23,7 @@
     "type": "git",
     "url": "https://github.com/EoinDavey/Setanta.git"
   },
-  "license": "ISC",
+  "license": "MPL-2.0",
   "devDependencies": {
     "@types/jest": "^26.0.15",
     "@types/node": "^14.14.20",
