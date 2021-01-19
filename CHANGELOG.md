@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1 - 2021/01/04
+
+### Fixed
+
+- Fixed variable binding bug introduced in last update
+
 ## 0.9.0 - 2021/01/04
 
 ### Added
