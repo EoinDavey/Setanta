@@ -149,6 +149,10 @@ test("verify depth correctness", () => {
                    }`,
             depths: [[0, 0], [0, 1], [0, 0], [1, 1], [0, 0], [0, 0]],
         },
+        {
+            prog: `x := x@y@z@a`,
+            depths: [g],
+        },
     ];
     for (const c of cases) {
         const res = parse(c.prog);

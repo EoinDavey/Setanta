@@ -1,6 +1,6 @@
 import { ASTKinds, PosInfo } from "./gen_parser";
 import * as P from "./gen_parser";
-import { PossibleResolution, Stmt } from "./values";
+import { Stmt } from "./values";
 import { ASTVisitor } from "./visitor";
 import { StaticError, alreadyDefinedError } from "./error";
 
@@ -13,15 +13,6 @@ export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) =
     b.exitScope();
     return node;
 }
-
-// Resolved type represents an AST that has it's variable resolutions assigned.
-type Resolved<T> = T extends { kind: string }
-    ? { [K in keyof T]: Resolved<T[K]> }
-    : T extends PossibleResolution
-    ? { resolved: true, global: false, depth: number, offset: number } | { resolved: true, global: true }
-    : T extends (infer X)[]
-    ? Resolved<X>[]
-    : T;
 
 // Declared ID wraps a standard ID to ensure at the type level that only declared
 // variables are defined.
@@ -115,9 +106,9 @@ export class Binder implements ASTVisitor<void> {
     private scopes: Scope[] = [];
 
     // visitProgram resolves the binding of a Setanta AST.
-    public visitProgram(p: P.Program): Resolved<P.Program> {
+    public visitProgram(p: P.Program): P.Program {
         this.visitStmts(p.stmts);
-        return p as Resolved<P.Program>;
+        return p;
     }
 
     public visitStmts(stmts: Stmt[]): void {
@@ -287,8 +278,7 @@ export class Binder implements ASTVisitor<void> {
 
     public visitObjLookups(expr: P.ObjLookups): void {
         this.visitAtom(expr.root);
-        for(const attr of expr.attrs)
-            this.visitID(attr.id);
+        // Don't visit attributes, they are ID objects but are not bound.
     }
 
     public visitAtom(atom: P.Atom): void {

@@ -33,7 +33,7 @@ export class Interpreter {
     public async interpret(p: Program): Promise<void> {
         const resolvedAst = this.binder.visitProgram(p);
         return execStmts(resolvedAst.stmts, this.global)
-            .catch((err) => {
+            .catch(err => {
                 if(err === STOP)
                     return;
                 return Promise.reject(err);

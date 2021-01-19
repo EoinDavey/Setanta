@@ -751,6 +751,18 @@ test("test obj lookups", async () => {
             exp: "0",
             inp: "res := a@b@c()[0]",
         },
+        // Regression test for variable binding bug
+        {
+            env: Environment.from([
+                ["b", {
+                    ainm: "b",
+                    getAttr: (s: string) => s === "res" ? true : null,
+                    setAttr: () => undefined,
+                }],
+            ]),
+            exp: true,
+            inp: "res := res@b",
+        },
     ];
     for (const c of cases) {
         const i = new Interpreter();

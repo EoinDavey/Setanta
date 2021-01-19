@@ -1,0 +1,138 @@
+>-- Cluiche Nathair (Snake)
+>-- See demos on try-setanta.ie
+>-- this is a test to ensure the demo stays working
+
+>-- Placeholder for stáitse
+creatlach Stáitse {
+    gníomh nua() {
+        >-- Make a 10x1 block so guaranteed to pick up
+        >-- apple by going right.
+        fadX@seo = 400
+        fadY@seo = 40
+        dath@seo = gníomh(dath) {}
+        dronLán@seo = gníomh(a,b,c,d) {}
+        glanDron@seo = gníomh(a,b,c,d) {}
+    }
+}
+stáitse := Stáitse()
+méarchlár := gníomh(fn) {}
+
+creatlach Nathair { >-- An nathair
+
+    gníomh nua(méid, xTos, yTos) {
+        ls@seo = [[xTos, yTos]] >-- Tosaigh le píosa amháin
+        méid@seo = méid >-- an méid
+        coimeád@seo = breag >-- coimád an píosa deireanach?
+    }
+
+    >-- bog an nathair go dtí an cead ait eile
+    >-- Tá an toradh fíor nuair atá an ait nua ceart go leor
+    >-- Tá an toradh breagach nuair atá an nathair i dtrioblóid
+    gníomh bog(dx, dy) {
+        ceann := ls@seo[fad(ls@seo)-1] >-- ceann an nathair
+        xNua := ceann[0] + dx*méid@seo >-- an ait nua X
+        yNua := ceann[1] + dy*méid@seo >-- na ait nua Y
+
+        >-- Seiceáil go bhfuil an ait nua idir teorainn an stáitse
+        má xNua < 0 | xNua + méid@seo > X | yNua < 0 | yNua + méid@seo > Y
+            toradh breag
+
+        >-- Seiceáil go bhfuil an ait nua folamh
+        le i idir (0, fad(ls@seo))
+            má xNua == ls@seo[i][0] & yNua == ls@seo[i][1]
+                toradh breag
+
+        ls@seo += [[xNua, yNua]] >-- Cuir an ait nua sa liosta
+        dronLán@stáitse(xNua, yNua, méid@seo, méid@seo) >-- Tarraing an píosa nua ar an stáitse
+
+        má !coimeád@seo { >-- Sin fíor nuair nach dteastaíonn uainn an píosa deireanach a scriosadh amach
+            glanDron@stáitse(ls@seo[0][0], ls@seo[0][1], méid@seo, méid@seo)
+            ls@seo = cuid@ls@seo(1, fad(ls@seo))
+        }
+
+        coimeád@seo = breag
+
+        >-- Bog an nathair go ceart, tá se in ann lean ar aghaidh
+        toradh fíor
+    }
+
+    >-- Cá bhfuil an nathair
+    gníomh áit() {
+        toradh ls@seo[fad(ls@seo)-1]
+    }
+
+    >-- Fás an nathair
+    gníomh fás() {
+        coimeád@seo = fíor
+    }
+}
+
+dx := 1 dy := 0
+
+>-- Seo gníomh chun an treo a athrú
+gníomh smacht(k) {
+    má k == 'ArrowRight' {
+        dx = 1
+        dy = 0
+    }
+    má k == 'ArrowLeft' {
+        dx = -1
+        dy = 0
+    }
+    má k == 'ArrowDown' {
+        dx = 0
+        dy = 1
+    }
+    má k == 'ArrowUp' {
+        dx = 0
+        dy = -1
+    }
+}
+
+>-- tarraing an t-úll
+gníomh tÚll(úll){
+    dath@stáitse('dearg')
+    dronLán@stáitse(úll[0], úll[1], MÉID, MÉID)
+    dath@stáitse('dubh')
+}
+
+X := fadX@stáitse
+Y := fadY@stáitse
+
+MÉID := 40 >-- An ard agus leithead gach píosa den naithair
+
+n := Nathair(MÉID, 0, 0) >-- Cruthaigh an nathair
+
+méarchlár(smacht) >-- Thug an gníomh "smacht" don mhéarchlár
+
+>-- Cruthaigh an chéad úll
+úll := [randUimh@mata(0, X//MÉID)*MÉID, randUimh@mata(0, Y//MÉID)*MÉID]
+tÚll(úll)
+
+scór := 0
+
+nuair-a fíor {
+    coladh(200) >-- Fan
+
+    >-- bog an naithair sa dtreo (dx, dy)
+    bhog := bog@n(dx, dy)
+    má !bhog { >-- An raibh an bogadh rathúil?
+        bris
+    }
+
+    áit := áit@n() >-- Cá bhfuil an nathair anois
+
+    má áit == úll { >-- An bhfuil an úll ag an nathair
+        scór += 1 >-- Méadaigh an scór
+
+        >-- pioc áit nua don úll
+        úll = [randUimh@mata(0, X//MÉID)*MÉID, randUimh@mata(0, Y//MÉID)*MÉID]
+        tÚll(úll)
+
+        >-- Fas an nathair
+        fás@n()
+    }
+}
+
+>-- Ag an deireadh scríobh an scór
+scríobh('Scór', scór)
