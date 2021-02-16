@@ -1,5 +1,5 @@
 import { athchuir, unescapeChars } from "../../src/teacs";
-test("test unescapeChars", () => {
+describe("test unescapeChars", () => {
     interface TC { inp: string; exp: string; }
     const cases: TC[] = [
         { inp: "", exp: "" },
@@ -10,11 +10,12 @@ test("test unescapeChars", () => {
         { inp: String.raw`\'abc\'`, exp: "'abc'" },
     ];
     for (const c of cases) {
-        expect(unescapeChars(c.inp)).toEqual(c.exp);
+        test(`unescapeChars(${c.inp}) = "${c.exp}"?`, () =>
+            expect(unescapeChars(c.inp)).toEqual(c.exp));
     }
 });
 
-test("test athchuir", () => {
+describe("test athchuir", () => {
     interface TC { inp: string; rep: string; val: string; exp: string; }
     const cases: TC[] = [
         { inp: "aaaa", rep: "b", val: "c", exp: "aaaa" },
@@ -23,6 +24,7 @@ test("test athchuir", () => {
         { inp: "", rep: "a", val: "b", exp: "" },
     ];
     for (const c of cases) {
-        expect(athchuir(c.inp, c.rep, c.val)).toEqual(c.exp);
+        test(`athchuir(${c.inp}, ${c.rep}, ${c.val}) = "${c.exp}"?`, () =>
+            expect(athchuir(c.inp, c.rep, c.val)).toEqual(c.exp));
     }
 });

@@ -1,6 +1,6 @@
 import { Value, goTéacs, repr } from "../../src/values";
 
-test("test goTéacs", () => {
+describe("test goTéacs", () => {
     interface TC { v: Value; exp: string; }
     const cases: TC[] = [
         { v: 123, exp: "123" },
@@ -28,11 +28,12 @@ test("test goTéacs", () => {
         },
     ];
     for (const c of cases) {
-        expect(goTéacs(c.v)).toEqual(c.exp);
+        test(`goTéacs(${c.v}) = "${c.exp}"?`, () =>
+            expect(goTéacs(c.v)).toEqual(c.exp));
     }
 });
 
-test("test repr", () => {
+describe("test repr", () => {
     interface TC { v: Value; exp: string; }
     const cases: TC[] = [
         { v: 123, exp: "123" },
@@ -60,6 +61,7 @@ test("test repr", () => {
         },
     ];
     for (const c of cases) {
-        expect(repr(c.v)).toEqual(c.exp);
+        test(`repr(${c.v}) = "${c.exp}"?`, () =>
+            expect(repr(c.v)).toEqual(c.exp));
     }
 });

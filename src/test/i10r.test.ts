@@ -10,7 +10,7 @@ import { resolveASTNode } from "../../src/bind";
 import * as Asserts from "../../src/asserts";
 import * as Checks from "../../src/checks";
 
-test("test isEqual", () => {
+describe("test isEqual", () => {
     interface TC { a: Value; b: Value; eq: boolean; }
     const cases: TC[] = [
         {a: 3, b: 3, eq: true},
@@ -24,12 +24,14 @@ test("test isEqual", () => {
         {a: [[], [1, 2, 3]], b: [[], [1, 2, 3]], eq: true},
         {a: [[], []], b: [[]], eq: false},
     ];
-    for (const c of cases) {
-        expect(Checks.isEqual(c.a, c.b)).toEqual(c.eq);
+    for (let i = 0; i < cases.length; ++i) {
+        const c = cases[i];
+        test(`test ${i}`, () =>
+            expect(Checks.isEqual(c.a, c.b)).toEqual(c.eq));
     }
 });
 
-test("test expressions", async () => {
+describe("test expressions", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {inp: "42", exp: 42},
@@ -81,27 +83,24 @@ test("test expressions", async () => {
         {inp: "-2 % 10", exp: 8},
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env)
-            i.global.env = c.env;
-        const p = new Parser(c.inp);
-        const res = p.matchExpr(0);
-        expect(res).not.toBeNull();
-        const resolved = resolveASTNode(res!);
-        try {
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env)
+                i.global.env = c.env;
+            const p = new Parser(c.inp);
+            const res = p.matchExpr(0);
+            expect(res).not.toBeNull();
+            const resolved = resolveASTNode(res!);
             const got = await resolved.evalfn(i.global);
             const quickGet = res!.qeval;
             expect(quickGet).not.toBeNull();
             expect(quickGet!(i.global)).toEqual(c.exp);
             expect(got).toEqual(c.exp);
-        } catch (e) {
-            console.log(c.inp);
-            throw e;
-        }
+        });
     }
 });
 
-test("test assign", async () => {
+describe("test assign", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -187,20 +186,22 @@ test("test assign", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test if stmt", async () => {
+describe("test if stmt", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -240,20 +241,22 @@ test("test if stmt", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test nuair-a loops", async () => {
+describe("test nuair-a loops", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -303,25 +306,22 @@ test("test nuair-a loops", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        try {
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
             await i.interpret(res.ast!);
-        } catch(e) {
-            console.log(c.inp);
-            throw e;
-        }
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test le idir loops", async () => {
+describe("test le idir loops", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -408,20 +408,22 @@ test("test le idir loops", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test function calls", async () => {
+describe("test function calls", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -459,20 +461,22 @@ test("test function calls", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test function definitions", async () => {
+describe("test function definitions", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -516,20 +520,22 @@ test("test function definitions", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test toradh", async () => {
+describe("test toradh", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -566,20 +572,22 @@ test("test toradh", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test postfix ops", async () => {
+describe("test postfix ops", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -609,20 +617,22 @@ test("test postfix ops", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test arrays", async () => {
+describe("test arrays", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -690,20 +700,22 @@ test("test arrays", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test obj lookups", async () => {
+describe("test obj lookups", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -765,20 +777,22 @@ test("test obj lookups", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test creatlach stmt", async () => {
+describe("test creatlach stmt", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -925,20 +939,22 @@ test("test creatlach stmt", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test object assignment", async () => {
+describe("test object assignment", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -992,20 +1008,22 @@ test("test object assignment", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test constructor", async () => {
+describe("test constructor", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -1076,16 +1094,18 @@ test("test constructor", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
@@ -1105,7 +1125,7 @@ test("context stop test", async () => {
     await i.interpret(res.ast!);
 });
 
-test("test comments", async () => {
+describe("test comments", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -1130,20 +1150,21 @@ test("test comments", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env)
+                i.global.env = c.env;
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 
-test("test anonymous functions", async () => {
+describe("test anonymous functions", () => {
     interface TC { inp: string; exp: Value; env?: Environment; }
     const cases: TC[] = [
         {
@@ -1173,16 +1194,18 @@ test("test anonymous functions", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        if (c.env) {
-            i.global.env = c.env;
-        }
-        const p = new Parser(c.inp);
-        const res = p.parse();
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        await i.interpret(res.ast!);
-        expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            if (c.env) {
+                i.global.env = c.env;
+            }
+            const p = new Parser(c.inp);
+            const res = p.parse();
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            await i.interpret(res.ast!);
+            expect(i.global.env.getGlobalValDirect("res")).toEqual(c.exp);
+        });
     }
 });
 

@@ -1,7 +1,7 @@
 import { syntaxErrString } from "../error";
 import { parse } from "../gen_parser";
 
-test("test syntaxErrString", () => {
+describe("test syntaxErrString", () => {
     interface TC { inp: string; expErr: string; }
     const cases: TC[] = [
         {
@@ -26,9 +26,11 @@ test("test syntaxErrString", () => {
         },
     ];
     for(const tc of cases) {
-        const res = parse(tc.inp);
-        expect(res.errs).toHaveLength(1);
-        const err = res.errs[0];
-        expect(syntaxErrString(err)).toEqual(tc.expErr);
+        test(`inp: ${tc.inp}`, () => {
+            const res = parse(tc.inp);
+            expect(res.errs).toHaveLength(1);
+            const err = res.errs[0];
+            expect(syntaxErrString(err)).toEqual(tc.expErr);
+        });
     }
 });

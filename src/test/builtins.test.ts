@@ -5,7 +5,7 @@ import { Value } from "../../src/values";
 import { resolveASTNode } from "../../src/bind";
 import { allFadaCombos } from "../../src/builtins";
 
-test("test fad", async () => {
+describe("test fad", () => {
     interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         { inp: "fad([])", exp: 0},
@@ -21,16 +21,18 @@ test("test fad", async () => {
         { inp: "fad@'hey'", exp: 3},
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        const p = new Parser(c.inp);
-        const res = p.matchExpr(0);
-        expect(res).not.toBeNull();
-        const got = await resolveASTNode(res!).evalfn(i.global);
-        expect(got).toEqual(c.exp);
+        test(`inp: "${c.inp}"`, async () => {
+            const i = new Interpreter();
+            const p = new Parser(c.inp);
+            const res = p.matchExpr(0);
+            expect(res).not.toBeNull();
+            const got = await resolveASTNode(res!).evalfn(i.global);
+            expect(got).toEqual(c.exp);
+        });
     }
 });
 
-test("test téacs fns", async () => {
+describe("test téacs fns", () => {
     interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         { inp: "roinn@'a b c'(' ')", exp: ["a", "b", "c"]},
@@ -48,16 +50,18 @@ test("test téacs fns", async () => {
         },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        const p = new Parser(c.inp);
-        const res = p.matchExpr(0);
-        expect(res).not.toBeNull();
-        const got = await resolveASTNode(res!).evalfn(i.global);
-        expect(got).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            const p = new Parser(c.inp);
+            const res = p.matchExpr(0);
+            expect(res).not.toBeNull();
+            const got = await resolveASTNode(res!).evalfn(i.global);
+            expect(got).toEqual(c.exp);
+        });
     }
 });
 
-test("test liosta fns", async () => {
+describe("test liosta fns", () => {
     interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         { inp: "cuid@[1,2,3](0, 2)", exp: [1, 2]},
@@ -74,12 +78,14 @@ test("test liosta fns", async () => {
         { inp: "aimsigh@[0, 1, 2](3)", exp: -1},
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        const p = new Parser(c.inp);
-        const res = p.matchExpr(0);
-        expect(res).not.toBeNull();
-        const got = await resolveASTNode(res!).evalfn(i.global);
-        expect(got).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            const p = new Parser(c.inp);
+            const res = p.matchExpr(0);
+            expect(res).not.toBeNull();
+            const got = await resolveASTNode(res!).evalfn(i.global);
+            expect(got).toEqual(c.exp);
+        });
     }
 });
 
@@ -153,7 +159,7 @@ test("test scrios_cúl liosta error", async () => {
     expect(i.interpret(res.ast!)).rejects.toThrow(`Ní feidir cúl liosta folamh a scriosadh`);
 });
 
-test("test go_uimh", async () => {
+describe("test go_uimh", () => {
     interface TC { inp: string; exp: number; }
     const cases: TC[] = [
         { inp: "go_uimh('123')", exp: 123 },
@@ -164,16 +170,18 @@ test("test go_uimh", async () => {
         { inp: "go_uimh('míuimh')", exp: NaN },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        const p = new Parser(c.inp);
-        const res = p.matchExpr(0);
-        expect(res).not.toBeNull();
-        const got = await resolveASTNode(res!).evalfn(i.global);
-        expect(got).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            const p = new Parser(c.inp);
+            const res = p.matchExpr(0);
+            expect(res).not.toBeNull();
+            const got = await resolveASTNode(res!).evalfn(i.global);
+            expect(got).toEqual(c.exp);
+        });
     }
 });
 
-test("test go_téacs", async () => {
+describe("test go_téacs", () => {
     interface TC { inp: string; exp: string; }
     const cases: TC[] = [
         { inp: "go_téacs(123)", exp: "123" },
@@ -183,16 +191,18 @@ test("test go_téacs", async () => {
         { inp: "go_teacs(go_téacs)", exp: "< gníomh go_téacs >" },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        const p = new Parser(c.inp);
-        const res = p.matchExpr(0);
-        expect(res).not.toBeNull();
-        const got = await resolveASTNode(res!).evalfn(i.global);
-        expect(got).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            const p = new Parser(c.inp);
+            const res = p.matchExpr(0);
+            expect(res).not.toBeNull();
+            const got = await resolveASTNode(res!).evalfn(i.global);
+            expect(got).toEqual(c.exp);
+        });
     }
 });
 
-test("uas/íos test", async () => {
+describe("uas/íos test", () => {
     interface TC { inp: string; exp: number | string; }
     const cases: TC[] = [
         { inp: "uas(3, 4)", exp: 4 },
@@ -207,16 +217,18 @@ test("uas/íos test", async () => {
         { inp: "íos('aaaab', 'aaaac')", exp: "aaaab" },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        const p = new Parser(c.inp);
-        const res = p.matchExpr(0);
-        expect(res).not.toBeNull();
-        const got = await resolveASTNode(res!).evalfn(i.global);
-        expect(got).toEqual(c.exp);
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            const p = new Parser(c.inp);
+            const res = p.matchExpr(0);
+            expect(res).not.toBeNull();
+            const got = await resolveASTNode(res!).evalfn(i.global);
+            expect(got).toEqual(c.exp);
+        });
     }
 });
 
-test("test mata", async () => {
+describe("test mata", () => {
     interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         { inp: "cearn@mata(5)", exp: 25 },
@@ -257,16 +269,18 @@ test("test mata", async () => {
         { inp: "eas@mata(2)", exp: Math.exp(2) },
     ];
     for (const c of cases) {
-        const i = new Interpreter();
-        const p = new Parser(c.inp);
-        const res = p.matchExpr(0);
-        expect(res).not.toBeNull();
-        const got = await resolveASTNode(res!).evalfn(i.global);
-        if (isNumber(got)) {
-            expect(got).toBeCloseTo(c.exp as number);
-        } else {
-            expect(got).toEqual(c.exp);
-        }
+        test(`inp: ${c.inp}`, async () => {
+            const i = new Interpreter();
+            const p = new Parser(c.inp);
+            const res = p.matchExpr(0);
+            expect(res).not.toBeNull();
+            const got = await resolveASTNode(res!).evalfn(i.global);
+            if (isNumber(got)) {
+                expect(got).toBeCloseTo(c.exp as number);
+            } else {
+                expect(got).toEqual(c.exp);
+            }
+        });
     }
 });
 
@@ -296,7 +310,7 @@ test("test fan", async () => {
     expect(end - start).toBeGreaterThan(500);
 });
 
-test("test allFadaCombos", () => {
+describe("test allFadaCombos", () => {
     const cases: {inp: string, exp: string[]}[] = [
         { inp: "á", exp: ["a", "á"] },
         { inp: "a", exp: ["a"] },
@@ -338,7 +352,9 @@ test("test allFadaCombos", () => {
         },
     ];
     for(const tc of cases) {
-        const res = allFadaCombos(tc.inp);
-        expect(res.sort()).toEqual(tc.exp.sort());
+        test(`inp: ${tc.inp}`, () => {
+            const res = allFadaCombos(tc.inp);
+            expect(res.sort()).toEqual(tc.exp.sort());
+        });
     }
 });

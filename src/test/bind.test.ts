@@ -1,7 +1,7 @@
 import { Binder } from "../bind";
 import { parse } from "../gen_parser";
 
-test("verify depth correctness", () => {
+describe("verify depth correctness", () => {
     // prog is input program
     // depths is a map of [depth, idx] expected values *in order of usage*
     interface TC { prog: string; depths: ([number, number]|{ global: true})[]; }
@@ -154,17 +154,20 @@ test("verify depth correctness", () => {
             depths: [g],
         },
     ];
-    for (const c of cases) {
-        const res = parse(c.prog);
-        expect(res.errs).toEqual([]);
-        expect(res.ast).not.toBeNull();
-        const binder = new Binder();
-        binder.enterScope();
-        binder.visitProgram(res.ast!);
-        binder.exitScope();
-        const gotDepths: ([number, number] | { global: true})[] = Array.from(binder.depthMap.entries())
-            .sort((a, b) => a[0].start.overallPos - b[0].start.overallPos)
-            .map(x => x[1]);
-        expect(c.depths).toEqual(gotDepths);
+    for(let i = 0; i < cases.length; i++) {
+        const tc = cases[i];
+        test(`subtest ${i}`, () => {
+            const res = parse(tc.prog);
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            const binder = new Binder();
+            binder.enterScope();
+            binder.visitProgram(res.ast!);
+            binder.exitScope();
+            const gotDepths: ([number, number] | { global: true})[] = Array.from(binder.depthMap.entries())
+                .sort((a, b) => a[0].start.overallPos - b[0].start.overallPos)
+                .map(x => x[1]);
+            expect(tc.depths).toEqual(gotDepths);
+        });
     }
 });
