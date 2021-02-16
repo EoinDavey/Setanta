@@ -30,6 +30,7 @@ export class Interpreter {
     // interpret takes a Setanta AST and executes it,
     // it returns a Promise that is resolved when the
     // execution completes.
+    // throws RuntimeErr | StaticErr
     public async interpret(p: Program): Promise<void> {
         const resolvedAst = this.binder.visitProgram(p);
         return execStmts(resolvedAst.stmts, this.global)
