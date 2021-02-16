@@ -305,14 +305,11 @@ const asgnOpTable: Map<string, AsgnOpEntry[]> = new Map([
     ["+=", [
         numAsgnOpEntry((a, b) => a + b),
         {
-            // Using += on a list is more efficient than x = x + y, due to use of in place `push`
-            // TODO review this, this isn't right. a = a + b shouldn't be semantically different
-            // than a += b (consider gníomh fn(ls) { ls = ls + [0] } vs gníomh fn(ls) { ls += [0] }
             lcheck: Checks.isLiosta,
             op: (ref: Ref, cur: Value, d: Value) => {
                 Asserts.assertLiosta(cur);
                 Asserts.assertLiosta(d);
-                cur.push(...d);
+                ref(cur.concat(d));
             },
             rcheck: Checks.isLiosta,
         },

@@ -29,3 +29,4 @@ title: Lists
 | `scrios` | Remove a member from the list at a given position | `scrios@[1, 2, 3](0) == [2, 3]` |
 | `scrios_cúl` | Remove the last member of the list | `scrios_cúl@[1, 2, 3]() == [1, 2]` |
 | `aimsigh` | Return the position of a member of a list (or -1 if there is no such member) | `aimsigh@[1, 2, 3](2) == 1` |
+| `cuir_le` | Append a value to the end of the list | `cuir_le@[1, 2, 3](4) == [1, 2, 3, 4]` |

@@ -149,6 +149,23 @@ test("test scrios_cúl liosta", async () => {
 `);
 });
 
+test("test cuir_le liosta", async () => {
+    const prog = `
+    ls := []
+    le i idir (0, 100) {
+        cuir_le@ls(i)
+    }
+    res := 0
+    le i idir (0, fad@ls) {
+        res += ls[i]
+    }`;
+    const i = new Interpreter();
+    const res = parse(prog);
+    expect(res.ast).not.toBeNull();
+    await i.interpret(res.ast!);
+    expect(i.global.env.getGlobalValDirect("res")).toEqual((100 * 99) / 2);
+});
+
 test("test scrios_cúl liosta error", async () => {
     const prog = `
     ls := []
