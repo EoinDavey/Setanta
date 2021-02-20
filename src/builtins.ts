@@ -481,5 +481,17 @@ const liostaOpsList: [string, (ls: Value[]) => Value][] = [
             };
         },
     ],
+    [
+        "cuir_le", ls => {
+            return {
+                ainm: "cuir_le",
+                arity: () => 1,
+                call: ([a]: Value[]): Promise<Value> => {
+                    ls.push(a);
+                    return Promise.resolve(ls);
+                },
+            };
+        },
+    ],
 ];
 export const liostaBuiltins = new Map(listToAllFadaCombos(liostaOpsList));

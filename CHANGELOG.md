@@ -1,5 +1,11 @@
 # Changelog
 
+## Upcoming
+
+### Added
+
+- Added `cuir_le` action for in-place list appends.
+
 ## 0.9.1 - 2021/01/04
 
 ### Fixed

@@ -29,3 +29,4 @@ title: Liosta
 | `scrios` | Scrios ball den liosta ag suíomh éigin | `scrios@[1, 2, 3](0) == [2, 3]` |
 | `scrios_cúl` | Scrios ball deireanach an liosta | `scrios_cúl@[1, 2, 3]() == [1, 2]` |
 | `aimsigh` | Faigh an suíomh ina bhfuil ball den liosta (nó -1 mura bhfuil an ball ann) | `aimsigh@[1, 2, 3](2) == 1` |
+| `cuir_le` | Cuir luach le chúl an liosta | `cuir_le@[1, 2, 3](4) == [1, 2, 3, 4]` |
