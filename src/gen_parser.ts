@@ -958,6 +958,7 @@ export class Parser {
     private readonly input: string;
     private pos: PosInfo;
     private negating: boolean = false;
+    private memoSafe: boolean = true;
     constructor(input: string) {
         this.pos = {overallPos: 0, line: 1, offset: 0};
         this.input = input;
@@ -968,8 +969,10 @@ export class Parser {
     public finished(): boolean {
         return this.pos.overallPos === this.input.length;
     }
+    public clearMemos(): void {
+    }
     public matchProgram($$dpth: number, $$cr?: ErrorTracker): Nullable<Program> {
-        return this.runner<Program>($$dpth,
+        return this.run<Program>($$dpth,
             () => {
                 let $scope$stmts: Nullable<AsgnStmt[]>;
                 let $$res: Nullable<Program> = null;
@@ -981,7 +984,7 @@ export class Parser {
                     $$res = {kind: ASTKinds.Program, stmts: $scope$stmts};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchAsgnStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<AsgnStmt> {
         return this.choice<AsgnStmt>([
@@ -1076,7 +1079,7 @@ export class Parser {
         return this.matchExpr($$dpth + 1, $$cr);
     }
     public matchIfStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<IfStmt> {
-        return this.runner<IfStmt>($$dpth,
+        return this.run<IfStmt>($$dpth,
             () => {
                 let $scope$expr: Nullable<Expr>;
                 let $scope$stmt: Nullable<NonAsgnStmt>;
@@ -1094,10 +1097,10 @@ export class Parser {
                     $$res = new IfStmt($scope$expr, $scope$stmt, $scope$elsebranch);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchIfStmt_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<IfStmt_$0> {
-        return this.runner<IfStmt_$0>($$dpth,
+        return this.run<IfStmt_$0>($$dpth,
             () => {
                 let $scope$stmt: Nullable<NonAsgnStmt>;
                 let $$res: Nullable<IfStmt_$0> = null;
@@ -1110,10 +1113,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.IfStmt_$0, stmt: $scope$stmt};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchBlockStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<BlockStmt> {
-        return this.runner<BlockStmt>($$dpth,
+        return this.run<BlockStmt>($$dpth,
             () => {
                 let $scope$blk: Nullable<AsgnStmt[]>;
                 let $$res: Nullable<BlockStmt> = null;
@@ -1127,10 +1130,10 @@ export class Parser {
                     $$res = new BlockStmt($scope$blk);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchNuairStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<NuairStmt> {
-        return this.runner<NuairStmt>($$dpth,
+        return this.run<NuairStmt>($$dpth,
             () => {
                 let $scope$expr: Nullable<Expr>;
                 let $scope$stmt: Nullable<NonAsgnStmt>;
@@ -1145,10 +1148,10 @@ export class Parser {
                     $$res = new NuairStmt($scope$expr, $scope$stmt);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchLeStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<LeStmt> {
-        return this.runner<LeStmt>($$dpth,
+        return this.run<LeStmt>($$dpth,
             () => {
                 let $scope$id: Nullable<ID>;
                 let $scope$strt: Nullable<Expr>;
@@ -1177,10 +1180,10 @@ export class Parser {
                     $$res = new LeStmt($scope$id, $scope$strt, $scope$end, $scope$step, $scope$stmt);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchLeStmt_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<LeStmt_$0> {
-        return this.runner<LeStmt_$0>($$dpth,
+        return this.run<LeStmt_$0>($$dpth,
             () => {
                 let $scope$step: Nullable<Expr>;
                 let $$res: Nullable<LeStmt_$0> = null;
@@ -1192,10 +1195,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.LeStmt_$0, step: $scope$step};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchDefnStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<DefnStmt> {
-        return this.runner<DefnStmt>($$dpth,
+        return this.run<DefnStmt>($$dpth,
             () => {
                 let $scope$idstart: Nullable<PosInfo>;
                 let $scope$id: Nullable<ID>;
@@ -1215,10 +1218,10 @@ export class Parser {
                     $$res = new DefnStmt($scope$idstart, $scope$id, $scope$idend, $scope$expr);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchAssgnStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<AssgnStmt> {
-        return this.runner<AssgnStmt>($$dpth,
+        return this.run<AssgnStmt>($$dpth,
             () => {
                 let $scope$lstart: Nullable<PosInfo>;
                 let $scope$lhs: Nullable<Postfix>;
@@ -1239,10 +1242,10 @@ export class Parser {
                     $$res = new AssgnStmt($scope$lstart, $scope$lhs, $scope$lend, $scope$op, $scope$expr);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchGniomhStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<GniomhStmt> {
-        return this.runner<GniomhStmt>($$dpth,
+        return this.run<GniomhStmt>($$dpth,
             () => {
                 let $scope$id: Nullable<ID>;
                 let $scope$args: Nullable<Nullable<CSIDs>>;
@@ -1267,10 +1270,10 @@ export class Parser {
                     $$res = new GniomhStmt($scope$id, $scope$args, $scope$stmts);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchCtlchStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<CtlchStmt> {
-        return this.runner<CtlchStmt>($$dpth,
+        return this.run<CtlchStmt>($$dpth,
             () => {
                 let $scope$id: Nullable<ID>;
                 let $scope$tuis: Nullable<Nullable<CtlchStmt_$0>>;
@@ -1291,10 +1294,10 @@ export class Parser {
                     $$res = new CtlchStmt($scope$id, $scope$tuis, $scope$gniomhs);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchCtlchStmt_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<CtlchStmt_$0> {
-        return this.runner<CtlchStmt_$0>($$dpth,
+        return this.run<CtlchStmt_$0>($$dpth,
             () => {
                 let $scope$parentstart: Nullable<PosInfo>;
                 let $scope$id: Nullable<ID>;
@@ -1311,10 +1314,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.CtlchStmt_$0, parentstart: $scope$parentstart, id: $scope$id, parentend: $scope$parentend};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchBrisStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<BrisStmt> {
-        return this.runner<BrisStmt>($$dpth,
+        return this.run<BrisStmt>($$dpth,
             () => {
                 let $$res: Nullable<BrisStmt> = null;
                 if (true
@@ -1324,10 +1327,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.BrisStmt, };
                 }
                 return $$res;
-            })();
+            });
     }
     public matchCCStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<CCStmt> {
-        return this.runner<CCStmt>($$dpth,
+        return this.run<CCStmt>($$dpth,
             () => {
                 let $$res: Nullable<CCStmt> = null;
                 if (true
@@ -1337,10 +1340,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.CCStmt, };
                 }
                 return $$res;
-            })();
+            });
     }
     public matchToradhStmt($$dpth: number, $$cr?: ErrorTracker): Nullable<ToradhStmt> {
-        return this.runner<ToradhStmt>($$dpth,
+        return this.run<ToradhStmt>($$dpth,
             () => {
                 let $scope$exp: Nullable<Nullable<Expr>>;
                 let $$res: Nullable<ToradhStmt> = null;
@@ -1353,13 +1356,13 @@ export class Parser {
                     $$res = new ToradhStmt($scope$exp);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchExpr($$dpth: number, $$cr?: ErrorTracker): Nullable<Expr> {
         return this.matchAnd($$dpth + 1, $$cr);
     }
     public matchAnd($$dpth: number, $$cr?: ErrorTracker): Nullable<And> {
-        return this.runner<And>($$dpth,
+        return this.run<And>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$head: Nullable<Or>;
@@ -1375,10 +1378,10 @@ export class Parser {
                     $$res = new And($scope$start, $scope$head, $scope$tail, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchAnd_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<And_$0> {
-        return this.runner<And_$0>($$dpth,
+        return this.run<And_$0>($$dpth,
             () => {
                 let $scope$trm: Nullable<Or>;
                 let $$res: Nullable<And_$0> = null;
@@ -1390,10 +1393,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.And_$0, trm: $scope$trm};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchOr($$dpth: number, $$cr?: ErrorTracker): Nullable<Or> {
-        return this.runner<Or>($$dpth,
+        return this.run<Or>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$head: Nullable<Eq>;
@@ -1409,10 +1412,10 @@ export class Parser {
                     $$res = new Or($scope$start, $scope$head, $scope$tail, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchOr_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<Or_$0> {
-        return this.runner<Or_$0>($$dpth,
+        return this.run<Or_$0>($$dpth,
             () => {
                 let $scope$trm: Nullable<Eq>;
                 let $$res: Nullable<Or_$0> = null;
@@ -1424,10 +1427,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.Or_$0, trm: $scope$trm};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchEq($$dpth: number, $$cr?: ErrorTracker): Nullable<Eq> {
-        return this.runner<Eq>($$dpth,
+        return this.run<Eq>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$head: Nullable<Comp>;
@@ -1443,10 +1446,10 @@ export class Parser {
                     $$res = new Eq($scope$start, $scope$head, $scope$tail, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchEq_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<Eq_$0> {
-        return this.runner<Eq_$0>($$dpth,
+        return this.run<Eq_$0>($$dpth,
             () => {
                 let $scope$op: Nullable<string>;
                 let $scope$trm: Nullable<Comp>;
@@ -1459,10 +1462,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.Eq_$0, op: $scope$op, trm: $scope$trm};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchComp($$dpth: number, $$cr?: ErrorTracker): Nullable<Comp> {
-        return this.runner<Comp>($$dpth,
+        return this.run<Comp>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$head: Nullable<Sum>;
@@ -1478,10 +1481,10 @@ export class Parser {
                     $$res = new Comp($scope$start, $scope$head, $scope$tail, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchComp_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<Comp_$0> {
-        return this.runner<Comp_$0>($$dpth,
+        return this.run<Comp_$0>($$dpth,
             () => {
                 let $scope$op: Nullable<Compare>;
                 let $scope$trm: Nullable<Sum>;
@@ -1494,10 +1497,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.Comp_$0, op: $scope$op, trm: $scope$trm};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchSum($$dpth: number, $$cr?: ErrorTracker): Nullable<Sum> {
-        return this.runner<Sum>($$dpth,
+        return this.run<Sum>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$head: Nullable<Product>;
@@ -1513,10 +1516,10 @@ export class Parser {
                     $$res = new Sum($scope$start, $scope$head, $scope$tail, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchSum_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<Sum_$0> {
-        return this.runner<Sum_$0>($$dpth,
+        return this.run<Sum_$0>($$dpth,
             () => {
                 let $scope$op: Nullable<PlusMinus>;
                 let $scope$trm: Nullable<Product>;
@@ -1529,10 +1532,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.Sum_$0, op: $scope$op, trm: $scope$trm};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchProduct($$dpth: number, $$cr?: ErrorTracker): Nullable<Product> {
-        return this.runner<Product>($$dpth,
+        return this.run<Product>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$head: Nullable<Prefix>;
@@ -1548,10 +1551,10 @@ export class Parser {
                     $$res = new Product($scope$start, $scope$head, $scope$tail, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchProduct_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<Product_$0> {
-        return this.runner<Product_$0>($$dpth,
+        return this.run<Product_$0>($$dpth,
             () => {
                 let $scope$op: Nullable<MulDiv>;
                 let $scope$trm: Nullable<Prefix>;
@@ -1564,10 +1567,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.Product_$0, op: $scope$op, trm: $scope$trm};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchPrefix($$dpth: number, $$cr?: ErrorTracker): Nullable<Prefix> {
-        return this.runner<Prefix>($$dpth,
+        return this.run<Prefix>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$op: Nullable<Nullable<string>>;
@@ -1584,10 +1587,10 @@ export class Parser {
                     $$res = new Prefix($scope$start, $scope$op, $scope$pf, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchPostfix($$dpth: number, $$cr?: ErrorTracker): Nullable<Postfix> {
-        return this.runner<Postfix>($$dpth,
+        return this.run<Postfix>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$at: Nullable<ObjLookups>;
@@ -1603,10 +1606,10 @@ export class Parser {
                     $$res = new Postfix($scope$start, $scope$at, $scope$ops, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchObjLookups($$dpth: number, $$cr?: ErrorTracker): Nullable<ObjLookups> {
-        return this.runner<ObjLookups>($$dpth,
+        return this.run<ObjLookups>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$attrs: Nullable<ObjLookups_$0[]>;
@@ -1622,10 +1625,10 @@ export class Parser {
                     $$res = new ObjLookups($scope$start, $scope$attrs, $scope$root, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchObjLookups_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<ObjLookups_$0> {
-        return this.runner<ObjLookups_$0>($$dpth,
+        return this.run<ObjLookups_$0>($$dpth,
             () => {
                 let $scope$id: Nullable<ID>;
                 let $$res: Nullable<ObjLookups_$0> = null;
@@ -1637,7 +1640,7 @@ export class Parser {
                     $$res = {kind: ASTKinds.ObjLookups_$0, id: $scope$id};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchPostOp($$dpth: number, $$cr?: ErrorTracker): Nullable<PostOp> {
         return this.choice<PostOp>([
@@ -1646,7 +1649,7 @@ export class Parser {
         ]);
     }
     public matchPostOp_1($$dpth: number, $$cr?: ErrorTracker): Nullable<PostOp_1> {
-        return this.runner<PostOp_1>($$dpth,
+        return this.run<PostOp_1>($$dpth,
             () => {
                 let $scope$args: Nullable<Nullable<CSArgs>>;
                 let $$res: Nullable<PostOp_1> = null;
@@ -1659,10 +1662,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.PostOp_1, args: $scope$args};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchPostOp_2($$dpth: number, $$cr?: ErrorTracker): Nullable<PostOp_2> {
-        return this.runner<PostOp_2>($$dpth,
+        return this.run<PostOp_2>($$dpth,
             () => {
                 let $scope$expr: Nullable<Expr>;
                 let $$res: Nullable<PostOp_2> = null;
@@ -1675,7 +1678,7 @@ export class Parser {
                     $$res = {kind: ASTKinds.PostOp_2, expr: $scope$expr};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchAtom($$dpth: number, $$cr?: ErrorTracker): Nullable<Atom> {
         return this.choice<Atom>([
@@ -1690,7 +1693,7 @@ export class Parser {
         ]);
     }
     public matchAtom_1($$dpth: number, $$cr?: ErrorTracker): Nullable<Atom_1> {
-        return this.runner<Atom_1>($$dpth,
+        return this.run<Atom_1>($$dpth,
             () => {
                 let $scope$trm: Nullable<Expr>;
                 let $$res: Nullable<Atom_1> = null;
@@ -1704,7 +1707,7 @@ export class Parser {
                     $$res = new Atom_1($scope$trm);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchAtom_2($$dpth: number, $$cr?: ErrorTracker): Nullable<Atom_2> {
         return this.matchID($$dpth + 1, $$cr);
@@ -1728,7 +1731,7 @@ export class Parser {
         return this.matchGniomhExpr($$dpth + 1, $$cr);
     }
     public matchGniomhExpr($$dpth: number, $$cr?: ErrorTracker): Nullable<GniomhExpr> {
-        return this.runner<GniomhExpr>($$dpth,
+        return this.run<GniomhExpr>($$dpth,
             () => {
                 let $scope$args: Nullable<Nullable<CSIDs>>;
                 let $scope$stmts: Nullable<AsgnStmt[]>;
@@ -1750,10 +1753,10 @@ export class Parser {
                     $$res = new GniomhExpr($scope$args, $scope$stmts);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchListLit($$dpth: number, $$cr?: ErrorTracker): Nullable<ListLit> {
-        return this.runner<ListLit>($$dpth,
+        return this.run<ListLit>($$dpth,
             () => {
                 let $scope$els: Nullable<Nullable<CSArgs>>;
                 let $$res: Nullable<ListLit> = null;
@@ -1767,10 +1770,10 @@ export class Parser {
                     $$res = new ListLit($scope$els);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchCSArgs($$dpth: number, $$cr?: ErrorTracker): Nullable<CSArgs> {
-        return this.runner<CSArgs>($$dpth,
+        return this.run<CSArgs>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$head: Nullable<Expr>;
@@ -1786,10 +1789,10 @@ export class Parser {
                     $$res = new CSArgs($scope$start, $scope$head, $scope$tail, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchCSArgs_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<CSArgs_$0> {
-        return this.runner<CSArgs_$0>($$dpth,
+        return this.run<CSArgs_$0>($$dpth,
             () => {
                 let $scope$exp: Nullable<Expr>;
                 let $$res: Nullable<CSArgs_$0> = null;
@@ -1801,10 +1804,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.CSArgs_$0, exp: $scope$exp};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchCSIDs($$dpth: number, $$cr?: ErrorTracker): Nullable<CSIDs> {
-        return this.runner<CSIDs>($$dpth,
+        return this.run<CSIDs>($$dpth,
             () => {
                 let $scope$head: Nullable<ID>;
                 let $scope$tail: Nullable<CSIDs_$0[]>;
@@ -1816,10 +1819,10 @@ export class Parser {
                     $$res = new CSIDs($scope$head, $scope$tail);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchCSIDs_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<CSIDs_$0> {
-        return this.runner<CSIDs_$0>($$dpth,
+        return this.run<CSIDs_$0>($$dpth,
             () => {
                 let $scope$id: Nullable<ID>;
                 let $$res: Nullable<CSIDs_$0> = null;
@@ -1831,10 +1834,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.CSIDs_$0, id: $scope$id};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchID($$dpth: number, $$cr?: ErrorTracker): Nullable<ID> {
-        return this.runner<ID>($$dpth,
+        return this.run<ID>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$id: Nullable<string>;
@@ -1850,10 +1853,10 @@ export class Parser {
                     $$res = new ID($scope$start, $scope$id, $scope$end);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchID_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<ID_$0> {
-        return this.runner<ID_$0>($$dpth,
+        return this.run<ID_$0>($$dpth,
             () => {
                 let $$res: Nullable<ID_$0> = null;
                 if (true
@@ -1863,10 +1866,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.ID_$0, };
                 }
                 return $$res;
-            })();
+            });
     }
     public matchBool($$dpth: number, $$cr?: ErrorTracker): Nullable<Bool> {
-        return this.runner<Bool>($$dpth,
+        return this.run<Bool>($$dpth,
             () => {
                 let $scope$bool: Nullable<string>;
                 let $$res: Nullable<Bool> = null;
@@ -1877,10 +1880,10 @@ export class Parser {
                     $$res = new Bool($scope$bool);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchNeamhni($$dpth: number, $$cr?: ErrorTracker): Nullable<Neamhni> {
-        return this.runner<Neamhni>($$dpth,
+        return this.run<Neamhni>($$dpth,
             () => {
                 let $$res: Nullable<Neamhni> = null;
                 if (true
@@ -1890,10 +1893,10 @@ export class Parser {
                     $$res = new Neamhni();
                 }
                 return $$res;
-            })();
+            });
     }
     public matchInt($$dpth: number, $$cr?: ErrorTracker): Nullable<Int> {
-        return this.runner<Int>($$dpth,
+        return this.run<Int>($$dpth,
             () => {
                 let $scope$int: Nullable<string>;
                 let $$res: Nullable<Int> = null;
@@ -1904,10 +1907,10 @@ export class Parser {
                     $$res = new Int($scope$int);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchTeacs($$dpth: number, $$cr?: ErrorTracker): Nullable<Teacs> {
-        return this.runner<Teacs>($$dpth,
+        return this.run<Teacs>($$dpth,
             () => {
                 let $scope$lit: Nullable<Teacs_$0>;
                 let $$res: Nullable<Teacs> = null;
@@ -1918,7 +1921,7 @@ export class Parser {
                     $$res = new Teacs($scope$lit);
                 }
                 return $$res;
-            })();
+            });
     }
     public matchTeacs_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<Teacs_$0> {
         return this.choice<Teacs_$0>([
@@ -1927,7 +1930,7 @@ export class Parser {
         ]);
     }
     public matchTeacs_$0_1($$dpth: number, $$cr?: ErrorTracker): Nullable<Teacs_$0_1> {
-        return this.runner<Teacs_$0_1>($$dpth,
+        return this.run<Teacs_$0_1>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$val: Nullable<string>;
@@ -1943,10 +1946,10 @@ export class Parser {
                     $$res = {kind: ASTKinds.Teacs_$0_1, start: $scope$start, val: $scope$val, end: $scope$end};
                 }
                 return $$res;
-            })();
+            });
     }
     public matchTeacs_$0_2($$dpth: number, $$cr?: ErrorTracker): Nullable<Teacs_$0_2> {
-        return this.runner<Teacs_$0_2>($$dpth,
+        return this.run<Teacs_$0_2>($$dpth,
             () => {
                 let $scope$start: Nullable<PosInfo>;
                 let $scope$val: Nullable<string>;
@@ -1962,7 +1965,7 @@ export class Parser {
                     $$res = {kind: ASTKinds.Teacs_$0_2, start: $scope$start, val: $scope$val, end: $scope$end};
                 }
                 return $$res;
-            })();
+            });
     }
     public match_($$dpth: number, $$cr?: ErrorTracker): Nullable<_> {
         return this.loop<wspace>(() => this.matchwspace($$dpth + 1, $$cr), true);
@@ -2052,6 +2055,7 @@ export class Parser {
             return {ast: res, errs: []};
         this.reset(mrk);
         const rec = new ErrorTracker();
+        this.clearMemos();
         this.matchProgram(0, rec);
         const err = rec.getErr()
         return {ast: res, errs: err !== null ? [err] : []}
@@ -2075,15 +2079,13 @@ export class Parser {
         this.reset(mrk);
         return null;
     }
-    private runner<T>($$dpth: number, fn: $$RuleType<T>): $$RuleType<T> {
-        return () => {
-            const mrk = this.mark();
-            const res = fn()
-            if (res !== null)
-                return res;
-            this.reset(mrk);
-            return null;
-        };
+    private run<T>($$dpth: number, fn: $$RuleType<T>): Nullable<T> {
+        const mrk = this.mark();
+        const res = fn()
+        if (res !== null)
+            return res;
+        this.reset(mrk);
+        return null;
     }
     private choice<T>(fns: Array<$$RuleType<T>>): Nullable<T> {
         for (const f of fns) {
@@ -2095,7 +2097,7 @@ export class Parser {
         return null;
     }
     private regexAccept(match: string, dpth: number, cr?: ErrorTracker): Nullable<string> {
-        return this.runner<string>(dpth,
+        return this.run<string>(dpth,
             () => {
                 const reg = new RegExp(match, "y");
                 const mrk = this.mark();
@@ -2111,7 +2113,7 @@ export class Parser {
                     });
                 }
                 return res;
-            })();
+            });
     }
     private tryConsume(reg: RegExp): Nullable<string> {
         const res = reg.exec(this.input);
@@ -2147,6 +2149,18 @@ export class Parser {
         this.negating = oneg;
         this.reset(mrk);
         return res === null ? true : null;
+    }
+    private memoise<K>(rule: $$RuleType<K>, memo: Map<number, [Nullable<K>, PosInfo]>): Nullable<K> {
+        const $scope$pos = this.mark();
+        const $scope$memoRes = memo.get($scope$pos.overallPos);
+        if(this.memoSafe && $scope$memoRes !== undefined) {
+        this.reset($scope$memoRes[1]);
+        return $scope$memoRes[0];
+        }
+        const $scope$result = rule();
+        if(this.memoSafe)
+        memo.set($scope$pos.overallPos, [$scope$result, this.mark()]);
+        return $scope$result;
     }
     private match$EOF(et?: ErrorTracker): Nullable<{kind: ASTKinds.$EOF}> {
         const res: {kind: ASTKinds.$EOF} | null = this.finished() ? { kind: ASTKinds.$EOF } : null;
