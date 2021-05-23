@@ -114,12 +114,6 @@ scór := 0
 nuair-a fíor {
     coladh(200) >-- Fan
 
-    >-- bog an naithair sa dtreo (dx, dy)
-    bhog := bog@n(dx, dy)
-    má !bhog { >-- An raibh an bogadh rathúil?
-        bris
-    }
-
     áit := áit@n() >-- Cá bhfuil an nathair anois
 
     má áit == úll { >-- An bhfuil an úll ag an nathair
@@ -131,6 +125,12 @@ nuair-a fíor {
 
         >-- Fas an nathair
         fás@n()
+    }
+
+    >-- bog an naithair sa dtreo (dx, dy)
+    bhog := bog@n(dx, dy)
+    má !bhog { >-- An raibh an bogadh rathúil?
+        bris
     }
 }
 
