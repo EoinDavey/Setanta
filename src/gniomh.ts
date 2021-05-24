@@ -27,7 +27,7 @@ export class GníomhImpl implements Callable {
     // bind returns a new Gníomh with "seo" and "tuis" bound
     // to the supplied object and the objects parent class.
     public bind(seo: Rud): Gníomh {
-        const ctx = new Context(this.ctx);
+        const ctx = this.ctx.wrapped();
         ctx.env.define("seo", seo);
         if (seo.tuis)
             ctx.env.define("tuis", seo.tuis);
@@ -40,7 +40,7 @@ export class GníomhImpl implements Callable {
     }
 
     public call(args: Value[]): Promise<Value> {
-        const ctx: Context = new Context(this.ctx);
+        const ctx: Context = this.ctx.wrapped();
         // args.length === this.args.length here is checked before call
         for (let i = 0; i < args.length; ++i)
             ctx.env.define(this.args[i].id, args[i]);

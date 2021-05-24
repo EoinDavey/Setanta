@@ -30,7 +30,7 @@ export function execStmts(stmts: Stmt[], ctx: Context): Promise<void> {
 // execStmtBlock executes block statement.
 function execStmtBlock(blk: P.BlockStmt, ctx: Context): Promise<void> {
     // Block statements create a new context.
-    ctx = new Context(ctx);
+    ctx = ctx.wrapped();
     return execStmts(blk.blk, ctx);
 }
 
@@ -238,7 +238,7 @@ async function execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
         stp = stpsz;
     }
 
-    ctx = new Context(ctx);
+    ctx = ctx.wrapped();
     ctx.env.define(id.id, s);
     const dircheck = e >= s
         ? (a: number, b: number) => a < b

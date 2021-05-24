@@ -1,18 +1,22 @@
 import { globalBuiltinsFadaCombos } from "./builtins";
 import { Value } from "./values";
-import { Context } from "./ctx";
+import { Context, RootContext } from "./ctx";
 import { Program } from "./gen_parser";
 import { execStmts } from "./execs";
 import { STOP } from "./consts";
 import { Binder } from "./bind";
+import { TaskQueue } from "./taskqueue";
 
 // The Interpreter class can be used to control the execution
 // of a Setanta program
 export class Interpreter {
-    public global: Context;
+    public global: RootContext;
     public binder: Binder;
+
+    private q: TaskQueue;
     constructor(externals?: (ctx: Context) => [string, Value][]) {
-        this.global = new Context();
+        this.q = new TaskQueue();
+        this.global = new RootContext(this.q);
         this.binder = new Binder();
         this.binder.enterScope();
         globalBuiltinsFadaCombos(this.global)
