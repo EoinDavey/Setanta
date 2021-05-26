@@ -40,7 +40,6 @@ function execStmtBlock(blk: P.BlockStmt, ctx: Context): Promise<void> {
 // and tracking the skip count.
 function execStmt(st: Stmt, ctx: Context): Promise<void> {
     return ctx.yieldExec(() => {
-        ++ctx.skipCnt;
         switch (st.kind) {
             case ASTKinds.IfStmt:
                 return execMá(st, ctx);
@@ -155,7 +154,7 @@ function refAtom(a: P.Atom, ctx: Context): Promise<Ref> {
 // execCCStmt throws a CCException. CCExceptions are caught by loops.
 function execCCStmt(): Promise<void> { return Promise.reject(CCException); }
 
-// execBrisStmt throws a CCException. CCExceptions are caught by loops.
+// execBrisStmt throws a BrisException. BrisExceptions are caught by loops.
 function execBrisStmt(): Promise<void> { return Promise.reject(BrisException); }
 
 // execCtlchStmt creates a Creatlach in the current scope.

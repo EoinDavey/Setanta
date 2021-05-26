@@ -1,11 +1,10 @@
 import { Environment } from "./env";
-import { SKIP_COUNT_LIM, STOP, STOPType } from "./consts";
+import { STOP, STOPType } from "./consts";
 
 // The Context classes represent the execution context of a specific execution
 // Context wraps the current lexical scope Environment and handles skip count and stopping
 // logic.
 export interface Context {
-    skipCnt: number;
     stopped: boolean;
     env: Environment;
 
@@ -16,7 +15,6 @@ export interface Context {
 
     addRejectFn(fn: (s: STOPType) => void): void;
     removeRejectFn(fn: (s: STOPType) => void): void;
-
 }
 
 abstract class ContextBase {
@@ -33,19 +31,23 @@ abstract class ContextBase {
     // Use string literal type to ensure only can be called with STOP exception
     protected abstract _rejectPool: [Set<(s: STOPType)=>void>];
 
+    protected abstract tickInterval: [number];
+    protected abstract nextYieldTs: [number];
+
     public abstract env: Environment;
 
     public wrapped(): Context {
         return new WrappedContext(this.env, this._stopped, this._skipCnt,
-            this._rejectPool);
+            this._rejectPool, this.nextYieldTs, this.tickInterval);
     }
 
     public yieldExec(ex: () => Promise<void>): Promise<void> {
         if(this.stopped)
             return Promise.reject(STOP);
 
-        if(this.skipCnt >= SKIP_COUNT_LIM) {
-            this.skipCnt = 0;
+        const now = Date.now();
+        if(now >= this.nextYieldTs[0]) {
+            this.nextYieldTs[0] = now + this.tickInterval[0];
             return new Promise(r => { setTimeout(r); }).then(ex);
         }
         return ex();
@@ -83,14 +85,18 @@ export class RootContext extends ContextBase implements Context {
     protected _stopped: [boolean];
     protected _skipCnt: [number];
     protected _rejectPool: [Set<(s: STOPType)=>void>];
+    protected nextYieldTs: [number];
+    protected tickInterval: [number];
     public env: Environment;
 
 
-    constructor() {
+    constructor(tickInterval: number) {
         super();
         this.env = new Environment();
         this._stopped = [false];
         this._skipCnt = [0];
+        this.tickInterval = [tickInterval];
+        this.nextYieldTs = [Date.now() + tickInterval];
         this._rejectPool = [new Set()];
     }
 }
@@ -99,14 +105,18 @@ export class WrappedContext extends ContextBase implements Context {
     protected _stopped: [boolean];
     protected _skipCnt: [number];
     protected _rejectPool: [Set<(s: STOPType)=>void>];
+    protected nextYieldTs: [number];
+    protected tickInterval: [number];
     public env: Environment;
 
     constructor(env: Environment, stopped: [boolean], skipCnt: [number],
-      rejectPool: [Set<(s: STOPType)=>void>]) {
+      rejectPool: [Set<(s: STOPType)=>void>], nextYieldTs: [number], tickInterval: [number]) {
         super();
         this.env = new Environment(env);
         this._stopped = stopped;
         this._skipCnt = skipCnt;
+        this.tickInterval = tickInterval;
+        this.nextYieldTs = nextYieldTs;
         this._rejectPool = rejectPool;
     }
 }

@@ -17,7 +17,7 @@ export class Interpreter {
     private resolveFn: () => void = () => undefined;
     private execPromise: Promise<void> | undefined;
     constructor(externals?: (ctx: Context) => [string, Value][]) {
-        this.global = new RootContext();
+        this.global = new RootContext(1000 / 30); // Set to 30 TPS
         this.binder = new Binder();
         this.binder.enterScope();
         globalBuiltinsFadaCombos(this.global)
@@ -33,9 +33,9 @@ export class Interpreter {
     }
 
     public inject(p: () => Promise<void>): void {
-        if(this.execPromise === undefined)
-            // TODO error
-            return;
+        if(this.execPromise === undefined) {
+            throw new Error("Ní féidir 'inject' a úsáid nuair nach bhfuil clár ar siúl.");
+        }
         this.pendingCnt += 1;
         p().catch(err => {
                if(err === STOP)
@@ -56,8 +56,7 @@ export class Interpreter {
     // throws RuntimeErr | StaticErr
     public async interpret(p: Program): Promise<void> {
         if(this.execPromise !== undefined) {
-            // TODO error
-            throw new Error("oop");
+            throw new Error("Ní féidir clár nua a thosaigh: Tá clár eile ag rith cheana.");
             return;
         }
         this.execPromise = new Promise((res, rej) => { this.resolveFn = res; this.rejectFn = rej; });
