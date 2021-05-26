@@ -8,7 +8,7 @@ import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
 import { Ref, Stmt, Value, repr } from "./values";
 import { Context } from "./ctx";
-import { BrisException, CCException, SKIP_COUNT_LIM, STOP } from "./consts";
+import { BrisException, CCException } from "./consts";
 
 // This library contains the main (slow) execution functions for execution of
 // Setanta statements.
@@ -21,6 +21,8 @@ export class Toradh {
     }
 }
 
+// IDEA for reconfiguring this, can we make this lazier? i.e. only chain next promise
+// when preceding promise is in flight?
 export function execStmts(stmts: Stmt[], ctx: Context): Promise<void> {
     const f = (x: Promise<void>, y: Stmt): Promise<void> =>
         x.then(() => execStmt(y, ctx));
@@ -37,48 +39,41 @@ function execStmtBlock(blk: P.BlockStmt, ctx: Context): Promise<void> {
 // execStmt executes a Setanta statement, and controls stopping of the program
 // and tracking the skip count.
 function execStmt(st: Stmt, ctx: Context): Promise<void> {
-    if (ctx.stopped === true)
-        return Promise.reject(STOP);
-    // Every SKIP_COUNT_LIM statements put the next execution on the macrotask queue.
-    if (ctx.skipCnt >= SKIP_COUNT_LIM) {
-        ctx.skipCnt = 0;
-        return new Promise(r => { setTimeout(r); })
-            .then(() => execStmt(st, ctx));
-    }
-
-    ++ctx.skipCnt;
-    switch (st.kind) {
-        case ASTKinds.IfStmt:
-            return execMá(st, ctx);
-        case ASTKinds.BlockStmt:
-            return execStmtBlock(st, ctx);
-        case ASTKinds.AssgnStmt:
-            return execAssgn(st, ctx);
-        case ASTKinds.DefnStmt:
-            return execDefn(st, ctx);
-        case ASTKinds.NuairStmt:
-            return execNuair(st, ctx);
-        case ASTKinds.LeStmt:
-            return execLeStmt(st, ctx);
-        case ASTKinds.GniomhStmt:
-            return execGniomhStmt(st, ctx);
-        case ASTKinds.ToradhStmt:
-            return execToradhStmt(st, ctx);
-        case ASTKinds.CCStmt:
-            return execCCStmt();
-        case ASTKinds.BrisStmt:
-            return execBrisStmt();
-        case ASTKinds.CtlchStmt:
-            return Promise.resolve(execCtlchStmt(st, ctx));
-        default:
-            // The default is a Setanta expression.
-            if (st.qeval !== null) {
-                // Quick evaluation is possible.
-                st.qeval(ctx);
-                return Promise.resolve();
-            }
-            return st.evalfn(ctx).then();
-    }
+    return ctx.yieldExec(() => {
+        ++ctx.skipCnt;
+        switch (st.kind) {
+            case ASTKinds.IfStmt:
+                return execMá(st, ctx);
+            case ASTKinds.BlockStmt:
+                return execStmtBlock(st, ctx);
+            case ASTKinds.AssgnStmt:
+                return execAssgn(st, ctx);
+            case ASTKinds.DefnStmt:
+                return execDefn(st, ctx);
+            case ASTKinds.NuairStmt:
+                return execNuair(st, ctx);
+            case ASTKinds.LeStmt:
+                return execLeStmt(st, ctx);
+            case ASTKinds.GniomhStmt:
+                return execGniomhStmt(st, ctx);
+            case ASTKinds.ToradhStmt:
+                return execToradhStmt(st, ctx);
+            case ASTKinds.CCStmt:
+                return execCCStmt();
+            case ASTKinds.BrisStmt:
+                return execBrisStmt();
+            case ASTKinds.CtlchStmt:
+                return Promise.resolve(execCtlchStmt(st, ctx));
+            default:
+                // The default is a Setanta expression.
+                if (st.qeval !== null) {
+                    // Quick evaluation is possible.
+                    st.qeval(ctx);
+                    return Promise.resolve();
+                }
+                return st.evalfn(ctx).then();
+        }
+    });
 }
 
 // refPostfix creates a reference to assign to a postfix AST node.

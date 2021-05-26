@@ -1,5 +1,5 @@
 import { Environment } from "./env";
-import { STOP, STOPType } from "./consts";
+import { SKIP_COUNT_LIM, STOP, STOPType } from "./consts";
 
 // The Context classes represent the execution context of a specific execution
 // Context wraps the current lexical scope Environment and handles skip count and stopping
@@ -12,6 +12,7 @@ export interface Context {
     wrapped(): Context;
 
     stop(): void;
+    yieldExec(ex: () => Promise<void>): Promise<void>;
 
     addRejectFn(fn: (s: STOPType) => void): void;
     removeRejectFn(fn: (s: STOPType) => void): void;
@@ -37,6 +38,17 @@ abstract class ContextBase {
     public wrapped(): Context {
         return new WrappedContext(this.env, this._stopped, this._skipCnt,
             this._rejectPool);
+    }
+
+    public yieldExec(ex: () => Promise<void>): Promise<void> {
+        if(this.stopped)
+            return Promise.reject(STOP);
+
+        if(this.skipCnt >= SKIP_COUNT_LIM) {
+            this.skipCnt = 0;
+            return new Promise(r => { setTimeout(r); }).then(ex);
+        }
+        return ex();
     }
 
     public get skipCnt(): number {
