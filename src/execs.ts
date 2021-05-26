@@ -42,9 +42,10 @@ function execStmt(st: Stmt, ctx: Context): Promise<void> {
     // Every SKIP_COUNT_LIM statements put the next execution on the macrotask queue.
     if (ctx.skipCnt >= SKIP_COUNT_LIM) {
         ctx.skipCnt = 0;
-        return new Promise(resolve => { setTimeout(resolve); })
+        return new Promise(r => { setTimeout(r); })
             .then(() => execStmt(st, ctx));
     }
+
     ++ctx.skipCnt;
     switch (st.kind) {
         case ASTKinds.IfStmt:

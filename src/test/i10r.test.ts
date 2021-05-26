@@ -1297,6 +1297,6 @@ test("Make sure self definition throws error", async () => {
         rejects.toThrow("Níl an athróg \"a\" sainithe fós");
 
     const creatlach = parse(`creatlach A ó A {}`).ast!;
-    await expect(i.interpret(creatlach)).
+    return expect(i.interpret(creatlach)).
         rejects.toThrow("Níl an athróg \"A\" sainithe fós");
 });

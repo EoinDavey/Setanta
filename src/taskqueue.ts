@@ -1,9 +1,9 @@
-type Task = () => Promise<void>;
+export type Task = () => void;
 
 export class TaskQueue {
     private q: Task[] = [];
 
-    public queue(t: Task): void {
+    public enqueue(t: Task): void {
         this.q.push(t);
     }
     public get empty(): boolean {

@@ -1,6 +1,5 @@
 import { Environment } from "./env";
 import { STOP, STOPType } from "./consts";
-import { TaskQueue } from "./taskqueue";
 
 // The Context classes represent the execution context of a specific execution
 // Context wraps the current lexical scope Environment and handles skip count and stopping
@@ -16,6 +15,7 @@ export interface Context {
 
     addRejectFn(fn: (s: STOPType) => void): void;
     removeRejectFn(fn: (s: STOPType) => void): void;
+
 }
 
 abstract class ContextBase {
@@ -31,6 +31,7 @@ abstract class ContextBase {
     // e.g. Outstanding setTimeout calls.
     // Use string literal type to ensure only can be called with STOP exception
     protected abstract _rejectPool: [Set<(s: STOPType)=>void>];
+
     public abstract env: Environment;
 
     public wrapped(): Context {
@@ -72,12 +73,10 @@ export class RootContext extends ContextBase implements Context {
     protected _rejectPool: [Set<(s: STOPType)=>void>];
     public env: Environment;
 
-    private q: TaskQueue;
 
-    constructor(q: TaskQueue) {
+    constructor() {
         super();
         this.env = new Environment();
-        this.q = q;
         this._stopped = [false];
         this._skipCnt = [0];
         this._rejectPool = [new Set()];
