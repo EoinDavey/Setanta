@@ -1224,7 +1224,7 @@ test("stop codladh test", async () => {
 test("stop action test", async () => {
     let wasRan = false;
     const i = new Interpreter(
-        1000 / 10,
+        10,
         () => [
             [
                 "dontrunme",
