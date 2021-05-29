@@ -11,7 +11,7 @@ export interface Context {
     wrapped(): Context;
 
     stop(): void;
-    yieldExec(ex: () => Promise<void>): Promise<void>;
+    yieldExec<T>(ex: () => Promise<T>): Promise<T>;
 
     addRejectFn(fn: (s: STOPType) => void): void;
     removeRejectFn(fn: (s: STOPType) => void): void;
@@ -41,7 +41,7 @@ abstract class ContextBase {
             this._rejectPool, this.nextYieldTs, this.tickInterval);
     }
 
-    public yieldExec(ex: () => Promise<void>): Promise<void> {
+    public yieldExec<T>(ex: () => Promise<T>): Promise<T> {
         if(this.stopped)
             return Promise.reject(STOP);
 

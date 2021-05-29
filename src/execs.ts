@@ -39,40 +39,38 @@ function execStmtBlock(blk: P.BlockStmt, ctx: Context): Promise<void> {
 // execStmt executes a Setanta statement, and controls stopping of the program
 // and tracking the skip count.
 function execStmt(st: Stmt, ctx: Context): Promise<void> {
-    return ctx.yieldExec(() => {
-        switch (st.kind) {
-            case ASTKinds.IfStmt:
-                return execMá(st, ctx);
-            case ASTKinds.BlockStmt:
-                return execStmtBlock(st, ctx);
-            case ASTKinds.AssgnStmt:
-                return execAssgn(st, ctx);
-            case ASTKinds.DefnStmt:
-                return execDefn(st, ctx);
-            case ASTKinds.NuairStmt:
-                return execNuair(st, ctx);
-            case ASTKinds.LeStmt:
-                return execLeStmt(st, ctx);
-            case ASTKinds.GniomhStmt:
-                return execGniomhStmt(st, ctx);
-            case ASTKinds.ToradhStmt:
-                return execToradhStmt(st, ctx);
-            case ASTKinds.CCStmt:
-                return execCCStmt();
-            case ASTKinds.BrisStmt:
-                return execBrisStmt();
-            case ASTKinds.CtlchStmt:
-                return Promise.resolve(execCtlchStmt(st, ctx));
-            default:
-                // The default is a Setanta expression.
-                if (st.qeval !== null) {
-                    // Quick evaluation is possible.
-                    st.qeval(ctx);
-                    return Promise.resolve();
-                }
-                return st.evalfn(ctx).then();
-        }
-    });
+    switch (st.kind) {
+        case ASTKinds.IfStmt:
+            return execMá(st, ctx);
+        case ASTKinds.BlockStmt:
+            return execStmtBlock(st, ctx);
+        case ASTKinds.AssgnStmt:
+            return execAssgn(st, ctx);
+        case ASTKinds.DefnStmt:
+            return execDefn(st, ctx);
+        case ASTKinds.NuairStmt:
+            return execNuair(st, ctx);
+        case ASTKinds.LeStmt:
+            return execLeStmt(st, ctx);
+        case ASTKinds.GniomhStmt:
+            return execGniomhStmt(st, ctx);
+        case ASTKinds.ToradhStmt:
+            return execToradhStmt(st, ctx);
+        case ASTKinds.CCStmt:
+            return execCCStmt();
+        case ASTKinds.BrisStmt:
+            return execBrisStmt();
+        case ASTKinds.CtlchStmt:
+            return Promise.resolve(execCtlchStmt(st, ctx));
+        default:
+            // The default is a Setanta expression.
+            if (st.qeval !== null) {
+                // Quick evaluation is possible.
+                st.qeval(ctx);
+                return Promise.resolve();
+            }
+            return st.evalfn(ctx).then();
+    }
 }
 
 // refPostfix creates a reference to assign to a postfix AST node.
@@ -206,7 +204,7 @@ async function execNuair(n: P.NuairStmt, ctx: Context): Promise<void> {
         if (!Checks.isTrue(x))
             break;
         try {
-            await execStmt(n.stmt, ctx);
+            await ctx.yieldExec(() => execStmt(n.stmt, ctx));
         } catch (err) {
             if (err === BrisException)
                 break;
@@ -244,7 +242,7 @@ async function execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
     for (let i = s; dircheck(i, e); i += stp) {
         ctx.env.assign(id.id, depth, i);
         try {
-            await execStmt(n.stmt, ctx);
+            await ctx.yieldExec(() => execStmt(n.stmt, ctx));
         } catch (err) {
             if (err === BrisException)
                 break;

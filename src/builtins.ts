@@ -4,7 +4,7 @@ import { RuntimeError } from "./error";
 import { athchuir } from "./teacs";
 import { Callable, ObjIntfWrap, Value, callFunc, goTéacs, repr } from "./values";
 import { Context } from "./ctx";
-import { STOPType } from "./consts";
+import { STOP, STOPType } from "./consts";
 
 // Take a 1-ary mathematical function and return a Callable
 function mathWrap(ainm: string, fn: (x: number) => number): Callable {
@@ -201,7 +201,7 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                 arity: () => 0,
                 call: (): Promise<null> => {
                     ctx.stop();
-                    return Promise.resolve(null);
+                    return Promise.reject(STOP);
                 },
             },
         ],
