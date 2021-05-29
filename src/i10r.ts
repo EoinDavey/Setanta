@@ -16,6 +16,7 @@ export class Interpreter {
     private rejectFn: (e: Error) => void = () => undefined;
     private resolveFn: () => void = () => undefined;
     private execPromise: Promise<void> | undefined;
+
     constructor(externals?: (ctx: Context) => [string, Value][]) {
         this.global = new RootContext(1000 / 30); // Set to 30 TPS
         this.binder = new Binder();
@@ -32,34 +33,39 @@ export class Interpreter {
         this.global.stop();
     }
 
+    // inject takes an execution function and inserts it into the ongoing execution
+    // context
     public inject(p: () => Promise<void>): void {
         if(this.execPromise === undefined) {
             throw new Error("Ní féidir 'inject' a úsáid nuair nach bhfuil clár ar siúl.");
         }
         this.pendingCnt += 1;
         p().catch(err => {
-               if(err === STOP)
-                   return;
-               this.rejectFn(err);
-           })
-           .finally(() => {
-               this.pendingCnt -= 1;
+                this.rejectFn(err);
+            })
+            .finally(() => {
+                this.pendingCnt -= 1;
 
-               if(this.pendingCnt === 0)
-                   this.resolveFn();
-           });
+                if(this.pendingCnt === 0)
+                    this.resolveFn();
+            });
     }
 
     // interpret takes a Setanta AST and executes it,
     // it returns a Promise that is resolved when the
     // execution completes.
     // throws RuntimeErr | StaticErr
-    public async interpret(p: Program): Promise<void> {
+    public async interpret(p: Program, stopOnErr = true): Promise<void> {
         if(this.execPromise !== undefined) {
             throw new Error("Ní féidir clár nua a thosaigh: Tá clár eile ag rith cheana.");
             return;
         }
-        this.execPromise = new Promise((res, rej) => { this.resolveFn = res; this.rejectFn = rej; });
+        this.execPromise = new Promise((res, rej) => {
+            this.resolveFn = res;
+            this.rejectFn = stopOnErr
+                ? (err) => { this.stop(); rej(err); }
+                : rej;
+        });
 
         try {
             const resolvedAst = this.binder.visitProgram(p);
@@ -67,6 +73,9 @@ export class Interpreter {
             this.inject(rootPromise);
 
             await this.execPromise;
+        } catch(e) {
+            if(e !== STOP)
+                throw e;
         } finally {
             this.execPromise = undefined;
         }

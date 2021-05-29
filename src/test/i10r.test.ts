@@ -1114,8 +1114,7 @@ test("context stop test", async () => {
         x := 0
         nuair-a fíor {
             x = x + 1
-        }
-    `;
+        }`;
     const p = new Parser(prog);
     const res = p.parse();
     const i = new Interpreter();

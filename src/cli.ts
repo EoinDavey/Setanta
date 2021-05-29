@@ -151,7 +151,7 @@ async function repl() {
                 console.log(repr(await ast.stmts[0].evalfn(i.global)));
                 continue;
             }
-            await i.interpret(ast);
+            await i.interpret(ast, false);
         } catch (err) {
             if (err instanceof RuntimeError || err instanceof StaticError) {
                 printError(err, soFar);

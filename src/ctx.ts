@@ -2,10 +2,9 @@ import { Environment } from "./env";
 import { STOP, STOPType } from "./consts";
 
 // The Context classes represent the execution context of a specific execution
-// Context wraps the current lexical scope Environment and handles skip count and stopping
+// Context wraps the current lexical scope Environment and handles yield and stopping
 // logic.
 export interface Context {
-    stopped: boolean;
     env: Environment;
 
     wrapped(): Context;
@@ -24,7 +23,6 @@ abstract class ContextBase {
     // This is done to avoid the overhead of checking the whole parent chain, each child
     // just has a reference to the root contexts values
     protected abstract _stopped: [boolean];
-    protected abstract _skipCnt: [number];
 
     // A pool of promise rejection functions to be called when the interpreter is stopped
     // e.g. Outstanding setTimeout calls.
@@ -37,8 +35,8 @@ abstract class ContextBase {
     public abstract env: Environment;
 
     public wrapped(): Context {
-        return new WrappedContext(this.env, this._stopped, this._skipCnt,
-            this._rejectPool, this.nextYieldTs, this.tickInterval);
+        return new WrappedContext(this.env, this._stopped, this._rejectPool,
+            this.nextYieldTs, this.tickInterval);
     }
 
     public yieldExec<T>(ex: () => Promise<T>): Promise<T> {
@@ -51,13 +49,6 @@ abstract class ContextBase {
             return new Promise(r => { setTimeout(r); }).then(ex);
         }
         return ex();
-    }
-
-    public get skipCnt(): number {
-        return this._skipCnt[0];
-    }
-    public set skipCnt(n: number) {
-        this._skipCnt[0] = n;
     }
 
     public get stopped(): boolean {
@@ -83,7 +74,6 @@ abstract class ContextBase {
 
 export class RootContext extends ContextBase implements Context {
     protected _stopped: [boolean];
-    protected _skipCnt: [number];
     protected _rejectPool: [Set<(s: STOPType)=>void>];
     protected nextYieldTs: [number];
     protected tickInterval: [number];
@@ -94,7 +84,6 @@ export class RootContext extends ContextBase implements Context {
         super();
         this.env = new Environment();
         this._stopped = [false];
-        this._skipCnt = [0];
         this.tickInterval = [tickInterval];
         this.nextYieldTs = [Date.now() + tickInterval];
         this._rejectPool = [new Set()];
@@ -103,18 +92,16 @@ export class RootContext extends ContextBase implements Context {
 
 export class WrappedContext extends ContextBase implements Context {
     protected _stopped: [boolean];
-    protected _skipCnt: [number];
     protected _rejectPool: [Set<(s: STOPType)=>void>];
     protected nextYieldTs: [number];
     protected tickInterval: [number];
     public env: Environment;
 
-    constructor(env: Environment, stopped: [boolean], skipCnt: [number],
-      rejectPool: [Set<(s: STOPType)=>void>], nextYieldTs: [number], tickInterval: [number]) {
+    constructor(env: Environment, stopped: [boolean], rejectPool: [Set<(s: STOPType)=>void>],
+        nextYieldTs: [number], tickInterval: [number]) {
         super();
         this.env = new Environment(env);
         this._stopped = stopped;
-        this._skipCnt = skipCnt;
         this.tickInterval = tickInterval;
         this.nextYieldTs = nextYieldTs;
         this._rejectPool = rejectPool;
