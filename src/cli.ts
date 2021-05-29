@@ -15,6 +15,8 @@ const [, , ...pargs] = process.argv;
 const usage = `Úsáid: setanta [comhad foinseach]
 Usage: setanta [source file]`;
 
+const TPS = 10; // Use 10 ticks per second in CLI mode.
+
 // Custom logic for better printing of error messages.
 function printError(r: RuntimeError, source: string) {
     if(r.start && r.end && r.end.line - r.start.line <= 3) {
@@ -116,7 +118,7 @@ async function repl() {
     const continuance = (): Promise<string|null> => {
         return new Promise(r => { rl.question("...", r); });
     };
-    const i = new Interpreter(getExternals(léighLíne));
+    const i = new Interpreter(TPS, getExternals(léighLíne));
 
     // In order to track positions for error printing correctly we have to keep
     // track of all code executed so far. We append new input onto this string and
@@ -190,7 +192,7 @@ async function runFile() {
             });
         });
     };
-    const i = new Interpreter(getExternals(léigh));
+    const i = new Interpreter(TPS, getExternals(léigh));
 
     try {
         await i.interpret(res.ast);

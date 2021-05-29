@@ -17,8 +17,8 @@ export class Interpreter {
     private resolveFn: () => void = () => undefined;
     private execPromise: Promise<void> | undefined;
 
-    constructor(externals?: (ctx: Context) => [string, Value][]) {
-        this.global = new RootContext(1000 / 30); // Set to 30 TPS
+    constructor(tps = 30, externals?: (ctx: Context) => [string, Value][]) {
+        this.global = new RootContext(1000 / tps);
         this.binder = new Binder();
         this.binder.enterScope();
         globalBuiltinsFadaCombos(this.global)
