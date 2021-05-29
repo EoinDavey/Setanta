@@ -8,7 +8,7 @@ import { ASTKinds } from "./gen_parser";
 import { Gníomh, GníomhImpl } from "./gniomh";
 import { Ref, Stmt, Value, repr } from "./values";
 import { Context } from "./ctx";
-import { BrisException, CCException, SKIP_COUNT_LIM, STOP } from "./consts";
+import { BrisException, CCException } from "./consts";
 
 // This library contains the main (slow) execution functions for execution of
 // Setanta statements.
@@ -21,6 +21,8 @@ export class Toradh {
     }
 }
 
+// IDEA for reconfiguring this, can we make this lazier? i.e. only chain next promise
+// when preceding promise is in flight?
 export function execStmts(stmts: Stmt[], ctx: Context): Promise<void> {
     const f = (x: Promise<void>, y: Stmt): Promise<void> =>
         x.then(() => execStmt(y, ctx));
@@ -30,22 +32,13 @@ export function execStmts(stmts: Stmt[], ctx: Context): Promise<void> {
 // execStmtBlock executes block statement.
 function execStmtBlock(blk: P.BlockStmt, ctx: Context): Promise<void> {
     // Block statements create a new context.
-    ctx = new Context(ctx);
+    ctx = ctx.wrapped();
     return execStmts(blk.blk, ctx);
 }
 
 // execStmt executes a Setanta statement, and controls stopping of the program
 // and tracking the skip count.
 function execStmt(st: Stmt, ctx: Context): Promise<void> {
-    if (ctx.stopped === true)
-        return Promise.reject(STOP);
-    // Every SKIP_COUNT_LIM statements put the next execution on the macrotask queue.
-    if (ctx.skipCnt >= SKIP_COUNT_LIM) {
-        ctx.skipCnt = 0;
-        return new Promise(resolve => { setTimeout(resolve); })
-            .then(() => execStmt(st, ctx));
-    }
-    ++ctx.skipCnt;
     switch (st.kind) {
         case ASTKinds.IfStmt:
             return execMá(st, ctx);
@@ -159,7 +152,7 @@ function refAtom(a: P.Atom, ctx: Context): Promise<Ref> {
 // execCCStmt throws a CCException. CCExceptions are caught by loops.
 function execCCStmt(): Promise<void> { return Promise.reject(CCException); }
 
-// execBrisStmt throws a CCException. CCExceptions are caught by loops.
+// execBrisStmt throws a BrisException. BrisExceptions are caught by loops.
 function execBrisStmt(): Promise<void> { return Promise.reject(BrisException); }
 
 // execCtlchStmt creates a Creatlach in the current scope.
@@ -211,7 +204,7 @@ async function execNuair(n: P.NuairStmt, ctx: Context): Promise<void> {
         if (!Checks.isTrue(x))
             break;
         try {
-            await execStmt(n.stmt, ctx);
+            await ctx.yieldExec(() => execStmt(n.stmt, ctx));
         } catch (err) {
             if (err === BrisException)
                 break;
@@ -238,7 +231,7 @@ async function execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
         stp = stpsz;
     }
 
-    ctx = new Context(ctx);
+    ctx = ctx.wrapped();
     ctx.env.define(id.id, s);
     const dircheck = e >= s
         ? (a: number, b: number) => a < b
@@ -249,7 +242,7 @@ async function execLeStmt(n: P.LeStmt, ctx: Context): Promise<void> {
     for (let i = s; dircheck(i, e); i += stp) {
         ctx.env.assign(id.id, depth, i);
         try {
-            await execStmt(n.stmt, ctx);
+            await ctx.yieldExec(() => execStmt(n.stmt, ctx));
         } catch (err) {
             if (err === BrisException)
                 break;

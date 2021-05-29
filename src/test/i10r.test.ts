@@ -1114,8 +1114,7 @@ test("context stop test", async () => {
         x := 0
         nuair-a fíor {
             x = x + 1
-        }
-    `;
+        }`;
     const p = new Parser(prog);
     const res = p.parse();
     const i = new Interpreter();
@@ -1225,6 +1224,7 @@ test("stop codladh test", async () => {
 test("stop action test", async () => {
     let wasRan = false;
     const i = new Interpreter(
+        10,
         () => [
             [
                 "dontrunme",
@@ -1297,6 +1297,6 @@ test("Make sure self definition throws error", async () => {
         rejects.toThrow("Níl an athróg \"a\" sainithe fós");
 
     const creatlach = parse(`creatlach A ó A {}`).ast!;
-    await expect(i.interpret(creatlach)).
+    return expect(i.interpret(creatlach)).
         rejects.toThrow("Níl an athróg \"A\" sainithe fós");
 });

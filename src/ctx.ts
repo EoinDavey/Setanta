@@ -1,41 +1,54 @@
 import { Environment } from "./env";
 import { STOP, STOPType } from "./consts";
 
-// The Context class represents the execution context of a specific execution
-// Context wraps the current lexical scope Environment and handles skip count and stopping
+// The Context classes represent the execution context of a specific execution
+// Context wraps the current lexical scope Environment and handles yield and stopping
 // logic.
-export class Context {
+export interface Context {
+    env: Environment;
+
+    wrapped(): Context;
+
+    stop(): void;
+    yieldExec<T>(ex: () => Promise<T>): Promise<T>;
+
+    addRejectFn(fn: (s: STOPType) => void): void;
+    removeRejectFn(fn: (s: STOPType) => void): void;
+}
+
+abstract class ContextBase {
     // We use single element arrays (tuples in TS) here to hold these values so that
     // they can be inherited from parent contexts by references, instead of by value
     // Another approach would be to wrap them in an object.
     // This is done to avoid the overhead of checking the whole parent chain, each child
     // just has a reference to the root contexts values
-    private _stopped: [boolean];
-    private _skipCnt: [number];
+    protected abstract _stopped: [boolean];
+
     // A pool of promise rejection functions to be called when the interpreter is stopped
     // e.g. Outstanding setTimeout calls.
     // Use string literal type to ensure only can be called with STOP exception
-    private _rejectPool: [Set<(s: STOPType)=>void>];
-    public env: Environment;
+    protected abstract _rejectPool: [Set<(s: STOPType)=>void>];
 
-    constructor(ctx?: Context) {
-        if (ctx) {
-            this.env = new Environment(ctx.env);
-            this._stopped = ctx._stopped;
-            this._skipCnt = ctx._skipCnt;
-            this._rejectPool = ctx._rejectPool;
-        } else {
-            this.env = new Environment();
-            this._stopped = [false];
-            this._skipCnt = [0];
-            this._rejectPool = [new Set()];
+    protected abstract tickInterval: [number];
+    protected abstract nextYieldTs: [number];
+
+    public abstract env: Environment;
+
+    public wrapped(): Context {
+        return new WrappedContext(this.env, this._stopped, this._rejectPool,
+            this.nextYieldTs, this.tickInterval);
+    }
+
+    public yieldExec<T>(ex: () => Promise<T>): Promise<T> {
+        if(this.stopped)
+            return Promise.reject(STOP);
+
+        const now = Date.now();
+        if(now >= this.nextYieldTs[0]) {
+            this.nextYieldTs[0] = now + this.tickInterval[0];
+            return new Promise(r => { setTimeout(r); }).then(ex);
         }
-    }
-    public get skipCnt(): number {
-        return this._skipCnt[0];
-    }
-    public set skipCnt(n: number) {
-        this._skipCnt[0] = n;
+        return ex();
     }
 
     public get stopped(): boolean {
@@ -56,5 +69,41 @@ export class Context {
     }
     public removeRejectFn(fn: (s: STOPType) => void): void {
         this._rejectPool[0].delete(fn);
+    }
+}
+
+export class RootContext extends ContextBase implements Context {
+    protected _stopped: [boolean];
+    protected _rejectPool: [Set<(s: STOPType)=>void>];
+    protected nextYieldTs: [number];
+    protected tickInterval: [number];
+    public env: Environment;
+
+
+    constructor(tickInterval: number) {
+        super();
+        this.env = new Environment();
+        this._stopped = [false];
+        this.tickInterval = [tickInterval];
+        this.nextYieldTs = [Date.now() + tickInterval];
+        this._rejectPool = [new Set()];
+    }
+}
+
+export class WrappedContext extends ContextBase implements Context {
+    protected _stopped: [boolean];
+    protected _rejectPool: [Set<(s: STOPType)=>void>];
+    protected nextYieldTs: [number];
+    protected tickInterval: [number];
+    public env: Environment;
+
+    constructor(env: Environment, stopped: [boolean], rejectPool: [Set<(s: STOPType)=>void>],
+        nextYieldTs: [number], tickInterval: [number]) {
+        super();
+        this.env = new Environment(env);
+        this._stopped = stopped;
+        this.tickInterval = tickInterval;
+        this.nextYieldTs = nextYieldTs;
+        this._rejectPool = rejectPool;
     }
 }

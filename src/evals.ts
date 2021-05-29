@@ -83,11 +83,11 @@ export function postfixArgsEval(pf: Postfix): EvalFn {
                         // Can use quick strategy?
                         if (y.args.qeval !== null) {
                             const args = y.args.qeval(ctx);
-                            return callFunc(val, args);
+                            return ctx.yieldExec(() => callFunc(val, args));
                         }
                         return y.args
                             .evalfn(ctx)
-                            .then(args => callFunc(val, args));
+                            .then(args => ctx.yieldExec(() => callFunc(val, args)));
                     }
                     // No args so supply empty list
                     return callFunc(val, []);
