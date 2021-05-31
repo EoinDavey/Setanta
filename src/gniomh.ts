@@ -1,7 +1,7 @@
 import { Context } from "./ctx";
 import { RuntimeError } from "./error";
 import { Rud } from "./rud";
-import { Callable, Stmt, Value } from "./values";
+import { Callable, Stmt, Value, repr } from "./values";
 import { Toradh, execStmts } from "./execs";
 import { BrisException } from "./consts";
 import { ID } from "./gen_parser";
@@ -77,7 +77,7 @@ export class GníomhWrap implements Gníomh {
 
     public call(args: Value[]): Promise<Value> {
         if (this.seo === null) // Really really should not happen
-            return Promise.reject(new RuntimeError("COMPLETE FAILURE"));
+            return Promise.reject(new RuntimeError(`Glaoch ar ${repr(this)} teipthe: Níl aon luach ar "seo"`));
         return this.f(this.seo, args);
     }
 

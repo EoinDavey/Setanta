@@ -5,6 +5,7 @@
 ### Fixed
 
 - Minor scheduling changes in interpreter.
+- Typos in error messages.
 
 ## 0.10.0 - 2021/02/20
 

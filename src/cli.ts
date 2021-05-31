@@ -142,7 +142,7 @@ async function repl() {
 
         prevPos = parser.mark();
         if (res.ast === null)
-            return Promise.reject(`Parser failure: ${res.errs}`);
+            return Promise.reject(`Theip ar an bparsálaí: ${res.errs}`);
         const ast = res.ast;
         try {
             // This is an expression, we can print the result
@@ -176,7 +176,7 @@ async function runFile() {
         return;
     }
     if (res.ast === null)
-        throw new Error("Unknown parser error: Serious failure");
+        throw new Error("Theip ar an bparsálaí: Earráid anaithnid");
     const rl: readline.Interface = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
