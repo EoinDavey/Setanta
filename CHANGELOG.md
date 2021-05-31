@@ -2,13 +2,15 @@
 
 ## Upcoming
 
-### Added
-
-- Added `cuir_le` action for in-place list appends.
-
 ### Fixed
 
 - Minor scheduling changes in interpreter.
+
+## 0.10.0 - 2021/02/20
+
+### Added
+
+- Added `cuir_le` action for in-place list appends.
 
 ## 0.9.1 - 2021/01/04
 
