@@ -10,13 +10,13 @@ export function getAttr(o: Obj, id: string): Value {
         const val = liostaBuiltins.get(id);
         if(val !== undefined)
             return val(o);
-        throw new RuntimeError(`Níl aon ball de ${repr(o)} le ainm "${id}"`);
+        throw new RuntimeError(`Níl aon ball "${id}" de ${repr(o)}`);
     }
     if(isTéacs(o)) {
         const val = téacsBuiltins.get(id);
         if(val !== undefined) 
             return val(o);
-        throw new RuntimeError(`Níl aon ball de ${repr(o)} le ainm "${id}"`);
+        throw new RuntimeError(`Níl aon ball "${id}" de ${repr(o)}`);
     }
     return o.getAttr(id);
 }

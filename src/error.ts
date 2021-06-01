@@ -35,11 +35,11 @@ export class RuntimeError extends Error {
 }
 
 export function alreadyDefinedError(id: string, start?: PosInfo, end?: PosInfo): StaticError {
-    return new StaticError(`Tá ${id} sa scóip seo cheana féin`, start, end);
+    return new StaticError(`Tá "${id}" sa scóip seo cheana féin`, start, end);
 }
 
 export function undefinedError(id: string, start?: PosInfo, end?: PosInfo): RuntimeError {
-    return new RuntimeError(`Níl aon athróg le ainm: ${id}`, start, end);
+    return new RuntimeError(`Níl aon athróg "${id}"`, start, end);
 }
 
 // If this is a runtime error, tag it with the location information.

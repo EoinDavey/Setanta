@@ -28,7 +28,7 @@ export class Rud implements ObjIntf {
         const gníomh = this.creatlach.aimsighGníomh(s);
         if (gníomh !== null)
             return gníomh.bind(this);
-        throw new RuntimeError(`Níl aon ball de ${repr(this)} le ainm "${s}"`);
+        throw new RuntimeError(`Níl aon ball "${s}" de ${repr(this)}`);
     }
 
     public setAttr(id: string, v: Value): void {
@@ -52,7 +52,7 @@ class TuisWrap implements ObjIntf {
         const gníomh = this.cr.aimsighGníomh(s);
         if (gníomh)
             return gníomh.bind(this.rud);
-        throw new RuntimeError(`Níl aon ball le ainm ${s} ag tuismitheoir de ${this.cr.ainm}`);
+        throw new RuntimeError(`Níl aon ball "${s}" ag tuismitheoir de ${this.cr.ainm}`);
     }
 
     public setAttr() {

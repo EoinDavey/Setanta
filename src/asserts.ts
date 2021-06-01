@@ -47,5 +47,5 @@ export function assertComparable(a: Value): asserts a is Comparable {
 
 export function assertIndexable(a: Value): asserts a is (string | Value[]) {
     if (!Checks.isLiosta(a) && !Checks.isTéacs(a))
-        throw new RuntimeError(`Ní liosta nó téacs é ${repr(a)}`);
+        throw new RuntimeError(`Ní liosta ná téacs é ${repr(a)}`);
 }

@@ -61,7 +61,7 @@ export function allFadaCombos(s: string): string[] {
         if(s[i] in fadaMp)
             fadaIdxs.push(i);
     if(fadaIdxs.length > 10)
-        throw new Error(`Tá an iomarca fada sa focal "${s}".`);
+        throw new Error(`Tá barraíocht síneadh fada (áéíóú) sa focal "${s}".`);
     const combos: string[] = [];
     const lm = 2 ** fadaIdxs.length;
     for(let subset = 0; subset < lm; ++subset) {
@@ -124,7 +124,7 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                     if (Checks.isTéacs(args[0]) || Checks.isBool(args[0]) || Checks.isNumber(args[0])) {
                         return Promise.resolve(Number(args[0]));
                     }
-                    throw new RuntimeError(`Níl uimhir, téacs nó bool é ${repr(args[0])}`);
+                    throw new RuntimeError(`Ní uimhir, téacs ná bool é ${repr(args[0])}`);
                 },
             },
         ],
