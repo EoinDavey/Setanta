@@ -1,4 +1,5 @@
 import { PosInfo, SyntaxErr } from "./gen_parser";
+import { BrisException, CCException, STOP} from "./consts";
 
 // StaticError wraps errors that are raised during static analysis
 // of the program.
@@ -44,12 +45,14 @@ export function undefinedError(id: string, start?: PosInfo, end?: PosInfo): Runt
 
 // If this is a runtime error, tag it with the location information.
 // Location info is used during printing.
-export function tagErrorLoc(r: Error, start: PosInfo, end: PosInfo): Error {
+export function tagErrorLoc(r: unknown, start: PosInfo, end: PosInfo): unknown {
     if(r instanceof RuntimeError && r.start === null && r.end === null) {
         r.start = start;
         r.end = end;
     }
-    return r;
+    if(typeof r === "string" && [STOP, CCException, BrisException].includes(r))
+        return r;
+    return new Error(`Earráid anaitnid: ${r}`);
 }
 
 // Needs to be updated to match the correct regex from the grammar spec.
