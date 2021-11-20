@@ -6,6 +6,7 @@
 
 - Minor scheduling changes in interpreter.
 - Typos in error messages.
+- Issue with underscores in variable names containing keywords.
 
 ## 0.10.0 - 2021/02/20
 

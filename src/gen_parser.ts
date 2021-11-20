@@ -149,7 +149,7 @@
 *                .qeval = Quick.EvalFn { return Quick.qTéacsEval(this.lit.val, this.lit.start, this.lit.end); }
 * _           := wspace*
 * wspace      := '(?:\s|>--(?:(?!--<).)*(--<|\n|$))'
-* gap         := wspace | '[^a-zA-Z0-9áéíóúÁÉÍÓÚ]' | '$'
+* gap         := wspace | '[^a-zA-Z_áéíóúÁÉÍÓÚ0-9]' | '$'
 * PlusMinus   := '\+|-'
 * AsgnOp      := '=|\+=|\*=|-=|%=|\/=|\/\/='
 * MulDiv      := '\*|\/\/|%|\/'
@@ -1984,7 +1984,7 @@ export class Parser {
         return this.matchwspace($$dpth + 1, $$cr);
     }
     public matchgap_2($$dpth: number, $$cr?: ErrorTracker): Nullable<gap_2> {
-        return this.regexAccept(String.raw`(?:[^a-zA-Z0-9áéíóúÁÉÍÓÚ])`, $$dpth + 1, $$cr);
+        return this.regexAccept(String.raw`(?:[^a-zA-Z_áéíóúÁÉÍÓÚ0-9])`, $$dpth + 1, $$cr);
     }
     public matchgap_3($$dpth: number, $$cr?: ErrorTracker): Nullable<gap_3> {
         return this.regexAccept(String.raw`(?:$)`, $$dpth + 1, $$cr);

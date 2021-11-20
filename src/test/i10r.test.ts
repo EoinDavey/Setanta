@@ -184,6 +184,14 @@ describe("test assign", () => {
                 res := 5
                 res //= 2`,
         },
+        {
+            exp: "Regression: gap contains underscore",
+            inp: `
+                gniomh_a := 'Regression: gap contains underscore'
+                má_abc := gniomh_a
+                res := má_abc
+            `,
+        },
     ];
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
