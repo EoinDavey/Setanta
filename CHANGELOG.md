@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 0.10.1 - 2021/11/20
 
 ### Fixed
 
