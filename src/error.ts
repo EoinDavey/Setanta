@@ -46,13 +46,16 @@ export function undefinedError(id: string, start?: PosInfo, end?: PosInfo): Runt
 // If this is a runtime error, tag it with the location information.
 // Location info is used during printing.
 export function tagErrorLoc(r: unknown, start: PosInfo, end: PosInfo): unknown {
-    if(r instanceof RuntimeError && r.start === null && r.end === null) {
-        r.start = start;
-        r.end = end;
+    if(r instanceof RuntimeError) {
+        if(r.start === null && r.end === null) {
+            r.start = start;
+            r.end = end;
+        }
+        return r;
     }
     if(typeof r === "string" && [STOP, CCException, BrisException].includes(r))
         return r;
-    return new Error(`Earráid anaitnid: ${r}`);
+    return new Error(`Earráid anaithnid: ${r}`);
 }
 
 // Needs to be updated to match the correct regex from the grammar spec.

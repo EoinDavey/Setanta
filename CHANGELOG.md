@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.1 - 2021/11/20
+## 0.10.2 - 2021/11/20
 
 ### Fixed
 
@@ -8,6 +8,7 @@
 - Typos in error messages.
 - Issue with underscores in variable names containing keywords.
 
+## ~~0.10.1 - 2021/11/20~~
 ## 0.10.0 - 2021/02/20
 
 ### Added
