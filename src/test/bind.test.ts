@@ -1,4 +1,5 @@
 import { Binder } from "../bind";
+import { StaticError } from "../error";
 import { parse } from "../gen_parser";
 
 describe("verify depth correctness", () => {
@@ -150,7 +151,8 @@ describe("verify depth correctness", () => {
             depths: [[0, 0], [0, 1], [0, 0], [1, 1], [0, 0], [0, 0]],
         },
         {
-            prog: `x := x@y@z@a`,
+            prog: `a := neamhní
+                   x := x@y@z@a`,
             depths: [g],
         },
     ];
@@ -161,13 +163,109 @@ describe("verify depth correctness", () => {
             expect(res.errs).toEqual([]);
             expect(res.ast).not.toBeNull();
             const binder = new Binder();
-            binder.enterScope();
+            binder.defineGlobal(binder.declareGlobal("scríobh"));
             binder.visitProgram(res.ast!);
-            binder.exitScope();
             const gotDepths: ([number, number] | { global: true})[] = Array.from(binder.depthMap.entries())
                 .sort((a, b) => a[0].start.overallPos - b[0].start.overallPos)
                 .map(x => x[1]);
             expect(tc.depths).toEqual(gotDepths);
+        });
+    }
+});
+
+describe("verify late global binding", () => {
+    interface TC { prog: string; hasErr: boolean }
+    const cases: TC[] = [
+        {
+            prog: `gníomh a() {
+                        toradh b()
+                   }
+                   gníomh b() {
+                       toradh a()
+                   }`,
+            hasErr: false,
+        },
+        {
+            prog: `creatlach A {
+                       gníomh a() {
+                           toradh b()
+                       }
+                   }
+                   a := A()
+                   a@a()
+                   gníomh b() {
+                       toradh 1
+                   }`,
+            hasErr: false,
+        },
+        {
+            prog: `
+                  {
+                      gníomh a() {
+                          toradh b()
+                      }
+                  }
+                  gníomh b() {
+                  }`,
+            hasErr: false,
+        },
+        {
+            prog: `
+                   a := gníomh() {
+                       toradh b
+                   }
+                   b := 2
+                  `,
+            hasErr: false,
+        },
+        {
+            prog: `
+                   o := 1
+
+                   gníomh a() {
+                       o := o
+                   }
+                  `,
+            hasErr: false,
+        },
+        {
+            prog: `
+                  {
+                      gníomh a() {
+                          toradh b()
+                      }
+                      gníomh b() {
+                      }
+                  }`,
+            hasErr: true,
+        },
+        {
+            prog: `a := b()
+                   gníomh b() {
+                       toradh a()
+                   }`,
+            hasErr: true,
+        },
+    ];
+    for(let i = 0; i < cases.length; i++) {
+        const tc = cases[i];
+        test(`subtest ${i}`, () => {
+            const res = parse(tc.prog);
+            expect(res.errs).toEqual([]);
+            expect(res.ast).not.toBeNull();
+            const binder = new Binder();
+            let errMsg = "";
+            try {
+                binder.visitProgram(res.ast!);
+            } catch(e) {
+                if(!(e instanceof StaticError))
+                    throw e;
+                errMsg = e.msg;
+            }
+            if(tc.hasErr)
+                expect(errMsg).not.toEqual("");
+            else
+                expect(errMsg).toEqual("");
         });
     }
 });

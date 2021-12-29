@@ -1,5 +1,15 @@
 # Changelog
 
+## Upcoming
+
+### Fixed
+
+- Bug where shadowing didn't work as expected.
+
+### Added
+
+- Better catching of undefined variables.
+
 ## 0.10.2 - 2021/11/20
 
 ### Fixed

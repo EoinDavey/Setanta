@@ -1,11 +1,9 @@
 import { CreatlachImpl } from "../../src/creatlach";
-import { Environment } from "../../src/env";
 import { Parser, parse } from "../../src/gen_parser";
 import { GníomhWrap } from "../../src/gniomh";
 import { Interpreter } from "../../src/i10r";
 import { Rud } from "../../src/rud";
 import { Value } from "../../src/values";
-import { resolveASTNode } from "../../src/bind";
 
 import * as Asserts from "../../src/asserts";
 import * as Checks from "../../src/checks";
@@ -32,7 +30,7 @@ describe("test isEqual", () => {
 });
 
 describe("test expressions", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; globals?: [string, Value][]; }
     const cases: TC[] = [
         {inp: "42", exp: 42},
         {inp: "12345678910", exp: 12345678910},
@@ -51,8 +49,8 @@ describe("test expressions", () => {
         {inp: "1 >= 0", exp: true},
         {inp: "(1)", exp: 1},
         {inp: "( 1 )", exp: 1},
-        {inp: "big > small", exp: true, env: Environment.from([["big", 100], ["small", 1]])},
-        {inp: "x*x + y*y - z*z", exp: 0, env: Environment.from([["x", 3], ["y", 4], ["z", 5]])},
+        {inp: "big > small", exp: true, globals: [["big", 100], ["small", 1]]},
+        {inp: "x*x + y*y - z*z", exp: 0, globals: [["x", 3], ["y", 4], ["z", 5]]},
         {inp: "fíor == fíor", exp: true},
         {inp: "fíor == breag", exp: false},
         {inp: "(fíor & fíor) != breag", exp: true},
@@ -70,8 +68,8 @@ describe("test expressions", () => {
         {inp: "[] == [1,2,3]", exp: false},
         {inp: "[1,2,3][0]", exp: 1},
         {inp: "[1,[1,2],3][1]", exp: [1, 2]},
-        {inp: "-x", exp: -2, env: Environment.from([["x", 2]])},
-        {inp: "-x[0]", exp: -2, env: Environment.from([["x", [2]]])},
+        {inp: "-x", exp: -2, globals: [["x", 2]]},
+        {inp: "-x[0]", exp: -2, globals: [["x", [2]]]},
         {inp: "!fíor", exp: false},
         {inp: "!breag", exp: true},
         {inp: "'abc'[0]", exp: "a"},
@@ -84,14 +82,11 @@ describe("test expressions", () => {
     ];
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
-            const i = new Interpreter();
-            if (c.env)
-                i.global.env = c.env;
+            const i = new Interpreter(30, () => c.globals ?? []);
             const p = new Parser(c.inp);
             const res = p.matchExpr(0);
             expect(res).not.toBeNull();
-            const resolved = resolveASTNode(res!);
-            const got = await resolved.evalfn(i.global);
+            const got = await i.evalExpr(res!);
             const quickGet = res!.qeval;
             expect(quickGet).not.toBeNull();
             expect(quickGet!(i.global)).toEqual(c.exp);
@@ -101,7 +96,7 @@ describe("test expressions", () => {
 });
 
 describe("test assign", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; globals?: [string, Value][]; }
     const cases: TC[] = [
         {
             exp: 12,
@@ -122,7 +117,7 @@ describe("test assign", () => {
             res := fíory*fíory`,
         },
         {
-            env: Environment.from([["x", 10]]),
+            globals: [["x", 10]],
             exp: 113,
             inp: `res := x
             10*10-40/3
@@ -195,10 +190,7 @@ describe("test assign", () => {
     ];
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
-            const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
+            const i = new Interpreter(30, () => c.globals ?? []);
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -210,7 +202,7 @@ describe("test assign", () => {
 });
 
 describe("test if stmt", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; globals?: [string, Value][]; }
     const cases: TC[] = [
         {
             exp: 8,
@@ -250,10 +242,7 @@ describe("test if stmt", () => {
     ];
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
-            const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
+            const i = new Interpreter(30, () => c.globals ?? []);
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -265,7 +254,7 @@ describe("test if stmt", () => {
 });
 
 describe("test nuair-a loops", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         {
             exp: 10,
@@ -316,9 +305,6 @@ describe("test nuair-a loops", () => {
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
             const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -330,7 +316,7 @@ describe("test nuair-a loops", () => {
 });
 
 describe("test le idir loops", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         {
             exp: 10,
@@ -418,9 +404,6 @@ describe("test le idir loops", () => {
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
             const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -432,10 +415,10 @@ describe("test le idir loops", () => {
 });
 
 describe("test function calls", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; globals?: [string, Value][]; }
     const cases: TC[] = [
         {
-            env: Environment.from([
+            globals: [
                 ["sum", {
                     ainm: "sum",
                     arity: () => 2,
@@ -443,12 +426,12 @@ describe("test function calls", () => {
                         return (args[0] as number) + (args[1] as number);
                     },
                 }],
-            ]),
+            ],
             exp: 42,
             inp: `res := sum(12*3, 4+2)`,
         },
         {
-            env: Environment.from([
+            globals: [
                 ["sum", {
                     ainm: "sum",
                     arity: () => 2,
@@ -463,17 +446,14 @@ describe("test function calls", () => {
                         return (args[0] as number) * (args[0] as number);
                     },
                 }],
-            ]),
+            ],
             exp: 0,
             inp: `res := sum(square(3), square(4)) - square(5)`,
         },
     ];
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
-            const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
+            const i = new Interpreter(30, () => c.globals ?? []);
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -485,7 +465,7 @@ describe("test function calls", () => {
 });
 
 describe("test function definitions", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         {
             exp: 45,
@@ -530,9 +510,6 @@ describe("test function definitions", () => {
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
             const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -544,7 +521,7 @@ describe("test function definitions", () => {
 });
 
 describe("test toradh", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         {
             exp: 25,
@@ -582,9 +559,6 @@ describe("test toradh", () => {
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
             const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -596,7 +570,7 @@ describe("test toradh", () => {
 });
 
 describe("test postfix ops", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         {
             exp: 3,
@@ -627,9 +601,6 @@ describe("test postfix ops", () => {
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
             const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -641,7 +612,7 @@ describe("test postfix ops", () => {
 });
 
 describe("test arrays", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         {
             exp: [0, 1, 2],
@@ -710,9 +681,6 @@ describe("test arrays", () => {
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
             const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -724,32 +692,32 @@ describe("test arrays", () => {
 });
 
 describe("test obj lookups", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; globals?: [string, Value][]; }
     const cases: TC[] = [
         {
-            env: Environment.from([
+            globals: [
                 ["b", {
                     ainm: "b",
                     getAttr: (s: string) => s === "a" ? true : null,
                     setAttr: () => undefined,
                 }],
-            ]),
+            ],
             exp: true,
             inp: "res := a@b",
         },
         {
-            env: Environment.from([
+            globals: [
                 ["b", {
                     ainm: "b",
                     getAttr: (s: string) => s === "a" ? true : null,
                     setAttr: () => undefined,
                 }],
-            ]),
+            ],
             exp: null,
             inp: "res := b@b",
         },
         {
-            env: Environment.from([
+            globals: [
                 ["c", {
                     ainm: "c",
                     getAttr: (s: string) => s === "b" ?
@@ -767,29 +735,26 @@ describe("test obj lookups", () => {
                     : null,
                     setAttr: () => undefined,
                 }],
-            ]),
+            ],
             exp: "0",
             inp: "res := a@b@c()[0]",
         },
         // Regression test for variable binding bug
         {
-            env: Environment.from([
+            globals: [
                 ["b", {
                     ainm: "b",
                     getAttr: (s: string) => s === "res" ? true : null,
                     setAttr: () => undefined,
                 }],
-            ]),
+            ],
             exp: true,
             inp: "res := res@b",
         },
     ];
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
-            const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
+            const i = new Interpreter(30, () => c.globals ?? []);
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -801,7 +766,7 @@ describe("test obj lookups", () => {
 });
 
 describe("test creatlach stmt", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         {
             exp: 25,
@@ -949,9 +914,6 @@ describe("test creatlach stmt", () => {
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
             const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -963,7 +925,7 @@ describe("test creatlach stmt", () => {
 });
 
 describe("test object assignment", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         {
             exp: 1,
@@ -1018,9 +980,6 @@ describe("test object assignment", () => {
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
             const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -1032,7 +991,7 @@ describe("test object assignment", () => {
 });
 
 describe("test constructor", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; globals?: [string, Value][]; }
     const cases: TC[] = [
         {
             exp: "Eoin",
@@ -1063,7 +1022,7 @@ describe("test constructor", () => {
             `,
         },
         {
-            env: Environment.from([
+            globals: [
                 ["dronuilleog", new CreatlachImpl("dronuilleog", new Map(
                     [
                         ["nua", new GníomhWrap(
@@ -1088,7 +1047,7 @@ describe("test constructor", () => {
                         )],
                     ],
                 ))],
-            ]),
+            ],
             exp: 16,
             inp: `
             creatlach cearnóg ó dronuilleog {
@@ -1103,10 +1062,7 @@ describe("test constructor", () => {
     ];
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
-            const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
+            const i = new Interpreter(30, () => c.globals ?? []);
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -1133,7 +1089,7 @@ test("context stop test", async () => {
 });
 
 describe("test comments", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value }
     const cases: TC[] = [
         {
             exp: 16,
@@ -1159,8 +1115,6 @@ describe("test comments", () => {
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
             const i = new Interpreter();
-            if (c.env)
-                i.global.env = c.env;
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -1172,7 +1126,7 @@ describe("test comments", () => {
 });
 
 describe("test anonymous functions", () => {
-    interface TC { inp: string; exp: Value; env?: Environment; }
+    interface TC { inp: string; exp: Value; }
     const cases: TC[] = [
         {
             exp: 4,
@@ -1203,9 +1157,6 @@ describe("test anonymous functions", () => {
     for (const c of cases) {
         test(`inp: ${c.inp}`, async () => {
             const i = new Interpreter();
-            if (c.env) {
-                i.global.env = c.env;
-            }
             const p = new Parser(c.inp);
             const res = p.parse();
             expect(res.errs).toEqual([]);
@@ -1302,9 +1253,9 @@ test("Make sure self definition throws error", async () => {
     const i = new Interpreter();
 
     await expect(i.interpret(direct)).
-        rejects.toThrow("Níl an athróg \"a\" sainithe fós");
+        rejects.toThrow("Níl an athróg \"a\" ar fáil");
 
     const creatlach = parse(`creatlach A ó A {}`).ast!;
     return expect(i.interpret(creatlach)).
-        rejects.toThrow("Níl an athróg \"A\" sainithe fós");
+        rejects.toThrow("Níl an athróg \"A\" ar fáil");
 });

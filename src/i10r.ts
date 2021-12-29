@@ -1,7 +1,7 @@
 import { globalBuiltinsFadaCombos } from "./builtins";
 import { Value } from "./values";
 import { Context, RootContext } from "./ctx";
-import { Program } from "./gen_parser";
+import { Expr, Program } from "./gen_parser";
 import { execStmts } from "./execs";
 import { STOP } from "./consts";
 import { Binder } from "./bind";
@@ -19,13 +19,18 @@ export class Interpreter {
 
     constructor(tps = 30, externals?: (ctx: Context) => [string, Value][]) {
         this.global = new RootContext(1000 / tps);
+        const globals = globalBuiltinsFadaCombos(this.global);
+        if(externals) {
+            const ext = externals(this.global);
+            globals.push(...ext);
+        }
+        globals.forEach(x => this.global.env.define(x[0], x[1]));
         this.binder = new Binder();
-        this.binder.enterScope();
-        globalBuiltinsFadaCombos(this.global)
-            .forEach(x => this.global.env.define(x[0], x[1]));
-        if(externals)
-            externals(this.global).forEach(ext =>
-                this.global.env.define(ext[0], ext[1]));
+        // Loop over defined globals.
+        for(const gl of globals) {
+            const id = this.binder.declareGlobal(gl[0]);
+            this.binder.defineGlobal(id);
+        }
     }
 
     // stop attempts to stop all active executions
@@ -60,6 +65,7 @@ export class Interpreter {
             throw new Error("Ní féidir clár nua a thosaigh: Tá clár eile ag rith cheana.");
             return;
         }
+
         this.execPromise = new Promise((res, rej) => {
             this.resolveFn = res;
             this.rejectFn = stopOnErr
@@ -82,4 +88,14 @@ export class Interpreter {
     }
 
     // TODO Add function for executing Expr nodes directly and returning Values
+    public async evalExpr(expr: Expr): Promise<Value> {
+        try {
+            this.binder.visitExpr(expr);
+            return await expr.evalfn(this.global);
+        } catch(e) {
+            if(e !== STOP)
+                throw e;
+        }
+        return null;
+    }
 }

@@ -33,7 +33,7 @@ creatlach Nathair { >-- An nathair
         xNua := ceann[0] + dx*méid@seo >-- an ait nua X
         yNua := ceann[1] + dy*méid@seo >-- na ait nua Y
 
-        >-- Seiceáil go bhfuil an ait nua idir teorainn an stáitse
+        >-- Seiceáil an bhfuil an ait nua idir teorainn an stáitse
         má xNua < 0 | xNua + méid@seo > X | yNua < 0 | yNua + méid@seo > Y
             toradh breag
 

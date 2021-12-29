@@ -25,9 +25,9 @@ export class Environment {
         return v;
     }
 
-    // Enclosing environment
+    // Enclosing environment.
     public readonly enclosing: Environment | null;
-    // globals contains the collection of global variables
+    // globals contains the collection of global variables.
     private readonly globals: Map<string, Value>;
     // values contains the current values for each variable
     // the mapping of variable name to array index is computed
@@ -39,7 +39,7 @@ export class Environment {
         this.enclosing = enc || null;
         // If we have no enclosing environment, we are
         // the outermost environment, so we construct
-        // the globals
+        // the globals.
         this.globals = enc?.globals ?? new Map();
     }
 
