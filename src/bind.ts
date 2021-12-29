@@ -4,16 +4,6 @@ import { Stmt } from "./values";
 import { ASTVisitor } from "./visitor";
 import { StaticError, alreadyDefinedError } from "./error";
 
-// resolveASTNode is a generic function to resolve variables in AST nodes,
-// it takes advantage of the Visitor pattern supported in the AST.
-export function resolveASTNode<T extends { accept: (visitor: ASTVisitor<void>) => void }>(node: T): T {
-    const b = new Binder();
-    b.enterScope();
-    node.accept(b);
-    b.exitScope();
-    return node;
-}
-
 // Declared ID wraps a standard ID to ensure at the type level that only declared
 // variables are defined.
 type DeclaredID = {
@@ -25,6 +15,12 @@ type DeclaredID = {
 enum VarState {
     DECLARED,
     DEFINED,
+}
+
+enum GlobalState {
+    DECLARED,
+    DEFINED,
+    LATE_BIND_AVAILABLE,
 }
 
 // Interface for the body of an action used to unite
@@ -102,11 +98,20 @@ export class Binder implements ASTVisitor<void> {
     // depthMap exists for easier testing
     public depthMap: Map<P.ID, ([number, number] | { global: true})> = new Map();
 
-    // The current stack of lexical scopes.
+    // The current stack of lexical scopes (excluding global).
     private scopes: Scope[] = [];
+
+    // Global scope is not directly lexical. We pre-process the global scope to
+    // pre-fill this set.
+    private globals: Map<string, GlobalState> = new Map();
+
+    private lateBindAvail = false;
 
     // visitProgram resolves the binding of a Setanta AST.
     public visitProgram(p: P.Program): P.Program {
+        const globs = this.globalNames(p);
+        for(const glob of globs)
+            this.globals.set(glob, GlobalState.LATE_BIND_AVAILABLE);
         this.visitStmts(p.stmts);
         return p;
     }
@@ -300,18 +305,13 @@ export class Binder implements ASTVisitor<void> {
     }
 
     public visitID(expr: P.ID): void {
-        // If this variable has been declared, (but not defined) then it can't be evaluated
-        if(this.scopes.length &&
-            this.scopes[this.scopes.length - 1].declared(expr.id)){
-            throw new StaticError(`Níl an athróg "${expr.id}" sainithe fós`, expr.start, expr.end);
-        }
-        // Resolve this variable
+        // Resolve this variable:
         // Find innermost scope containing defined var
-        // Do not check the outermost scope, as this is the
-        // global scope, which is treated separately
-        for(let i = 0; i < this.scopes.length - 1; i++) {
+        for(let i = 0; i < this.scopes.length; i++) {
             const idx = this.scopes[this.scopes.length - 1 - i].getIdx(expr.id);
             if(idx === undefined)
+                continue;
+            if(!this.scopes[this.scopes.length - 1 - i].defined(expr.id))
                 continue;
             // Variable defined in scope i;
             // Variable defined at index idx;
@@ -319,9 +319,14 @@ export class Binder implements ASTVisitor<void> {
             expr.depth = {resolved: true, global: false, depth: i, offset: idx};
             return;
         }
+        const gState = this.globals.get(expr.id);
+        if(gState !== GlobalState.DEFINED &&
+            !(this.lateBindAvail && gState === GlobalState.LATE_BIND_AVAILABLE)) {
+            throw new StaticError(`Níl an athróg "${expr.id}" ar fáil`, expr.start, expr.end);
+        }
         this.depthMap.set(expr, { global: true });
         // If we haven't found it, assume its a global (we can't always locate globals
-        // for many reasons)
+        // for many reasons).
         expr.depth = {resolved: true, global: true};
     }
 
@@ -336,16 +341,36 @@ export class Binder implements ASTVisitor<void> {
         this.scopes.pop();
     }
 
+    public declareGlobal(s: string, start?: PosInfo, end?: PosInfo): DeclaredID {
+        if(this.globals.get(s) === GlobalState.DEFINED)
+            throw alreadyDefinedError(s, start, end);
+        this.globals.set(s, GlobalState.DECLARED);
+        return { declared: true, id: s};
+    }
+
+    public defineGlobal(id: DeclaredID): void {
+        this.globals.set(id.id, GlobalState.DEFINED);
+    }
+
+    private globalNames(p: P.Program): string[] {
+        const o: string[] = [];
+        for(const stmt of p.stmts)
+            if(stmt.kind === ASTKinds.DefnStmt || stmt.kind === ASTKinds.GniomhStmt
+                || stmt.kind === ASTKinds.CtlchStmt)
+                o.push(stmt.id.id);
+        return o;
+    }
+
     private declareVar(s: string, start?: PosInfo, end?:PosInfo): DeclaredID {
         if(this.scopes.length === 0)
-            throw new StaticError(`Ní féidir an athróg ${s} a fhógairt`, start, end);
+            return this.declareGlobal(s, start, end);
         this.scopes[this.scopes.length - 1].declareVar(s, start, end);
         return { declared: true, id: s };
     }
 
     private defineVar(id: DeclaredID): void {
         if(this.scopes.length === 0)
-            return;
+            return this.defineGlobal(id);
         this.scopes[this.scopes.length - 1].defineVar(id);
     }
 
@@ -353,12 +378,18 @@ export class Binder implements ASTVisitor<void> {
         // Create a new scope to define arguments in
         this.enterScope();
 
+        const lateBind = this.lateBindAvail;
+
+        this.lateBindAvail = true;
+
         for(const arg of gniomh.args?.ids ?? []) {
             const v = this.declareVar(arg.id, arg.start, arg.end);
             this.defineVar(v);
         }
 
         this.visitStmts(gniomh.stmts);
+
+        this.lateBindAvail = lateBind;
 
         this.exitScope();
     }
