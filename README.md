@@ -28,11 +28,16 @@ npm i -g setanta
 
 ## Doiciméadacht
 
-Féach ar an doiciméadacht Setanta ar [docs.try-setanta.ie](http://docs.try-setanta.ie).
+Tá teagasc as Gaeilge agus as Béarla ar fáil ar [try-setanta.ie](https://try-setanta.ie).
+
+Féach ar doiciméadacht Setanta ar [docs.try-setanta.ie](http://docs.try-setanta.ie).
 
 NB: Níl mo chuid Gaeilge foirfe, má tá botún nó earráid éigin ar an suíomh sin, le do thoil seol ríomhphost dom ar `eoind@vey.ie`, nó seol PR dom ar GitHub.
 
 ## *Documentation*
+
+*There is a Setanta tutorial available in Irish and English on
+[try-setanta.ie](https://try-setanta.ie).*
 
 *Look at the Setanta documentation at [docs.try-setanta.ie](http://docs.try-setanta.ie).*
 
