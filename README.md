@@ -55,7 +55,7 @@ NB: Níl mo chuid Gaeilge foirfe, má tá botún nó earráid éigin ar an suío
 
 ## Stair Setanta
 
-D'fhorbair mé Setanta mar chuid de mo thionscadal an bliana deiridh ag Ollscoil Mhá Nuad. Tá mo thráchtas le fheiceáil [anseo](https://github.com/EoinDavey/Setanta-site/raw/master/notes/out/final-report.pdf).
+D'fhorbair mé Setanta mar chuid de mo thionscadal an bliana deiridh ag Ollscoil Mhá Nuad. Tá mo thráchtas le fheiceáil [anseo](https://github.com/EoinDavey/Setanta-thesis/blob/master/out/final-report.pdf).
 
 Rinne mé Setanta mar thug mé faoi deara go raibh beagnach gach teanga ríomhchláruchain forbartha as Béarla. Theastaigh uaim teanga ríomchlárucháin a cruthú a bhí go hiomlán as Gaeilge ar feadh chúpla cúis.
 
@@ -66,7 +66,7 @@ Rinne mé Setanta mar thug mé faoi deara go raibh beagnach gach teanga ríomhch
 
 ## *History of Setanta*
 
-*I developed Setanta as part of my final year project at Maynooth University. My thesis can be seen [here](https://github.com/EoinDavey/Setanta-site/raw/master/notes/out/final-report.pdf).*
+*I developed Setanta as part of my final year project at Maynooth University. My thesis can be seen [here](https://github.com/EoinDavey/Setanta-thesis/blob/master/out/final-report.pdf).*
 
 *I made Setanta because I noticed that nearly all programming languages were developed in English. I wanted to create a programming language that was entirely in Irish for a few reasons.*
 
