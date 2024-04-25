@@ -2,3 +2,5 @@
 /node_modules/
 *.swp
 /docs/_site/
+run.json
+settings.json

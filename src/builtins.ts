@@ -5,6 +5,7 @@ import { athchuir } from "./teacs";
 import { Callable, ObjIntfWrap, Value, callFunc, goTéacs, repr } from "./values";
 import { Context } from "./ctx";
 import { STOP, STOPType } from "./consts";
+import { IncomingMessage } from "http";
 
 // Take a 1-ary mathematical function and return a Callable
 function mathWrap(ainm: string, fn: (x: number) => number): Callable {
@@ -212,6 +213,107 @@ function getGlobalBuiltins(ctx: Context): [string, Value][] {
                 arity: () => 0,
                 call: () => new Promise<null>((_, rej) => { ctx.addRejectFn(rej); }),
             },
+        ],
+        [
+            // args[0]: téacs
+            // rith runs terminal command and returns output
+            "rith",
+            {
+                ainm: "rith",
+                arity: () => 1,
+                call: async ([command] : Value[]) => {
+                    Asserts.assertTéacs(command);
+                    const child_process = await import('child_process');
+                    const exec = child_process.execSync;
+
+                    const stdout = exec(command).toString();
+                    return Promise.resolve(stdout);
+                },
+            },
+        ],
+        [
+            // args[0]: liosta, args[1]: Value
+            // innéacsuimhir finds the index of an item in a liosta
+            "innéacsuimhir",
+            {
+                ainm: "innéacsuimhir",
+                arity: () => 2,
+                call: ([liosta, item] : Value[]) => {
+                    if(liosta === null) return Promise.reject(STOP);
+                    Asserts.assertLiosta(liosta);
+                    const ind = liosta.indexOf(item);
+                    if(ind === -1){
+                        return Promise.reject(STOP);
+                    }
+                    return Promise.resolve(ind);
+                },
+            },
+        ],
+        [
+            // args[0-2]: téacs
+            // iarr requests data from the URL provided
+            "iarr",
+            {
+                ainm: "iarr",
+                arity: () => 3,
+                call: async ([dest, method, body] : Value[]) : Promise<Value> => {
+					Asserts.assertTéacs(dest);
+                    Asserts.assertTéacs(method);
+                    const defaultOptions = { method: method, headers: { 'User-Agent': 'Setanta/0.10.4' }, body };
+
+                    const isHttps = (dest.startsWith("https://"));
+
+                    const http = await import(isHttps ? 'https' : 'http');
+                    const fetch = http.request;
+
+                    return new Promise(res => {
+                        const run = (resp : IncomingMessage) => {
+
+                            let data = '';
+
+                            resp.on('data', chnk => { data += chnk; });
+                            resp.on('end', () => {
+                                res(data);
+                            });
+                        };
+
+                        fetch(dest, defaultOptions, run);
+                    });
+                },
+            },
+        ],
+        [
+            // Filesystem interface object
+            "comhaid", new ObjIntfWrap("comhaid", [
+                [["oscail"], {
+                    "ainm": "oscail",
+                    arity: () => 1,
+                    call: async ([name]) => {
+                        Asserts.assertTéacs(name);
+
+                        const fs = await import('fs');
+                        const read = fs.readFileSync;
+
+                        const data = read(name, 'utf8');
+                        if(data === undefined) throw new RuntimeError("Ní féidir le do ríomchár léigh an comhad mar tá sé nach bhuuil ann");
+                        return Promise.resolve(data);
+                    },
+                }],
+                [["sábháil"], {
+                    ainm: 'sábháil',
+                    arity: () => 2,
+                    call: async ([name, content]) => {
+                        Asserts.assertTéacs(name);
+                        Asserts.assertTéacs(content);
+
+                        const fs = await import('fs');
+                        const write = fs.writeFileSync;
+                        write(name, content);
+
+                        return Promise.resolve(null);
+                    },
+                }],
+            ]),
         ],
         [
             // Built in maths object
