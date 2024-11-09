@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.10.5 - 2024/11/09
+
+### Fixed
+
+- Periodic dependency update.
+
+## 0.10.4 - 2023/03/24
+
+### Fixed
+
+- Periodic dependency update.
+
 ## 0.10.3 - 2022/01/26
 
 ### Fixed
