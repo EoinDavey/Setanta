@@ -74,8 +74,8 @@ export class Interpreter {
         });
 
         try {
-            const resolvedAst = this.binder.visitProgram(p);
-            const rootPromise = () => execStmts(resolvedAst.stmts, this.global);
+            this.binder.visitProgram(p);
+            const rootPromise = () => execStmts(p.stmts, this.global);
             this.inject(rootPromise);
 
             await this.execPromise;

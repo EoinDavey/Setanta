@@ -64,9 +64,9 @@ export function csArgsEval(args: CSArgs): (ctx: Context) => Promise<Value[]> {
                     x.then(ls =>
                         y.exp
                             .evalfn(ctx)
-                            .then(v => ls.concat([v]))
+                            .then(v => ls.concat([v])),
                     ),
-                args.head.evalfn(ctx).then((x: Value) => [x])
+                args.head.evalfn(ctx).then((x: Value) => [x]),
             )
             .catch(err => Promise.reject(tagErrorLoc(err, args.start, args.end)));
 }
@@ -121,8 +121,8 @@ export function objLookupsEval(ol: ObjLookups): EvalFn {
                         Asserts.assertObj(obj);
                         return getAttr(obj, y.id.id);
                     },
-                    root
-                )
+                    root,
+                ),
             )
             .catch(err => Promise.reject(tagErrorLoc(err, ol.start, ol.end)));
 }

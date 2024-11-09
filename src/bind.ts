@@ -108,12 +108,11 @@ export class Binder implements ASTVisitor<void> {
     private lateBindAvail = false;
 
     // visitProgram resolves the binding of a Setanta AST.
-    public visitProgram(p: P.Program): P.Program {
+    public visitProgram(p: P.Program): void {
         const globs = this.globalNames(p);
         for(const glob of globs)
             this.globals.set(glob, GlobalState.LATE_BIND_AVAILABLE);
         this.visitStmts(p.stmts);
-        return p;
     }
 
     public visitStmts(stmts: Stmt[]): void {
@@ -125,7 +124,7 @@ export class Binder implements ASTVisitor<void> {
     public visitStmt(stmt: Stmt): void {
         if(stmt.kind === ASTKinds.CCStmt || stmt.kind === ASTKinds.BrisStmt)
             return;
-        stmt.accept<void>(this);
+        stmt.accept(this);
     }
 
     public visitIfStmt(stmt: P.IfStmt): void {
@@ -292,7 +291,7 @@ export class Binder implements ASTVisitor<void> {
             || atom.kind === ASTKinds.Bool || atom.kind === ASTKinds.Neamhni)
             return;
         // Use visitor pattern to bind atom.
-        atom.accept<void>(this);
+        atom.accept(this);
     }
 
     public visitListLit(expr: P.ListLit): void {

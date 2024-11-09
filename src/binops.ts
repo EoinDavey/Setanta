@@ -36,7 +36,7 @@ export function orBinOp(or: Or): EvalFn {
             .reduce(
                 (x: Promise<Value>, y): Promise<Value> =>
                     x.then(val => Checks.isTrue(val) ? val : y.trm.evalfn(ctx)),
-                or.head.evalfn(ctx)
+                or.head.evalfn(ctx),
             )
             .catch(err => Promise.reject(tagErrorLoc(err, or.start, or.end)));
 }
@@ -50,7 +50,7 @@ export function andBinOp(and: And): EvalFn {
             .reduce(
                 (x: Promise<Value>, y): Promise<Value> =>
                     x.then(val => !Checks.isTrue(val) ? val : y.trm.evalfn(ctx)),
-                and.head.evalfn(ctx)
+                and.head.evalfn(ctx),
             )
             .catch(err => Promise.reject(tagErrorLoc(err, and.start, and.end)));
 }
@@ -67,7 +67,7 @@ export function binOpEvalFn(obj: {head: Evalable, tail: {trm: Evalable, op: stri
                         .evalfn(ctx)
                         .then((b: Value) =>
                             evalBinOp(a, b, y.op, obj.start, obj.end))),
-            obj.head.evalfn(ctx)
+            obj.head.evalfn(ctx),
         );
 }
 
@@ -161,7 +161,7 @@ export function binOpQuickEvalFn(obj: {head: Evalable, tail: {trm: Evalable, op:
                     const b = y.trm.qeval(ctx);
                     return evalBinOp(x, b, y.op, obj.start, obj.end);
                 },
-                head.qeval(ctx)
+                head.qeval(ctx),
             );
     };
 }

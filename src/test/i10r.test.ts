@@ -1196,7 +1196,7 @@ test("stop action test", async () => {
                     },
                 },
             ],
-        ]
+        ],
     );
     const prog = `
     stop()

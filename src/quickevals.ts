@@ -119,7 +119,7 @@ export function qObjLookupsEval(ol: ObjLookups): MaybeEv {
                     Asserts.assertObj(x);
                     return getAttr(x, y.id.id);
                 },
-                rt
+                rt,
             );
         } catch(err) {
             throw tagErrorLoc(err, ol.start, ol.end);
